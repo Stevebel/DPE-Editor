@@ -1,0 +1,25 @@
+/*
+ * @NOTE: Prepend a `~` to css file paths that are in your node_modules
+ *        See https://github.com/webpack-contrib/sass-loader#imports
+ */
+
+@font-face {
+  font-family: 'Pokemon';
+  src: url('fonts/pokemon_pixel_font.eot?') format('eot'),
+    url('fonts/pokemon_pixel_font.woff') format('woff'),
+    url('fonts/pokemon_pixel_font.ttf') format('truetype'),
+    url('fonts/pokemon_pixel_font.svg#Pokemon-Pixel-Font') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+}
+
+body {
+  font-family: 'Pokemon';
+}
+
+#pokedex {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
