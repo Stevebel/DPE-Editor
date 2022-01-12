@@ -1,3 +1,4 @@
+import { isString } from 'lodash';
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
 
 export type StringDefinitionsConfig<T> = {
@@ -29,8 +30,8 @@ export class StringDefinitionsHandler<T> implements SourceValueHandler<T[]> {
     let end = -1;
     let match: RegExpExecArray | null;
     while ((match = this.stringDefinitionRe.exec(raw))) {
-      let pointerConst = match[1];
-      let str = match[2]
+      const pointerConst = match[1];
+      const str = match[2]
         .replace(ESCAPED_NEW_LINE_RE, '\n')
         .replace(ESCAPED_ACCENTED_E_RE, 'é');
       data.push({
@@ -63,6 +64,10 @@ export class StringDefinitionsHandler<T> implements SourceValueHandler<T[]> {
   }
 
   private getString(item: T): string {
-    return item[this.config.stringProperty] as any;
+    const str = item[this.config.stringProperty];
+    if (isString(str)) {
+      return str;
+    }
+    throw new Error('String property is not a string');
   }
 }

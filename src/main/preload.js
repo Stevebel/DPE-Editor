@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { contextBridge, ipcRenderer } = require('electron');
 const ElectronStore = require('electron-store');
 
-const  store = new ElectronStore();
-console.log(store.get('dpeFolder'));
+const store = new ElectronStore();
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -25,6 +25,6 @@ contextBridge.exposeInMainWorld('electron', {
     },
     set(key, value) {
       store.set(key, value);
-    }
-  }
+    },
+  },
 });

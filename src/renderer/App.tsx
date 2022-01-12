@@ -1,10 +1,8 @@
-import './App.scss';
-
 import { ThemeProvider } from '@emotion/react';
 import { Box, Button, createTheme, Tab, Tabs, TextField } from '@mui/material';
 import React from 'react';
 import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
-
+import './App.scss';
 import { TabPanel } from './common/TabPanel';
 import { PokedexTab } from './pokemon-editor/tabs/pokedex/PokedexTab';
 

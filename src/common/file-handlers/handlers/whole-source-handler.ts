@@ -1,8 +1,15 @@
-import { ParseData, SourceFileDefinition, SourceValueHandler } from '../file-handler.interface';
+import {
+  ParseData,
+  SourceFileDefinition,
+  SourceValueHandler,
+} from '../file-handler.interface';
+import { getKeys } from '../parse-utils';
 
-export class WholeSourceHandler<T> implements SourceValueHandler<T> {
-  private parseData: { [K in Extract<keyof T, string>]: ParseData<T[K]> } =
-    {} as any;
+export default class WholeSourceHandler<T> implements SourceValueHandler<T> {
+  private parseData: Partial<{
+    [K in Extract<keyof T, string>]: ParseData<T[K]>;
+  }> = {};
+
   source?: string;
 
   constructor(private schema: SourceFileDefinition<T>['schema']) {}
@@ -13,8 +20,7 @@ export class WholeSourceHandler<T> implements SourceValueHandler<T> {
     const out: T = {} as any;
     let start = Infinity;
     let end = -1;
-    for (let key in this.schema) {
-      console.log(`...Parsing ${key}`);
+    getKeys(this.schema).forEach((key) => {
       const handler = this.schema[key];
       if (handler) {
         const data = handler.parse(raw);
@@ -28,21 +34,23 @@ export class WholeSourceHandler<T> implements SourceValueHandler<T> {
           end = data.end;
         }
       }
-    }
+    });
 
     return {
-      start: start,
-      end: end,
+      start,
+      end,
       value: out,
     };
   }
+
   format(value: T): string {
-    if (!this.source) {
+    const { source } = this;
+    if (!source) {
       throw new Error('Cannot format without source');
     }
 
     let out = '';
-    let parseInfo = Object.entries(this.parseData) as Array<
+    const parseInfo = Object.entries(this.parseData) as Array<
       [keyof T, ParseData<any>]
     >;
     let lastSourceIndex = 0;
@@ -51,12 +59,12 @@ export class WholeSourceHandler<T> implements SourceValueHandler<T> {
     parseInfo
       .sort((a, b) => a[1].start - b[1].start)
       .forEach(([key, data]) => {
-        out += this.source!.substring(lastSourceIndex, data.start);
-        out += this.schema[key]!.format(value[key]);
+        out += source.substring(lastSourceIndex, data.start);
+        out += this.schema[key]?.format(value[key]);
         lastSourceIndex = data.end;
       });
-    if (lastSourceIndex < this.source.length) {
-      out += this.source.substring(lastSourceIndex);
+    if (lastSourceIndex < source.length) {
+      out += source.substring(lastSourceIndex);
     }
     return out;
   }

@@ -29,7 +29,7 @@ export class ExternConstHandler implements SourceValueHandler<string[]> {
     let end = -1;
     let match: RegExpExecArray | null;
     while ((match = this.re.exec(raw))) {
-      let constName = match[1];
+      const constName = match[1];
       data.push(constName);
 
       start = Math.min(start, match.index);

@@ -1,4 +1,7 @@
-import { closingBracketIndex, nextCommaIndex } from '../common/file-handlers/parse-utils';
+import {
+  closingBracketIndex,
+  nextCommaIndex,
+} from '../common/file-handlers/parse-utils';
 
 describe('closingBracketIndex', () => {
   it('should find the closing bracket index', () => {

@@ -4,7 +4,7 @@ import { HEX_RE } from './number-handlers';
 const CONST_RE = /\s*([a-zA-Z_]\w*)\s*/;
 export const ConstHandler: SourceValueHandler<string> = {
   parse: (raw) => {
-    let match = CONST_RE.exec(raw);
+    const match = CONST_RE.exec(raw);
     if (!match) {
       throw new Error(`Could not parse ${raw} as a constant`);
     }
@@ -23,7 +23,7 @@ export const AddressOrConstHandler: SourceValueHandler<string | number> = {
     let value: string | number | null = null;
     let start: number | null = null;
 
-    let match = HEX_RE.exec(raw);
+    let match: RegExpExecArray | null = HEX_RE.exec(raw);
     if (match) {
       value = parseInt(match[1], 16);
       start = match.index;
@@ -34,21 +34,20 @@ export const AddressOrConstHandler: SourceValueHandler<string | number> = {
         start = match.index;
       }
     }
-    if (value === null) {
+    if (value === null || start == null || match == null) {
       throw new Error(`Could not parse ${raw} as an address or constant`);
     }
 
     return {
-      start: start!,
-      end: start! + match![0].length,
-      value: value!,
+      start,
+      end: start + match[0].length,
+      value,
     };
   },
   format: (value) => {
     if (typeof value === 'string') {
       return value;
-    } else {
-      return '(const u8*) 0x' + value.toString(16);
     }
+    return `(const u8*) 0x${value.toString(16)}`;
   },
 };

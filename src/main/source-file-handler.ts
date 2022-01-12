@@ -1,8 +1,11 @@
 import { readFile, writeFile } from 'fs/promises';
-import path from 'path/posix';
-
-import { ParseData, SourceFileDefinition, SourceLocation } from '../common/file-handlers/file-handler.interface';
-import { WholeSourceHandler } from '../common/file-handlers/handlers/whole-source-handler';
+import path from 'path';
+import {
+  ParseData,
+  SourceFileDefinition,
+  SourceLocation,
+} from '../common/file-handlers/file-handler.interface';
+import WholeSourceHandler from '../common/file-handlers/handlers/whole-source-handler';
 
 export type ParseInfo<T> = {
   [K in keyof T]: ParseData<T[K]>;
@@ -24,7 +27,8 @@ export class SourceFileHandler<T> {
   getFileLocation(loc: SourceLocation) {
     if (loc.folder === 'cfru') {
       return path.join(this.cfruFolder, loc.fileName);
-    } else if (loc.folder === 'dpe') {
+    }
+    if (loc.folder === 'dpe') {
       return path.join(this.dpeFolder, loc.fileName);
     }
     throw new Error(`Unknown folder ${loc.folder}`);
@@ -33,7 +37,7 @@ export class SourceFileHandler<T> {
   async load(): Promise<T> {
     const data = await Promise.all(
       this.definition.location.map(async (loc, i) => {
-        console.log('Loading ' + this.getFileLocation(loc));
+        console.log(`Loading ${this.getFileLocation(loc)}`);
         const raw = await readFile(this.getFileLocation(loc), 'utf8');
         return this.handlers[i].parse(raw);
       })
@@ -45,6 +49,7 @@ export class SourceFileHandler<T> {
       throw e;
     }
   }
+
   async save(data: T) {
     return Promise.all(
       this.definition.location.map((loc, i) => {

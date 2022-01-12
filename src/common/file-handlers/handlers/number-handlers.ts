@@ -19,14 +19,14 @@ export const IntHandler: SourceValueHandler<number> = {
         start = match.index;
       }
     }
-    if (value === null) {
+    if (value === null || start === null || match === null) {
       throw new Error(`Could not parse ${raw} as an integer`);
     }
 
     return {
-      start: start!,
-      end: start! + match![0].length,
-      value: value!,
+      start,
+      end: start + match[0].length,
+      value,
     };
   },
   format: (value) => value.toString(10),
@@ -37,20 +37,20 @@ export const HexAddressHandler: SourceValueHandler<number> = {
     let value: number | null = null;
     let start: number | null = null;
 
-    let match = HEX_RE.exec(raw);
+    const match = HEX_RE.exec(raw);
     if (match) {
       value = parseInt(match[1], 16);
       start = match.index;
     }
-    if (value === null) {
+    if (value === null || start === null || match === null) {
       throw new Error(`Could not parse ${raw} as a hex address`);
     }
 
     return {
-      start: start!,
-      end: start! + match![0].length,
-      value: value!,
+      start,
+      end: start + match[0].length,
+      value,
     };
   },
-  format: (value) => '(const u8*) 0x' + value.toString(16),
+  format: (value) => `(const u8*) 0x${value.toString(16)}`,
 };

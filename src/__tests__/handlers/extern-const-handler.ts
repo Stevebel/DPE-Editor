@@ -1,4 +1,7 @@
-import { ExternConstHandler, ExternConstHandlerConfig } from '../../common/file-handlers/handlers/extern-const-handler';
+import {
+  ExternConstHandler,
+  ExternConstHandlerConfig,
+} from '../../common/file-handlers/handlers/extern-const-handler';
 import { trimMultiline } from '../../common/test-utils';
 
 describe('ExternConstHandler', () => {

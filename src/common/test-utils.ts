@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 export function trimMultiline(str: string) {
   return str
     .split('\n')

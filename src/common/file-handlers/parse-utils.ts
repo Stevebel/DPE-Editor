@@ -31,14 +31,14 @@ export function closingBracketIndex(
     }
 
     if (str[i] === open) {
-      openCount++;
+      openCount += 1;
     } else if (str[i] === close) {
-      openCount--;
+      openCount -= 1;
       if (openCount === 0) {
         return i;
       }
     }
-    i++;
+    i += 1;
   }
   throw new Error(`Unterminated ${open}`);
 }
@@ -77,11 +77,19 @@ export function nextCommaIndex(str: string): number {
     if (str[i] === ',') {
       return i;
     }
-    i++;
+    i += 1;
   }
   return -1;
 }
 
 export function regExpEscape(str: string) {
   return str.replace(/[-[\]{}()*+!<=:?.^$|#,]/g, '\\$&');
+}
+
+export type KeyOfType<T, U> = {
+  [k in keyof T]: T[k] extends U ? k : never;
+}[keyof T];
+
+export function getKeys<O>(o: O) {
+  return Object.keys(o) as Extract<keyof O, string>[];
 }

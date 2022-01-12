@@ -1,4 +1,7 @@
-import { AddressOrConstHandler, ConstHandler } from '../../common/file-handlers/handlers/const-handler';
+import {
+  AddressOrConstHandler,
+  ConstHandler,
+} from '../../common/file-handlers/handlers/const-handler';
 
 describe('ConstHandler', () => {
   it('should parse a const', () => {

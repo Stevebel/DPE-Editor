@@ -1,4 +1,7 @@
-import { HexAddressHandler, IntHandler } from '../../common/file-handlers/handlers/number-handlers';
+import {
+  HexAddressHandler,
+  IntHandler,
+} from '../../common/file-handlers/handlers/number-handlers';
 
 describe('IntHandler', () => {
   it('should parse a decimal number', () => {

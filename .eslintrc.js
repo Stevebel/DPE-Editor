@@ -1,14 +1,19 @@
 module.exports = {
-  extends: ['erb',
-  "plugin:@typescript-eslint/eslint-recommended",
-  "plugin:@typescript-eslint/recommended"],
+  extends: [
+    'erb',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
     'import/no-unresolved': 'error',
     // Since React 17 and typescript 4.1 you can safely disable the rule
     'react/react-in-jsx-scope': 'off',
-    'react/jsx-props-no-spreading': 'ignore',
+    'react/jsx-props-no-spreading': 'off',
+    'no-cond-assign': ['error', 'except-parens'],
+    'prefer-destructuring': 'warn',
+    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
   },
   parserOptions: {
     ecmaVersion: 2020,

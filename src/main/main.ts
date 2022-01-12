@@ -1,14 +1,13 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint global-require: off, no-console: off, promise/always-return: off */
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
-
 import { SourceFileDefinition } from 'common/file-handlers/file-handler.interface';
+import 'core-js/stable';
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import log from 'electron-log';
 import ElectronStore from 'electron-store';
 import { autoUpdater } from 'electron-updater';
 import path from 'path';
-
+import 'regenerator-runtime/runtime';
 import { AppConfig } from '../common/config.interface';
 import { IPCChannel } from '../common/ipc.interface';
 import {
@@ -17,8 +16,8 @@ import {
   formatSourceData,
   PokemonSourceData,
   PokemonSourceHandlers,
-  SOURCE_DEFS,
   SourceDefStruct,
+  SOURCE_DEFS,
 } from '../common/pokemon-source-data';
 import MenuBuilder from './menu';
 import { SourceFileHandler } from './source-file-handler';
@@ -51,7 +50,7 @@ function getHandler<T>(def: SourceFileDefinition<T>): SourceFileHandler<T> {
   );
 }
 
-let handlers: PokemonSourceHandlers = {} as any;
+const handlers: PokemonSourceHandlers = {} as any;
 
 async function loadFiles() {
   if (store.get('cfruFolder') && store.get('dpeFolder')) {
@@ -75,7 +74,7 @@ async function loadFiles() {
     const channel: IPCChannel = 'pokemon-source-data';
     mainWindow!.webContents.send(channel, data);
 
-    //await saveFiles(data);
+    // await saveFiles(data);
   }
 }
 
@@ -83,9 +82,7 @@ async function saveFiles(data: AllPokemonData) {
   const sourceData = convertToSource(data);
 
   const promises = Object.entries(handlers).map(async ([name, handler]) => {
-    return await handler.save(
-      sourceData[name as keyof PokemonSourceData] as any
-    );
+    return handler.save(sourceData[name as keyof PokemonSourceData] as any);
   });
 
   await Promise.all(promises);

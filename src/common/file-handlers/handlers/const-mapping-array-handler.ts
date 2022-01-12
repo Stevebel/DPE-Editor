@@ -1,5 +1,4 @@
 import { escapeRegExp } from 'lodash';
-
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
 
 export type ConstMappingArrayHandlerConfig<T> = {
@@ -12,9 +11,17 @@ export type ConstMappingArrayHandlerConfig<T> = {
   rightAdd: number;
 };
 
+function getAddition(amount: number) {
+  if (!amount) {
+    return '';
+  }
+  return amount > 0 ? ` + ${amount}` : ` - ${-amount}`;
+}
 export class ConstMappingArrayHandler<T> implements SourceValueHandler<T[]> {
   private readonly config: ConstMappingArrayHandlerConfig<T>;
+
   private definitionRe: RegExp;
+
   private lineRe: RegExp;
 
   constructor(config: ConstMappingArrayHandlerConfig<T>) {
@@ -25,22 +32,18 @@ export class ConstMappingArrayHandler<T> implements SourceValueHandler<T[]> {
     );
 
     const leftHand =
-      escapeRegExp('[' + this.config.leftHandPrefix) +
+      escapeRegExp(`[${this.config.leftHandPrefix}`) +
       /(\w+)/.source +
-      escapeRegExp(this.getAddition(this.config.leftAdd) + ']');
+      escapeRegExp(`${getAddition(this.config.leftAdd)}]`);
     const rightHand =
       this.config.rightHandPrefix +
       /(\w+)/.source +
-      this.getAddition(this.config.rightAdd);
+      getAddition(this.config.rightAdd);
 
     this.lineRe = new RegExp(
-      leftHand + /\s*=\s*/.source + rightHand + '\\s*,?',
+      `${leftHand + /\s*=\s*/.source + rightHand}\\s*,?`,
       'g'
     );
-  }
-
-  private getAddition(amount: number) {
-    return amount === 0 ? '' : amount > 0 ? ` + ${amount}` : ` - ${-amount}`;
   }
 
   parse(source: string): ParseData<T[]> {
@@ -78,9 +81,9 @@ export class ConstMappingArrayHandler<T> implements SourceValueHandler<T[]> {
           (item) =>
             `[${this.config.leftHandPrefix}${
               item[this.config.leftHandProperty]
-            }${this.getAddition(this.config.leftAdd)}] = ${
+            }${getAddition(this.config.leftAdd)}] = ${
               this.config.rightHandPrefix
-            }${item[this.config.rightHandProperty]}${this.getAddition(
+            }${item[this.config.rightHandProperty]}${getAddition(
               this.config.rightAdd
             )},`
         )

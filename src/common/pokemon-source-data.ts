@@ -1,12 +1,26 @@
 import { SourceFileHandler } from 'main/source-file-handler';
-
 import { SourceFileDefinition } from './file-handlers/file-handler.interface';
-import { PokedexConsts, PokedexConstsSourceDef } from './file-handlers/files/pokedex';
-import { PokedexDataString, PokedexDataStringSourceDef } from './file-handlers/files/pokedex-data-string';
-import { PokedexDataSourceDef, PokedexDataTable } from './file-handlers/files/pokedex-data-table';
-import { PokemonNameTable, PokemonNameTableSourceDef } from './file-handlers/files/pokemon-name-table';
+import {
+  PokedexConsts,
+  PokedexConstsSourceDef,
+} from './file-handlers/files/pokedex';
+import {
+  PokedexDataString,
+  PokedexDataStringSourceDef,
+} from './file-handlers/files/pokedex-data-string';
+import {
+  PokedexDataSourceDef,
+  PokedexDataTable,
+} from './file-handlers/files/pokedex-data-table';
+import {
+  PokemonNameTable,
+  PokemonNameTableSourceDef,
+} from './file-handlers/files/pokemon-name-table';
 import { SpeciesData, SpeciesSourceDef } from './file-handlers/files/species';
-import { SpeciesToPokedex, SpeciesToPokedexSourceDef } from './file-handlers/files/species-to-pokedex';
+import {
+  SpeciesToPokedex,
+  SpeciesToPokedexSourceDef,
+} from './file-handlers/files/species-to-pokedex';
 
 export const SOURCE_DEFS = {
   pokedexDataTable: PokedexDataSourceDef,
@@ -69,6 +83,10 @@ export type PokemonSpeciesData = {
   dexEntryConst?: string;
 };
 
+function notUndefined<T>(x: T | undefined): x is T {
+  return x != null;
+}
+
 export function formatSourceData(
   sourceData: PokemonSourceData
 ): AllPokemonData {
@@ -82,10 +100,10 @@ export function formatSourceData(
   } = sourceData;
 
   const pokedexToSpecies: { [key: string]: string[] } = {};
-  for (const { nationalDex, species } of speciesToPokedex.mappings) {
+  speciesToPokedex.mappings.forEach(({ species: s, nationalDex }) => {
     pokedexToSpecies[nationalDex] = pokedexToSpecies[nationalDex] || [];
-    pokedexToSpecies[nationalDex].push(species);
-  }
+    pokedexToSpecies[nationalDex].push(s);
+  });
 
   const pokemon: PokemonData[] = pokedexDataTable.pokedexEntries.map(
     ({
@@ -99,9 +117,13 @@ export function formatSourceData(
       trainerScale,
       trainerOffset,
     }) => {
-      const nationalDexNumber = pokedexConsts.nationalDexConsts.find(
+      const nationDexConst = pokedexConsts.nationalDexConsts.find(
         (c) => c.nationalDex === nationalDex
-      )!.number;
+      );
+      if (!nationDexConst) {
+        throw new Error(`No national dex const for ${nationalDex}`);
+      }
+      const nationalDexNumber = nationDexConst.number;
       const pokemonSpecies: PokemonSpeciesData[] = pokedexToSpecies[
         nationalDex
       ].map((speciesName) => {
@@ -118,8 +140,8 @@ export function formatSourceData(
           species: speciesName,
           speciesNumber: sp.number,
 
-          name: name?.name,
-          nameConst: name?.nameConst,
+          name: name.name,
+          nameConst: name.nameConst,
 
           dexEntry: dexEntry?.dexEntry,
           dexEntryConst: dexEntry?.dexEntryConst,
@@ -201,11 +223,16 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
 
   const pokedexDataString: PokedexDataString = {
     pokedexData: pokemonSpecies
-      .filter((s) => s.dexEntry)
-      .map(({ dexEntry, dexEntryConst }) => ({
-        dexEntry: dexEntry!,
-        dexEntryConst: dexEntryConst!,
-      })),
+      .map(({ dexEntry, dexEntryConst }) => {
+        if (dexEntry && dexEntryConst) {
+          return {
+            dexEntry,
+            dexEntryConst,
+          };
+        }
+        return undefined;
+      })
+      .filter(notUndefined),
   };
 
   const speciesToPokedex: SpeciesToPokedex = {
@@ -240,8 +267,4 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
     pokedexConsts,
     speciesToPokedex,
   };
-}
-
-function notUndefined<T>(x: T | undefined): x is T {
-  return x != null;
 }

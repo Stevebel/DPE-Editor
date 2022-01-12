@@ -3,7 +3,10 @@ import { AddressOrConstHandler } from '../handlers/const-handler';
 import { FunctionArrayHandler } from '../handlers/function-array-handler';
 import { messageHandler } from '../handlers/message-handler';
 import { IntHandler } from '../handlers/number-handlers';
-import { StructIndexedArrayHandler, structProp } from '../handlers/struct-array-handler';
+import {
+  StructIndexedArrayHandler,
+  structProp,
+} from '../handlers/struct-array-handler';
 
 export interface PokedexDataTable {
   pokedexEntries: PokedexEntry[];

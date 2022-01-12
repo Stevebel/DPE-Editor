@@ -1,5 +1,9 @@
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
-import { closingBracketIndex, nextCommaIndex, regExpEscape } from '../parse-utils';
+import {
+  closingBracketIndex,
+  nextCommaIndex,
+  regExpEscape,
+} from '../parse-utils';
 
 export type StructIndexedArrayConfig<O> = {
   definition: string;
@@ -28,10 +32,12 @@ export class StructIndexedArrayHandler<O>
   implements SourceValueHandler<Array<O>>
 {
   private definitionRe: RegExp;
+
   private indexRe: RegExp;
+
   constructor(private config: StructIndexedArrayConfig<O>) {
     this.definitionRe = new RegExp(
-      regExpEscape(config.definition).replace(/\s+/g, '\\s+') + '\\s*=\\s*\\{'
+      `${regExpEscape(config.definition).replace(/\s+/g, '\\s+')}\\s*=\\s*\\{`
     );
     this.indexRe = new RegExp(`\\[${config.indexPrefix}(\\w+)\\]\\s*=\\s*`);
   }
@@ -41,27 +47,27 @@ export class StructIndexedArrayHandler<O>
   }
 
   parse(raw: string): ParseData<Array<O>> {
-    let match = this.definitionRe.exec(raw);
+    const match = this.definitionRe.exec(raw);
     if (!match) {
       throw new Error(`Could not find definition: ${this.config.definition}`);
     }
 
-    let start = match.index;
-    let end = start + closingBracketIndex(raw.substring(start), '{', '}');
+    const start = match.index;
+    const end = start + closingBracketIndex(raw.substring(start), '{', '}');
 
     let rawData = raw.substring(start + match[0].length, end);
-    let data: Array<O> = [];
+    const data: Array<O> = [];
     while (rawData.length > 0) {
-      let match = this.indexRe.exec(rawData);
-      if (!match) {
+      const propsMatch = this.indexRe.exec(rawData);
+      if (!propsMatch) {
         break;
       }
-      rawData = rawData.substring(match.index + match[0].length);
+      rawData = rawData.substring(propsMatch.index + propsMatch[0].length);
       const propsEnd = closingBracketIndex(rawData, '{', '}');
 
       let rawProps = rawData.substring(1, propsEnd).trim();
-      let item: O = {
-        [this.getConfig().indexProperty]: match[1],
+      const item: O = {
+        [this.getConfig().indexProperty]: propsMatch[1],
       } as any;
       while (rawProps.length > 0) {
         let propEnd = nextCommaIndex(rawProps);
@@ -99,6 +105,7 @@ export class StructIndexedArrayHandler<O>
       value: data,
     };
   }
+
   format(value: Array<O>): string {
     let out = `${this.config.definition} = {\n`;
     value.forEach((item) => {

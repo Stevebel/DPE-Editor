@@ -22,5 +22,12 @@
   },
   "files.watcherExclude": {
     "**/target": true
-  }
+  },
+
+  "editor.formatOnSave": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": [
+    "source.organizeImports",
+    "source.fixAll.eslint"
+  ],
 }

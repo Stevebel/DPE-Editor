@@ -1,8 +1,11 @@
 import { SourceFileDefinition } from '../../common/file-handlers/file-handler.interface';
 import { messageHandler } from '../../common/file-handlers/handlers/message-handler';
 import { IntHandler } from '../../common/file-handlers/handlers/number-handlers';
-import { StructIndexedArrayHandler, structProp } from '../../common/file-handlers/handlers/struct-array-handler';
-import { WholeSourceHandler } from '../../common/file-handlers/handlers/whole-source-handler';
+import {
+  StructIndexedArrayHandler,
+  structProp,
+} from '../../common/file-handlers/handlers/struct-array-handler';
+import WholeSourceHandler from '../../common/file-handlers/handlers/whole-source-handler';
 import { trimMultiline } from '../../common/test-utils';
 
 describe('WholeSourceHandler', () => {
