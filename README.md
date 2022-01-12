@@ -12,7 +12,7 @@
 
 <div align="center">
 
-[![Build Status][travis-image]][travis-url]
+[![Build Status][github-actions-status]][github-actions-url]
 [![Good first issues open][good-first-issue-image]][good-first-issue-url]
 [![Github Tag][github-tag-image]][github-tag-url]
 
@@ -52,7 +52,7 @@ See Electron React Boilerplate [docs and guides here](https://electron-react-boi
 
 [github-tag-image]: https://img.shields.io/github/tag/stevebel/DPE-Editor.svg?label=version
 [github-tag-url]: https://github.com/stevebel/DPE-Editor/releases/latest
-[travis-image]: https://travis-ci.com/stevebel/DPE-Editor.svg?branch=master
-[travis-url]: https://travis-ci.com/stevebel/DPE-Editor
+[github-actions-status]: https://github.com/stevebel/DPE-Editor/workflows/Test/badge.svg
+[github-actions-url]: https://github.com/stevebel/DPE-Editor/actions
 [good-first-issue-image]: https://img.shields.io/github/issues/stevebel/DPE-Editor/good%20first%20issue.svg?label=good%20first%20issues
 [good-first-issue-url]: https://github.com/stevebel/DPE-Editor/issues?q=is%3Aopen+is%3Aissue+label%3A"good+first+issue"

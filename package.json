@@ -89,13 +89,13 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "stevebel",
+      "repo": "DPE-Editor"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/stevebel/DPE-Editor.git"
   },
   "author": {
     "name": "Steven Beller",
