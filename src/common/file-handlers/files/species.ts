@@ -1,8 +1,6 @@
 import { SourceFileDefinition } from '../file-handler.interface';
-import {
-  DefineCountHandler,
-  DefinesHandler,
-} from '../handlers/defines-handler';
+import DefineCountHandler from '../handlers/define-consts-handler';
+import { DefinesHandler } from '../handlers/defines-handler';
 
 export interface SpeciesStructure {
   species: SpeciesData[];

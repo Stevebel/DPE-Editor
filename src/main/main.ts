@@ -11,7 +11,6 @@ import 'regenerator-runtime/runtime';
 import { AppConfig } from '../common/config.interface';
 import { IPCChannel } from '../common/ipc.interface';
 import {
-  AllPokemonData,
   convertToSource,
   formatSourceData,
   PokemonSourceData,
@@ -78,15 +77,15 @@ async function loadFiles() {
   }
 }
 
-async function saveFiles(data: AllPokemonData) {
-  const sourceData = convertToSource(data);
+// async function saveFiles(data: AllPokemonData) {
+//   const sourceData = convertToSource(data);
 
-  const promises = Object.entries(handlers).map(async ([name, handler]) => {
-    return handler.save(sourceData[name as keyof PokemonSourceData] as any);
-  });
+//   const promises = Object.entries(handlers).map(async ([name, handler]) => {
+//     return handler.save(sourceData[name as keyof PokemonSourceData] as any);
+//   });
 
-  await Promise.all(promises);
-}
+//   await Promise.all(promises);
+// }
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;

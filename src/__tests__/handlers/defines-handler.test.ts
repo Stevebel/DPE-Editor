@@ -1,5 +1,5 @@
+import DefineCountHandler from '../../common/file-handlers/handlers/define-consts-handler';
 import {
-  DefineCountHandler,
   DefineCountHandlerConfig,
   DefinesHandler,
   DefinesHandlerConfig,
