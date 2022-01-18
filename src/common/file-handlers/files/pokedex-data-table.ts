@@ -1,12 +1,10 @@
 import { SourceFileDefinition } from '../file-handler.interface';
+import { ArrayHandler } from '../handlers/array-handler';
 import { AddressOrConstHandler } from '../handlers/const-handler';
 import { FunctionArrayHandler } from '../handlers/function-array-handler';
 import { messageHandler } from '../handlers/message-handler';
 import { IntHandler } from '../handlers/number-handlers';
-import {
-  StructIndexedArrayHandler,
-  structProp,
-} from '../handlers/struct-array-handler';
+import { getProp, StructHandler } from '../handlers/struct-handler';
 
 export interface PokedexDataTable {
   pokedexEntries: PokedexEntry[];
@@ -33,22 +31,24 @@ export const PokedexDataSourceDef: SourceFileDefinition<PokedexDataTable> = {
     },
   ],
   schema: {
-    pokedexEntries: new StructIndexedArrayHandler<PokedexEntry>({
+    pokedexEntries: new ArrayHandler<PokedexEntry>({
       definition:
         'const struct PokedexEntry gPokedexEntries[NATIONAL_DEX_COUNT]',
       indexProperty: 'nationalDex',
       indexPrefix: 'NATIONAL_DEX_',
-      structProps: [
-        structProp('categoryName', messageHandler()),
-        structProp('height', IntHandler),
-        structProp('weight', IntHandler),
-        structProp('description', AddressOrConstHandler),
-        structProp('unusedDescription', AddressOrConstHandler),
-        structProp('pokemonScale', IntHandler),
-        structProp('pokemonOffset', IntHandler),
-        structProp('trainerScale', IntHandler),
-        structProp('trainerOffset', IntHandler),
-      ],
+      itemHandler: new StructHandler({
+        props: [
+          getProp('categoryName', messageHandler()),
+          getProp('height', IntHandler),
+          getProp('weight', IntHandler),
+          getProp('description', AddressOrConstHandler),
+          getProp('unusedDescription', AddressOrConstHandler),
+          getProp('pokemonScale', IntHandler),
+          getProp('pokemonOffset', IntHandler),
+          getProp('trainerScale', IntHandler),
+          getProp('trainerOffset', IntHandler),
+        ],
+      }),
     }),
     alternateDexEntries: new FunctionArrayHandler({
       definition: 'const struct AlternateDexEntries gAlternateDexEntries[]',

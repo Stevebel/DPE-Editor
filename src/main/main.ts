@@ -11,7 +11,6 @@ import 'regenerator-runtime/runtime';
 import { AppConfig } from '../common/config.interface';
 import { IPCChannel } from '../common/ipc.interface';
 import {
-  convertToSource,
   formatSourceData,
   PokemonSourceData,
   PokemonSourceHandlers,
@@ -69,7 +68,7 @@ async function loadFiles() {
 
     console.log(data);
     // Just for testing
-    data.source = convertToSource(data);
+    data.source = rawData;
     const channel: IPCChannel = 'pokemon-source-data';
     mainWindow!.webContents.send(channel, data);
 

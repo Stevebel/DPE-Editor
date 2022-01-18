@@ -23,6 +23,7 @@ export default class WholeSourceHandler<T> implements SourceValueHandler<T> {
     getKeys(this.schema).forEach((key) => {
       const handler = this.schema[key];
       if (handler) {
+        console.log('Parsing', key);
         const data = handler.parse(raw);
         out[key] = data.value;
         this.parseData[key] = data;

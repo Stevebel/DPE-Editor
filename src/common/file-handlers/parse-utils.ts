@@ -40,13 +40,16 @@ export function closingBracketIndex(
     }
     i += 1;
   }
-  throw new Error(`Unterminated ${open}`);
+  throw new Error(`Unterminated ${open}: ${str}`);
 }
 
-// Find index of the first comma that is not inside a string or brackets
-export function nextCommaIndex(str: string): number {
+// Find index of the first target character that is not inside a string or brackets
+export function nextIndexOf(str: string, target: string): number {
   let i = 0;
   while (i < str.length) {
+    if (str[i] === target) {
+      return i;
+    }
     if (str[i] === `"` || str[i] === `'`) {
       // Skip over quoted strings
       i = str.indexOf(str[i], i + 1);
@@ -73,17 +76,24 @@ export function nextCommaIndex(str: string): number {
     } else if (str[i] === '{') {
       // Skip over curly brackets
       i += closingBracketIndex(str.substring(i), '{', '}');
+    } else if (str[i] === '(') {
+      // Skip over parentheses
+      i += closingBracketIndex(str.substring(i), '(', ')');
+    } else {
+      i += 1;
     }
-    if (str[i] === ',') {
-      return i;
-    }
-    i += 1;
   }
   return -1;
 }
 
+export function nextCommaIndex(str: string): number {
+  return nextIndexOf(str, ',');
+}
+
 export function regExpEscape(str: string) {
-  return str.replace(/[-[\]{}()*+!<=:?.^$|#,]/g, '\\$&');
+  return str
+    .replace(/[-[\]{}()*+!<=:?.^$|#,]/g, '\\$&')
+    .replace(/\s+/g, '\\s+');
 }
 
 export type KeyOfType<T, U> = {
@@ -92,4 +102,12 @@ export type KeyOfType<T, U> = {
 
 export function getKeys<O>(o: O) {
   return Object.keys(o) as Extract<keyof O, string>[];
+}
+
+export function setProperty<O, T, K extends KeyOfType<O, T>>(
+  o: O,
+  key: K,
+  value: T
+) {
+  (o as any)[key] = value;
 }

@@ -26,6 +26,9 @@ describe('IntHandler', () => {
   it('should format a number', () => {
     expect(IntHandler.format(123)).toBe('123');
   });
+  it('should format an address', () => {
+    expect(IntHandler.format(0xbeef)).toBe('0xbeef');
+  });
 });
 
 describe('HexAddressHandler', () => {
