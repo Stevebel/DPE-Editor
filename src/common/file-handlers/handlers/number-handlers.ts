@@ -2,6 +2,7 @@ import { SourceValueHandler } from '../file-handler.interface';
 
 export const HEX_RE = /0x([0-9A-F]+)/i;
 export const DECIMAL_RE = /(\d+)/;
+export const NUMBER_RE = /0x[0-9A-F]+|[0-9]+/i;
 
 export const IntHandler: SourceValueHandler<number> = {
   parse: (raw) => {
@@ -29,7 +30,8 @@ export const IntHandler: SourceValueHandler<number> = {
       value,
     };
   },
-  format: (value) => value.toString(10),
+  format: (value) =>
+    value < 9999 ? value.toString(10) : `0x${value.toString(16)}`,
 };
 
 export const HexAddressHandler: SourceValueHandler<number> = {
@@ -53,4 +55,20 @@ export const HexAddressHandler: SourceValueHandler<number> = {
     };
   },
   format: (value) => `(const u8*) 0x${value.toString(16)}`,
+};
+
+export const BooleanHandler: SourceValueHandler<boolean> = {
+  parse: (raw) => {
+    const match = /(true|false)/i.exec(raw);
+    if (match) {
+      return {
+        start: 0,
+        end: match[0].length,
+        value: match[1].toLowerCase() === 'true',
+      };
+    }
+    throw new Error(`Could not parse ${raw} as a boolean`);
+  },
+
+  format: (value) => (value ? 'TRUE' : 'FALSE'),
 };

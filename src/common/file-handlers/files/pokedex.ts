@@ -32,6 +32,7 @@ export const PokedexConstsSourceDef: SourceFileDefinition<PokedexConsts> = {
     }),
     dexEntryConsts: new ExternConstHandler({
       constPrefix: 'DEX_ENTRY_',
+      constSuffix: '',
     }),
   },
 };

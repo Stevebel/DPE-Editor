@@ -30,4 +30,5 @@
     "source.organizeImports",
     "source.fixAll.eslint"
   ],
+  "jest.jestCommandLine": "npx jest",
 }

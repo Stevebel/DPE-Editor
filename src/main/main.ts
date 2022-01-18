@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint global-require: off, no-console: off, promise/always-return: off */
-import { SourceFileDefinition } from 'common/file-handlers/file-handler.interface';
 import 'core-js/stable';
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import log from 'electron-log';
@@ -9,9 +8,9 @@ import { autoUpdater } from 'electron-updater';
 import path from 'path';
 import 'regenerator-runtime/runtime';
 import { AppConfig } from '../common/config.interface';
+import { SourceFileDefinition } from '../common/file-handlers/file-handler.interface';
 import { IPCChannel } from '../common/ipc.interface';
 import {
-  convertToSource,
   formatSourceData,
   PokemonSourceData,
   PokemonSourceHandlers,
@@ -69,7 +68,7 @@ async function loadFiles() {
 
     console.log(data);
     // Just for testing
-    data.source = convertToSource(data);
+    data.source = rawData;
     const channel: IPCChannel = 'pokemon-source-data';
     mainWindow!.webContents.send(channel, data);
 

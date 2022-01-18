@@ -1,10 +1,11 @@
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
 
 const EXTERN_CONST_BASE_RE = /extern\s+const\s+u8\s+/g;
-const EXTERN_CONST_END_RE = /([\w]+)\[\];/g;
+const EXTERN_CONST_END_RE = /\[\];/g;
 
 export type ExternConstHandlerConfig = {
   constPrefix: string;
+  constSuffix: string;
 };
 
 export class ExternConstHandler implements SourceValueHandler<string[]> {
@@ -12,9 +13,9 @@ export class ExternConstHandler implements SourceValueHandler<string[]> {
 
   constructor(private config: ExternConstHandlerConfig) {
     this.re = new RegExp(
-      EXTERN_CONST_BASE_RE.source +
-        this.config.constPrefix +
-        EXTERN_CONST_END_RE.source,
+      `${EXTERN_CONST_BASE_RE.source + this.config.constPrefix}([\\w]+)${
+        this.config.constSuffix
+      }${EXTERN_CONST_END_RE.source}`,
       'g'
     );
   }
@@ -46,7 +47,10 @@ export class ExternConstHandler implements SourceValueHandler<string[]> {
   format(value: string[]): string {
     return value
       .map(
-        (item) => `extern const u8 ${this.getConfig().constPrefix}${item}[];`
+        (item) =>
+          `extern const u8 ${this.getConfig().constPrefix}${item}${
+            this.getConfig().constSuffix
+          }[];`
       )
       .join('\n');
   }
