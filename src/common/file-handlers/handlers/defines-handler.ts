@@ -1,6 +1,6 @@
 import { isNumber } from 'lodash';
+import { KeyOfType } from '../../ts-utils';
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
-import { KeyOfType } from '../parse-utils';
 import { IntHandler } from './number-handlers';
 
 export const DEFINE_BASE_RE = /#define\s+/g;

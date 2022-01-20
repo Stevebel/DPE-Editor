@@ -1,10 +1,6 @@
+import { KeyOfType, setProperty } from '../../ts-utils';
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
-import {
-  KeyOfType,
-  nextIndexOf,
-  regExpEscape,
-  setProperty,
-} from '../parse-utils';
+import { nextIndexOf, regExpEscape } from '../parse-utils';
 import { StructProp } from './struct-handler';
 
 export type ConstDefinitionHandlerConfig<T> = {

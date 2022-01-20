@@ -10,13 +10,13 @@ import 'regenerator-runtime/runtime';
 import { AppConfig } from '../common/config.interface';
 import { SourceFileDefinition } from '../common/file-handlers/file-handler.interface';
 import { IPCChannel } from '../common/ipc.interface';
+import { formatSourceData } from '../common/pokemon-source-converter';
 import {
-  formatSourceData,
   PokemonSourceData,
   PokemonSourceHandlers,
   SourceDefStruct,
   SOURCE_DEFS,
-} from '../common/pokemon-source-data';
+} from '../common/pokemon-source-data.interface';
 import MenuBuilder from './menu';
 import { SourceFileHandler } from './source-file-handler';
 import { resolveHtmlPath } from './util';

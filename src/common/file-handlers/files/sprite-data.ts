@@ -18,23 +18,23 @@ export const SpriteDataSourceDef: SourceFileDefinition<SpriteData> = {
   ],
   schema: {
     frontSprites: new ExternConstHandler({
-      constPrefix: 'gFrontSprite',
+      constPrefix: '',
       constSuffix: 'Tiles',
     }),
     backShinySprites: new ExternConstHandler({
-      constPrefix: 'gBackShinySprite',
+      constPrefix: '',
       constSuffix: 'Tiles',
     }),
     frontSpritePals: new ExternConstHandler({
-      constPrefix: 'gFrontSprite',
+      constPrefix: '',
       constSuffix: 'Pal',
     }),
     backShinySpritePals: new ExternConstHandler({
-      constPrefix: 'gBackShinySprite',
+      constPrefix: '',
       constSuffix: 'Pal',
     }),
     iconSprites: new ExternConstHandler({
-      constPrefix: 'gIconSprite',
+      constPrefix: '',
       constSuffix: 'Tiles',
     }),
   },

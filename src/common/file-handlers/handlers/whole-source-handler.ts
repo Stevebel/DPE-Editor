@@ -1,9 +1,9 @@
+import { getKeys } from '../../ts-utils';
 import {
   ParseData,
   SourceFileDefinition,
   SourceValueHandler,
 } from '../file-handler.interface';
-import { getKeys } from '../parse-utils';
 
 export default class WholeSourceHandler<T> implements SourceValueHandler<T> {
   private parseData: Partial<{

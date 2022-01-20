@@ -1,10 +1,9 @@
+import { KeyOfType, setProperty } from '../../ts-utils';
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
 import {
   closingBracketIndex,
-  KeyOfType,
   nextCommaIndex,
   regExpEscape,
-  setProperty,
 } from '../parse-utils';
 import { StructProp } from './struct-handler';
 
