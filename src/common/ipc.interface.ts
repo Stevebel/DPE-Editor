@@ -24,6 +24,6 @@ export type AppIPC = {
   on: <K extends IPCChannel>(
     channel: K,
     func: (...args: IPCSends<K>) => void
-  ) => void;
+  ) => () => void;
   once: (channel: IPCChannel, func: (...args: any[]) => void) => void;
 };

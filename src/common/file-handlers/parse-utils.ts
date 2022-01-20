@@ -95,11 +95,3 @@ export function regExpEscape(str: string) {
     .replace(/[-[\]{}()*+!<=:?.^$|#,]/g, '\\$&')
     .replace(/\s+/g, '\\s+');
 }
-
-export function setProperty<O, T, K extends KeyOfType<O, T>>(
-  o: O,
-  key: K,
-  value: T
-) {
-  (o as any)[key] = value;
-}
