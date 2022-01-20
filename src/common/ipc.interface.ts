@@ -1,4 +1,4 @@
-import { AllPokemonData } from './pokemon-source-data';
+import { AllPokemonData } from './pokemon-data.interface';
 
 export type IPCConfigs = {
   'locate-dpe': () => void;

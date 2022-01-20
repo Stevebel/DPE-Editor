@@ -1,5 +1,6 @@
+import { KeyOfType } from '../../ts-utils';
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
-import { closingBracketIndex, KeyOfType, nextCommaIndex } from '../parse-utils';
+import { closingBracketIndex, nextCommaIndex } from '../parse-utils';
 import { StructProp } from './struct-handler';
 
 export type FunctionHandlerConfig<T> = {

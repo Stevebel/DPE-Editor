@@ -5,12 +5,12 @@ import { IntHandler } from '../handlers/number-handlers';
 import { getProp, StructHandler } from '../handlers/struct-handler';
 
 export type PicTable = {
-  backPics: CompressedSpriteSheet[];
+  pics: CompressedSpriteSheet[];
 };
 
 export type CompressedSpriteSheet = {
   species: string;
-  data: string;
+  sprite: string;
   size: number;
 };
 
@@ -26,14 +26,14 @@ function getPicTableSourceDef(
       },
     ],
     schema: {
-      backPics: new ArrayHandler<CompressedSpriteSheet>({
+      pics: new ArrayHandler<CompressedSpriteSheet>({
         definition,
-        indexPrefix: '',
+        indexPrefix: 'SPECIES_',
         indexProperty: 'species',
         itemHandler: new StructHandler({
           namedProps: false,
           props: [
-            getProp('data', new ConstHandler({ suffix: 'Tiles' })),
+            getProp('sprite', new ConstHandler({ suffix: 'Tiles' })),
             getProp('size', IntHandler),
             getProp('species', new ConstHandler({ prefix: 'SPECIES_' })),
           ],
