@@ -15,7 +15,7 @@ function getPokedexOrder(
   return order;
 }
 
-function getTypeOrder(type: string) {
+function getTypeOrder(type: string | undefined) {
   return type ? TypeOrder[type] : -1;
 }
 
@@ -30,8 +30,8 @@ export function getPokedexOrders(data: AllPokemonData): PokedexOrders {
     type: getPokedexOrder(
       pokemon,
       (p) =>
-        getTypeOrder(p.species[0].baseStats.type1) * MAX_TYPE_ORDER +
-        getTypeOrder(p.species[0].baseStats.type2)
+        getTypeOrder(p.species[0].baseStats?.type1) * MAX_TYPE_ORDER +
+        getTypeOrder(p.species[0].baseStats?.type2)
     ),
   };
 }

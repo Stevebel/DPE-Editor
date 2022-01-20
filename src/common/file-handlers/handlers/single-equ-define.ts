@@ -6,17 +6,15 @@ export type SingleEquDefineConfig = {
 };
 
 export class SingleEquDefineHandler implements SourceValueHandler<number> {
-  private re: RegExp;
-
-  constructor(private config: SingleEquDefineConfig) {
-    this.re = new RegExp(
-      `\\.equ\\s+${config.constName}\\s*,\\s*([x0-9a-fA-F]+)`,
-      'g'
-    );
-  }
+  constructor(private config: SingleEquDefineConfig) {}
 
   parse(raw: string): ParseData<number> {
-    const match = this.re.exec(raw);
+    const re = new RegExp(
+      `\\.equ\\s+${this.config.constName}\\s*,\\s*([x0-9a-fA-F]+)`,
+      'g'
+    );
+
+    const match = re.exec(raw);
     if (!match) {
       throw new Error(`Could not find .equ ${this.config.constName}`);
     }
