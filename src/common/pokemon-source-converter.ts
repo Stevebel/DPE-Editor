@@ -10,15 +10,15 @@ import { ItemAnimationTable } from './file-handlers/files/item-animation-table';
 import { Learnsets } from './file-handlers/files/learnsets';
 import {
   CompressedSpritePalette,
-  PaletteTable,
+  PaletteTable
 } from './file-handlers/files/palette-table';
 import {
   PicCoords,
-  PicCoordsTable,
+  PicCoordsTable
 } from './file-handlers/files/pic-coords-table';
 import {
   CompressedSpriteSheet,
-  PicTable,
+  PicTable
 } from './file-handlers/files/pic-table';
 import { PokedexConsts } from './file-handlers/files/pokedex';
 import { PokedexDataString } from './file-handlers/files/pokedex-data-string';
@@ -31,8 +31,8 @@ import { SpriteData } from './file-handlers/files/sprite-data';
 import { getPokedexOrders } from './pokedex-orders';
 import {
   AllPokemonData,
-  PokemonData,
-  PokemonSpeciesData,
+  IPokemonData,
+  IPokemonSpeciesData
 } from './pokemon-data.interface';
 import { PokemonSourceData } from './pokemon-source-data.interface';
 import { notUndefined } from './ts-utils';
@@ -394,7 +394,7 @@ export function formatSourceData(
     pokedexToSpecies[nationalDex].push(s);
   });
 
-  const pokemon: PokemonData[] = pokedexDataTable.pokedexEntries.map(
+  const pokemon: IPokemonData[] = pokedexDataTable.pokedexEntries.map(
     ({
       nationalDex,
       description,
@@ -413,7 +413,7 @@ export function formatSourceData(
         throw new Error(`No national dex const for ${nationalDex}`);
       }
       const nationalDexNumber = nationDexConst.number;
-      const pokemonSpecies: PokemonSpeciesData[] = pokedexToSpecies[
+      const pokemonSpecies: IPokemonSpeciesData[] = pokedexToSpecies[
         nationalDex
       ].map((speciesName) => {
         const sp = species.species.find((s) => s.species === speciesName);

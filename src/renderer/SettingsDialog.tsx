@@ -3,7 +3,9 @@ import {
   Button,
   FormControl,
   Modal,
+  SxProps,
   TextField,
+  Theme,
   Typography,
 } from '@mui/material';
 import React, { useEffect } from 'react';
@@ -14,7 +16,7 @@ export interface SettingsDialogProps {
 }
 const Config = window.electron.store;
 
-const dialogStyle = {
+const dialogStyle: SxProps<Theme> = {
   position: 'absolute',
   top: '50px',
   left: '50%',
@@ -25,10 +27,10 @@ const dialogStyle = {
   boxShadow: 24,
   p: 4,
 };
-const folderInputStyle = {
+const folderInputStyle: SxProps<Theme> = {
   flexDirection: 'row',
   flexGrow: 1,
-  mt: 1,
+  mt: 2,
   flexBasis: 550,
 };
 
@@ -70,7 +72,7 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
           id="modal-modal-title"
           variant="h6"
           component="h2"
-          marginBottom={2}
+          marginBottom={1}
         >
           Settings
         </Typography>

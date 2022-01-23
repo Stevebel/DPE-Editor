@@ -8,14 +8,14 @@ import { SpeciesData } from './file-handlers/files/species';
 import { PokemonSourceData } from './pokemon-source-data.interface';
 
 export type AllPokemonData = {
-  pokemon: PokemonData[];
+  pokemon: IPokemonData[];
   species: SpeciesData[];
   lastNationalDex: number;
 
   source?: PokemonSourceData;
 };
 
-export type PokemonData = {
+export type IPokemonData = {
   nationalDex: string;
   regionalDexNumber?: number;
   nationalDexNumber: number;
@@ -31,10 +31,10 @@ export type PokemonData = {
   trainerOffset: number;
 
   // Species data
-  species: PokemonSpeciesData[];
+  species: IPokemonSpeciesData[];
 };
 
-export type PokemonSpeciesData = {
+export type IPokemonSpeciesData = {
   species: string;
   speciesNumber: number;
 
