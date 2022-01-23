@@ -10,15 +10,15 @@ import { ItemAnimationTable } from './file-handlers/files/item-animation-table';
 import { Learnsets } from './file-handlers/files/learnsets';
 import {
   CompressedSpritePalette,
-  PaletteTable
+  PaletteTable,
 } from './file-handlers/files/palette-table';
 import {
   PicCoords,
-  PicCoordsTable
+  PicCoordsTable,
 } from './file-handlers/files/pic-coords-table';
 import {
   CompressedSpriteSheet,
-  PicTable
+  PicTable,
 } from './file-handlers/files/pic-table';
 import { PokedexConsts } from './file-handlers/files/pokedex';
 import { PokedexDataString } from './file-handlers/files/pokedex-data-string';
@@ -32,7 +32,7 @@ import { getPokedexOrders } from './pokedex-orders';
 import {
   AllPokemonData,
   IPokemonData,
-  IPokemonSpeciesData
+  IPokemonSpeciesData,
 } from './pokemon-data.interface';
 import { PokemonSourceData } from './pokemon-source-data.interface';
 import { notUndefined } from './ts-utils';
