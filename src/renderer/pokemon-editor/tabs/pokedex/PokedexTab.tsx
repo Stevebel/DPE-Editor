@@ -1,7 +1,7 @@
 import { FormControlLabel, Grid, Switch, TextField } from '@mui/material';
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import React, { ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import { usePokemonStoreContext } from '../../pokemon.store';
 
 export interface PokedexTabProps {
