@@ -2,13 +2,13 @@
  * Builds the DLL for development electron renderer process
  */
 
-import webpack from 'webpack';
 import path from 'path';
+import webpack from 'webpack';
 import { merge } from 'webpack-merge';
-import baseConfig from './webpack.config.base';
-import webpackPaths from './webpack.paths';
 import { dependencies } from '../../package.json';
 import checkNodeEnv from '../scripts/check-node-env';
+import baseConfig from './webpack.config.base';
+import webpackPaths from './webpack.paths';
 
 checkNodeEnv('development');
 
@@ -31,7 +31,11 @@ const configuration: webpack.Configuration = {
   module: require('./webpack.config.renderer.dev').default.module,
 
   entry: {
-    renderer: Object.keys(dependencies || {}),
+    renderer: [
+      ...Object.keys(dependencies || {}),
+      'autosuggest-highlight/match',
+      'autosuggest-highlight/parse',
+    ].filter(key => key !== 'autosuggest-highlight'),
   },
 
   output: {

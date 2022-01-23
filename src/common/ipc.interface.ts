@@ -14,7 +14,7 @@ export type IPCSends<K extends IPCChannel> = ReturnType<
   IPCConfigs[K]
 > extends Array<any>
   ? ReturnType<IPCConfigs[K]>
-  : Array<ReturnType<IPCConfigs[K]>>;
+  : [ReturnType<IPCConfigs[K]>];
 
 export type AppIPC = {
   send: <K extends IPCChannel>(
@@ -24,6 +24,6 @@ export type AppIPC = {
   on: <K extends IPCChannel>(
     channel: K,
     func: (...args: IPCSends<K>) => void
-  ) => void;
+  ) => () => void;
   once: (channel: IPCChannel, func: (...args: any[]) => void) => void;
 };

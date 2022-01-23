@@ -31,8 +31,8 @@ import { SpriteData } from './file-handlers/files/sprite-data';
 import { getPokedexOrders } from './pokedex-orders';
 import {
   AllPokemonData,
-  PokemonData,
-  PokemonSpeciesData,
+  IPokemonData,
+  IPokemonSpeciesData,
 } from './pokemon-data.interface';
 import { PokemonSourceData } from './pokemon-source-data.interface';
 import { notUndefined } from './ts-utils';
@@ -394,7 +394,7 @@ export function formatSourceData(
     pokedexToSpecies[nationalDex].push(s);
   });
 
-  const pokemon: PokemonData[] = pokedexDataTable.pokedexEntries.map(
+  const pokemon: IPokemonData[] = pokedexDataTable.pokedexEntries.map(
     ({
       nationalDex,
       description,
@@ -413,7 +413,7 @@ export function formatSourceData(
         throw new Error(`No national dex const for ${nationalDex}`);
       }
       const nationalDexNumber = nationDexConst.number;
-      const pokemonSpecies: PokemonSpeciesData[] = pokedexToSpecies[
+      const pokemonSpecies: IPokemonSpeciesData[] = pokedexToSpecies[
         nationalDex
       ].map((speciesName) => {
         const sp = species.species.find((s) => s.species === speciesName);

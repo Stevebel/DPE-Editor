@@ -52,6 +52,8 @@ const handlers: PokemonSourceHandlers = {} as any;
 
 async function loadFiles() {
   if (store.get('cfruFolder') && store.get('dpeFolder')) {
+    console.log('CFRU', store.get('cfruFolder'));
+    console.log('DPE', store.get('dpeFolder'));
     Object.entries(SOURCE_DEFS).forEach(([name, def]) => {
       handlers[name as keyof SourceDefStruct] = getHandler(def as any) as any;
     });

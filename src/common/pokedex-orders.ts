@@ -1,11 +1,11 @@
 import { sortBy } from 'lodash';
 import { PokedexOrders } from './file-handlers/files/pokedex-order';
 import { MAX_TYPE_ORDER, TypeOrder } from './lookup-values';
-import { AllPokemonData, PokemonData } from './pokemon-data.interface';
+import { AllPokemonData, IPokemonData } from './pokemon-data.interface';
 
 function getPokedexOrder(
-  pokemon: PokemonData[],
-  sortFn: (p: PokemonData) => string | number | undefined
+  pokemon: IPokemonData[],
+  sortFn: (p: IPokemonData) => string | number | undefined
 ): string[] {
   const sorted = sortBy(
     pokemon.filter((p) => sortFn(p) !== undefined),
