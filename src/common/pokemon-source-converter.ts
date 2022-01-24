@@ -1,3 +1,4 @@
+import { isString } from 'lodash';
 import { BaseStats } from './file-handlers/files/base-stats';
 import { CryTable } from './file-handlers/files/cry-table';
 import { EggMovesStructure } from './file-handlers/files/egg-moves';
@@ -111,7 +112,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
     alternateDexEntries: pokemon.flatMap((p) =>
       p.species
         .slice(1)
-        .map((s) => s.dexEntryConst)
+        .map((s) => s.dexEntryConst as string | undefined)
         .filter(notUndefined)
     ),
   };
@@ -130,7 +131,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
   const pokedexDataString: PokedexDataString = {
     pokedexData: pokemonSpecies
       .map(({ dexEntry, dexEntryConst }) => {
-        if (dexEntry && dexEntryConst) {
+        if (dexEntry && isString(dexEntryConst)) {
           return {
             dexEntry,
             dexEntryConst,
@@ -152,14 +153,14 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
 
   const dexEntryConsts = pokemonSpecies
     .map((s) => s.dexEntryConst)
-    .filter(notUndefined);
+    .filter(isString);
   const pokedexConsts: PokedexConsts = {
     nationalDexConsts: pokemon.map(({ nationalDex, nationalDexNumber }) => ({
       nationalDex,
       number: nationalDexNumber,
     })),
     dexEntryConsts,
-    finalDexEntry: dexEntryConsts[data.lastNationalDex],
+    finalDexEntry: dexEntryConsts[dexEntryConsts.length - 1],
   };
 
   const frontSprites = pokemonSpecies
@@ -444,9 +445,9 @@ export function formatSourceData(
         const backCoords = backPicCoords.picCoords.find(
           (c) => c.species === speciesName
         );
-        const enemyElevation = enemyElevationTable.elevations.find(
-          (e) => e.species === speciesName
-        )?.elevation;
+        const enemyElevation =
+          enemyElevationTable.elevations.find((e) => e.species === speciesName)
+            ?.elevation || 0;
 
         const baseStats = allBaseStats.baseStats.find(
           (b) => b.species === speciesName
@@ -479,7 +480,7 @@ export function formatSourceData(
           nameConst: name.nameConst,
 
           dexEntry: dexEntry?.dexEntry,
-          dexEntryConst: dexEntry?.dexEntryConst,
+          dexEntryConst: dexEntry?.dexEntryConst || description,
 
           frontSprite,
           backShinySprite,
@@ -518,6 +519,8 @@ export function formatSourceData(
       };
     }
   );
+
+  pokemon.sort((a, b) => a.nationalDexNumber - b.nationalDexNumber);
 
   return {
     pokemon,

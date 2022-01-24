@@ -1,5 +1,5 @@
-import { escapeRegExp } from 'lodash';
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
+import { regExpEscape } from '../parse-utils';
 
 export type ConstMappingArrayHandlerConfig<T> = {
   definition: string;
@@ -28,13 +28,13 @@ export class ConstMappingArrayHandler<T> implements SourceValueHandler<T[]> {
     this.config = config;
 
     this.definitionRe = new RegExp(
-      escapeRegExp(this.config.definition) + /\s*=\s*\{\s*([\s\S]+?)\}/.source
+      regExpEscape(this.config.definition) + /\s*=\s*\{\s*([\s\S]+?)\}/.source
     );
 
     const leftHand =
-      escapeRegExp(`[${this.config.leftHandPrefix}`) +
+      regExpEscape(`[${this.config.leftHandPrefix}`) +
       /(\w+)/.source +
-      escapeRegExp(`${getAddition(this.config.leftAdd)}]`);
+      regExpEscape(`${getAddition(this.config.leftAdd)}]`);
     const rightHand =
       this.config.rightHandPrefix +
       /(\w+)/.source +

@@ -17,3 +17,18 @@ export function setProperty<O, T, K extends KeyOfType<O, T>>(
 export function notUndefined<T>(x: T | undefined): x is T {
   return x != null;
 }
+
+export type SubType<
+  Tuple extends readonly [...any[]],
+  K extends keyof Tuple[number]
+> = {
+  [Index in keyof Tuple]: Tuple[Index][K];
+} & { length: Tuple['length'] };
+
+export type NestedPath = Array<string | number>;
+
+export type Head<T extends any[]> = T extends [] ? never : T[0];
+
+export type Tail<T extends any[]> = T extends [head: any, ...tail: infer Tail_]
+  ? Tail_
+  : never;

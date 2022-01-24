@@ -1,3 +1,4 @@
+import { TypeLk } from '../../lookup-values';
 import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
 import { ConstHandler } from '../handlers/const-handler';
@@ -13,8 +14,8 @@ export type BaseStat = {
   baseSpAttack: number;
   baseSpDefense: number;
   baseSpeed: number;
-  type1: string;
-  type2: string;
+  type1: TypeLk['type'];
+  type2: TypeLk['type'];
   catchRate: number;
   expYield: number;
   evYield_HP: number;

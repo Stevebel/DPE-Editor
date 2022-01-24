@@ -1,6 +1,7 @@
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import Typeahead from '../../common/Typeahead';
+import { SPECIES_LABEL } from '../../consts';
 import { PokemonSpeciesData, usePokemonStoreContext } from '../pokemon.store';
 
 type SelectOption = {
@@ -20,7 +21,6 @@ export const SpeciesSelect = observer(() => {
   }
 
   function getOptions() {
-    console.log('Get options');
     return (pokemonStore.availableSpecies || []).map(toOption);
   }
 
@@ -39,7 +39,7 @@ export const SpeciesSelect = observer(() => {
     <Typeahead
       options={getOptions()}
       value={getSelectedOption()}
-      label="Variant"
+      label={SPECIES_LABEL}
       isOptionEqualToValue={(a, b) => a.value === b.value}
       onChange={(_, option) => handleSelect(option as SelectOption)}
     />

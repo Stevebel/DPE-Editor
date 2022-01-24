@@ -14,6 +14,7 @@ module.exports = {
     'no-cond-assign': ['error', 'except-parens'],
     'prefer-destructuring': 'warn',
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
+    'import/prefer-default-export': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,

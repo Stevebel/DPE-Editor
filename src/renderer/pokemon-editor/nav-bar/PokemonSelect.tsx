@@ -12,14 +12,14 @@ export const PokemonSelect = observer(() => {
   const pokemonStore = usePokemonStoreContext();
 
   function toOption(p: PokemonData): SelectOption {
+    const s = p.species[0] || {};
     return {
-      label: p.species[0]?.name,
+      label: `#${p.nationalDexNumber} - ${s.name}`,
       value: p.id,
     };
   }
 
   function getOptions() {
-    console.log('Get options');
     return pokemonStore.pokemon
       .filter((p) => p.nationalDexNumber > 0)
       .map(toOption);

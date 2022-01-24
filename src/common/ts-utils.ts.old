@@ -1,0 +1,77 @@
+export type KeyOfType<T, U> = {
+  [k in keyof T]: T[k] extends U ? k : never;
+}[keyof T];
+
+export function getKeys<O>(o: O) {
+  return Object.keys(o) as Extract<keyof O, string>[];
+}
+
+export function setProperty<O, T, K extends KeyOfType<O, T>>(
+  o: O,
+  key: K,
+  value: T
+) {
+  (o as any)[key] = value;
+}
+
+export function notUndefined<T>(x: T | undefined): x is T {
+  return x != null;
+}
+
+export type SubType<
+  Tuple extends readonly [...any[]],
+  K extends keyof Tuple[number]
+> = {
+  [Index in keyof Tuple]: Tuple[Index][K];
+} & { length: Tuple['length'] };
+
+type PathKey<T> = T extends Array<any>
+  ? keyof T & number
+  : keyof T & (string | number);
+
+export type NestedKeyOf<ObjectType extends object> = {
+  [Key in keyof ObjectType & (string | number)]: ObjectType[Key] extends object
+    ? `${Key}` | `${Key}.${NestedKeyOf<ObjectType[Key]>}`
+    : `${Key}`;
+}[keyof ObjectType & (string | number)];
+
+export type NestedPath<ObjectType extends object> = {
+  [Key in keyof ObjectType & (string | number)]: ObjectType[Key] extends object
+    ? [Key] | [Key, ...NestedPath<ObjectType[Key]>]
+    : [Key];
+}[keyof ObjectType & (string | number)];
+
+export type Head<T extends any[]> = T extends [] ? never : T[0];
+
+export type Tail<T extends any[]> = T extends [head: any, ...tail: infer Tail_]
+  ? Tail_
+  : never;
+
+export type ExceptLast<T extends any[]> = T extends [
+  ...rest: infer Rest_,
+  tail: any
+]
+  ? Rest_
+  : never;
+
+export type Last<T extends any[]> = T extends [...rest: any, last: infer Last_]
+  ? Last_
+  : never;
+
+export type TypeOfNestedPath<
+  ObjectType extends object,
+  Path extends NestedPath<ObjectType>
+> = Tail<Path> extends []
+  ? ObjectType[Head<Path>]
+  : ObjectType[Head<Path>] extends object
+  ? Tail<Path> extends NestedPath<ObjectType[Head<Path>]>
+    ? TypeOfNestedPath<ObjectType[Head<Path>], Tail<Path>>
+    : never
+  : never;
+
+export type ParentTypeOfNestedPath<
+  T extends object,
+  Path extends NestedPath<T>
+> = ExceptLast<Path> extends NestedPath<T>
+  ? TypeOfNestedPath<T, ExceptLast<Path>>
+  : T;
