@@ -1,3 +1,4 @@
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { NestedPath } from '../../../common/ts-utils';
 import { CanUpdatePath, getValueFor } from './CanUpdatePath.interface';
@@ -5,7 +6,7 @@ import { CanUpdatePath, getValueFor } from './CanUpdatePath.interface';
 export interface CommonObservableFieldProps<T extends CanUpdatePath> {
   label: string;
   store: T;
-  path: NestedPath;
+  path: NestedPath<T>;
   setter?: keyof T;
   disabled?: boolean;
 }
@@ -38,7 +39,7 @@ export const ObservableField = observer(
         const setFn: (value: string) => void = store[setter] as any;
         setFn.call(store, newValue);
       } else {
-        store.updatePath(newValue as any, path);
+        runInAction(() => store.updatePath(newValue as any, path));
       }
     };
 

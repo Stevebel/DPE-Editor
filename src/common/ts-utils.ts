@@ -25,7 +25,7 @@ export type SubType<
   [Index in keyof Tuple]: Tuple[Index][K];
 } & { length: Tuple['length'] };
 
-export type NestedPath = Array<string | number>;
+export type NestedPath<T> = [keyof T, ...Array<string | number>];
 
 export type Head<T extends any[]> = T extends [] ? never : T[0];
 

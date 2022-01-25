@@ -119,9 +119,8 @@ export const PokemonDataSchema = z.object({
   nationalDexNumber: zDexNumber,
 
   categoryName: z.string().max(12),
-  height: z.number().nonnegative().lte(1000),
-  weight: z.number().nonnegative().lte(9999),
-  description: zConst.or(zAddress),
+  height: z.number().nonnegative().lte(100.0),
+  weight: z.number().nonnegative().lte(999.9),
   pokemonScale: z.number().nonnegative(),
   pokemonOffset: z.number().nonnegative(),
   trainerScale: z.number().nonnegative(),

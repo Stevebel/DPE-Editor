@@ -1,23 +1,26 @@
 import { ZodError } from 'zod';
 import { NestedPath } from '../../../common/ts-utils';
 
-function getParent(obj: any, path: NestedPath) {
-  let parent = obj;
+function getParent<T extends object>(obj: T, path: NestedPath<T>) {
+  let parent: any = obj;
   for (let i = 0; i < path.length - 1; i++) {
     parent = parent[path[i]];
   }
   return parent;
 }
-function getProperty(path: NestedPath) {
+function getProperty(path: NestedPath<any>) {
   return path[path.length - 1];
 }
 
 export interface CanUpdatePath {
-  updatePath: <Path extends NestedPath>(newValue: any, path: Path) => void;
-  getErrorForPath: (path: NestedPath) => string | null;
+  updatePath: <Path extends NestedPath<this>>(
+    newValue: any,
+    path: Path
+  ) => void;
+  getErrorForPath: (path: NestedPath<this>) => string | null;
 }
 
-export function doUpdatePath<T extends object, Path extends NestedPath>(
+export function doUpdatePath<T extends object, Path extends NestedPath<T>>(
   obj: T,
   newValue: any,
   path: Path
@@ -40,7 +43,7 @@ export function getErrorByPath(
   );
 }
 
-export function getValueFor<T extends object, Path extends NestedPath>(
+export function getValueFor<T extends object, Path extends NestedPath<T>>(
   obj: T,
   path: Path
 ): any {

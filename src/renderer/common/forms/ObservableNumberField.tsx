@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { CanUpdatePath } from './CanUpdatePath.interface';
 import { CommonObservableFieldProps, ObservableField } from './ObservableField';
 
-export const ObservableTextField = observer(
+export const ObservableNumberField = observer(
   <T extends CanUpdatePath>(
     props: CommonObservableFieldProps<T> & {
       InputProps?: TextFieldProps['InputProps'];
@@ -14,11 +14,12 @@ export const ObservableTextField = observer(
         {...props}
         field={(o) => {
           const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-            o.onChange(e.target.value);
+            o.onChange(parseFloat(e.target.value) || 0);
 
           return (
             <TextField
               label={props.label}
+              type="number"
               variant="standard"
               required
               error={o.error != null}

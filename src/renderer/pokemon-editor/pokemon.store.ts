@@ -89,6 +89,7 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
       }
     }
     this.id = id;
+    this.performErrorCheck();
   }
 
   setPokemonName(name: string) {
@@ -105,12 +106,12 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
     this.performErrorCheck();
   }
 
-  updatePath<Path extends NestedPath>(newValue: any, path: Path) {
+  updatePath<Path extends NestedPath<this>>(newValue: any, path: Path) {
     doUpdatePath(this, newValue, path);
     this.performErrorCheck();
   }
 
-  getErrorForPath(path: NestedPath) {
+  getErrorForPath(path: NestedPath<this>) {
     return getErrorByPath(this.errors, path);
   }
 
@@ -161,7 +162,6 @@ export class PokemonData implements IPokemonData, CanUpdatePath {
       id: false,
     });
 
-    this.id = id;
     if (data) {
       Object.assign(this, {
         ...data,
@@ -169,23 +169,21 @@ export class PokemonData implements IPokemonData, CanUpdatePath {
           data.species?.map((species) => new PokemonSpeciesData(species)) || [],
       });
     }
+    this.id = id;
     if (this.species.length === 0) {
       const defaultSpecies = new PokemonSpeciesData();
       this.species.push(defaultSpecies);
     }
 
-    const errorCheck = PokemonDataSchema.safeParse(this);
-    if (!errorCheck.success) {
-      console.log(`#${this.nationalDexNumber}`, errorCheck, this);
-    }
+    this.performErrorCheck();
   }
 
-  updatePath<Path extends NestedPath>(newValue: any, path: Path) {
+  updatePath<Path extends NestedPath<this>>(newValue: any, path: Path) {
     doUpdatePath(this, newValue, path);
     this.performErrorCheck();
   }
 
-  getErrorForPath(path: NestedPath) {
+  getErrorForPath(path: NestedPath<this>) {
     return getErrorByPath(this.errors, path);
   }
 
@@ -216,11 +214,23 @@ export class PokemonStore {
     });
   }
 
-  addPokemon(data?: IPokemonData) {
+  addPokemon(data?: Partial<IPokemonData>) {
+    let copyFrom = data;
+    if (!copyFrom && this.selectedPokemon) {
+      copyFrom = {
+        ...this.selectedPokemon,
+        species: this.selectedPokemon.species.map((species) => ({
+          ...species,
+          name: `${species.name} Copy`,
+          species: `${species.species}_COPY`,
+        })),
+      };
+    }
     const pokemon = new PokemonData({
-      ...data,
+      ...copyFrom,
       nationalDexNumber: this.pokemon.length,
     });
+    console.log('New pokemon', pokemon);
     this.pokemon = [...this.pokemon, pokemon];
     this.setSelectedPokemon(pokemon.id);
   }
