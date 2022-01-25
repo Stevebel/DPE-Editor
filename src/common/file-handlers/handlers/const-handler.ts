@@ -7,7 +7,9 @@ export type ConstHandlerConfig = {
   prefix?: string;
   suffix?: string;
 };
-export class ConstHandler implements SourceValueHandler<string> {
+export class ConstHandler<T extends string = string>
+  implements SourceValueHandler<T>
+{
   re: RegExp;
 
   prefix: string;
@@ -29,11 +31,11 @@ export class ConstHandler implements SourceValueHandler<string> {
     return {
       start: match.index,
       end: match.index + match[0].length,
-      value: match[1],
+      value: match[1] as T,
     };
   }
 
-  format(value: string) {
+  format(value: T) {
     return this.prefix + value + this.suffix;
   }
 }

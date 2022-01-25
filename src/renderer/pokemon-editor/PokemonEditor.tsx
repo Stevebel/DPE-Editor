@@ -16,12 +16,6 @@ export const PokemonEditor = observer(() => {
   const handleTabChange = (_: any, newValue: number) => {
     setTab(newValue);
   };
-  const handleNameChange = (name: string) => {
-    console.log('Name:', name);
-  };
-  const handleSpeciesChange = (species: string) => {
-    console.log('Species:', species);
-  };
   useEffect(() => {
     window.electron.ipcRenderer.send('load-files');
 
@@ -42,10 +36,7 @@ export const PokemonEditor = observer(() => {
       {(pokemonData.selectedPokemon && (
         <Box id="tabs">
           <TabPanel value={tab} index={0}>
-            <PokedexTab
-              onNameChange={handleNameChange}
-              onSpeciesChange={handleSpeciesChange}
-            />
+            <PokedexTab />
           </TabPanel>
           <TabPanel value={tab} index={1}>
             Item Two

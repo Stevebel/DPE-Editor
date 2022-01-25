@@ -14,12 +14,12 @@ export interface SpeciesData {
 export const SpeciesSourceDef: SourceFileDefinition<SpeciesStructure> = {
   location: [
     {
-      folder: 'cfru',
-      fileName: 'include/constants/species.h',
-    },
-    {
       folder: 'dpe',
       fileName: 'include/species.h',
+    },
+    {
+      folder: 'cfru',
+      fileName: 'include/constants/species.h',
     },
   ],
   schema: {

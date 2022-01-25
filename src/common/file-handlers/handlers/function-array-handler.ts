@@ -1,5 +1,5 @@
-import { escapeRegExp } from 'lodash';
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
+import { regExpEscape } from '../parse-utils';
 
 export type FunctionArrayHandlerConfig = {
   definition: string;
@@ -19,9 +19,9 @@ export class FunctionArrayHandler implements SourceValueHandler<string[]> {
 
     this.definitionRe = new RegExp(
       `${
-        escapeRegExp(this.config.definition) +
+        regExpEscape(this.config.definition) +
         /\s*=\s*\{\s*([\s\S]+?)/.source +
-        escapeRegExp(this.config.terminator)
+        regExpEscape(this.config.terminator)
       }\\s*\\}`
     );
 

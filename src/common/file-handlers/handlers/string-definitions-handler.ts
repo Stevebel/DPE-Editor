@@ -9,6 +9,8 @@ export type StringDefinitionsConfig<T> = {
 
 const ESCAPED_NEW_LINE_RE = /\\n/g;
 const ESCAPED_ACCENTED_E_RE = /\\e/g;
+const ESCAPED_M_SYMBOL_RE = /\[B5\]/g;
+const ESCAPED_F_SYMBOL_RE = /\[B6\]/g;
 
 export class StringDefinitionsHandler<T> implements SourceValueHandler<T[]> {
   private stringDefinitionRe: RegExp;
@@ -33,7 +35,9 @@ export class StringDefinitionsHandler<T> implements SourceValueHandler<T[]> {
       const pointerConst = match[1];
       const str = match[2]
         .replace(ESCAPED_NEW_LINE_RE, '\n')
-        .replace(ESCAPED_ACCENTED_E_RE, 'é');
+        .replace(ESCAPED_ACCENTED_E_RE, 'é')
+        .replace(ESCAPED_M_SYMBOL_RE, '♂')
+        .replace(ESCAPED_F_SYMBOL_RE, '♀');
       data.push({
         [this.getConfig().constProperty]: pointerConst,
         [this.getConfig().stringProperty]: str,
@@ -58,7 +62,9 @@ export class StringDefinitionsHandler<T> implements SourceValueHandler<T[]> {
             item[this.config.constProperty]
           }\n${this.getString(item)
             .replace(/\n/g, '\\n')
-            .replace(/é/g, '\\e')}\n\n`
+            .replace(/é/g, '\\e')
+            .replace(/♂/g, '[B5]')
+            .replace(/♀/g, '[B6]')}\n\n`
       )
       .join('');
   }

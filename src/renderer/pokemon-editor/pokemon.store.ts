@@ -1,7 +1,8 @@
 /* eslint-disable max-classes-per-file */
-import { getObserverTree, makeAutoObservable } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
+import { ZodError } from 'zod';
 import { ToneData } from '../../common/file-handlers/files/cry-table';
 import { Evolution } from '../../common/file-handlers/files/evolution-table';
 import { ItemAnimation } from '../../common/file-handlers/files/item-animation-table';
@@ -12,13 +13,23 @@ import {
   BaseStatData,
   IPokemonData,
   IPokemonSpeciesData,
+  PokemonDataSchema,
+  PokemonSpeciesDataSchema,
 } from '../../common/pokemon-data.interface';
+import { NestedPath } from '../../common/ts-utils';
+import {
+  CanUpdatePath,
+  doUpdatePath,
+  getErrorByPath,
+} from '../common/forms/CanUpdatePath.interface';
 
 function formatSpeciesConst(species: string): string {
-  return species
-    .replace(/[^a-zA-Z0-9]+/g, '_')
-    .replace(/_$/, '')
-    .toUpperCase();
+  const endsWithSpace = species.match(/[\s_]$/);
+  const clean = species.replace(/[^a-zA-Z0-9]+/g, '_').toUpperCase();
+  if (!endsWithSpace) {
+    return clean.replace(/_$/, '');
+  }
+  return clean;
 }
 
 export class PokemonSpeciesData implements IPokemonSpeciesData {
@@ -32,7 +43,7 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   dexEntry?: string;
 
-  dexEntryConst?: string;
+  dexEntryConst: string | number = -1;
 
   frontSprite?: string;
 
@@ -46,7 +57,7 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   backCoords?: Omit<PicCoords, 'species'>;
 
-  enemyElevation?: number;
+  enemyElevation = 0;
 
   baseStats?: BaseStatData;
 
@@ -67,6 +78,8 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   // State
   manualSpecies = false;
 
+  errors: ZodError<typeof PokemonSpeciesDataSchema> | null = null;
+
   constructor(data?: Partial<IPokemonSpeciesData>, id = uuid()) {
     makeAutoObservable(this);
     if (data) {
@@ -76,22 +89,43 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
       }
     }
     this.id = id;
+    this.performErrorCheck();
   }
 
   setPokemonName(name: string) {
     this.name = name;
     if (!this.manualSpecies) {
       this.setSpeciesConst(name);
+      this.performErrorCheck();
     }
   }
 
   setSpeciesConst(species: string) {
     this.species = formatSpeciesConst(species);
     this.nameConst = this.species;
+    this.performErrorCheck();
+  }
+
+  updatePath<Path extends NestedPath<this>>(newValue: any, path: Path) {
+    doUpdatePath(this, newValue, path);
+    this.performErrorCheck();
+  }
+
+  getErrorForPath(path: NestedPath<this>) {
+    return getErrorByPath(this.errors, path);
+  }
+
+  performErrorCheck() {
+    const errorCheck = PokemonSpeciesDataSchema.safeParse(this);
+    if (!errorCheck.success) {
+      this.errors = errorCheck.error;
+    } else {
+      this.errors = null;
+    }
   }
 }
 
-export class PokemonData implements IPokemonData {
+export class PokemonData implements IPokemonData, CanUpdatePath {
   id: string;
 
   nationalDex = '';
@@ -120,18 +154,46 @@ export class PokemonData implements IPokemonData {
   // Species data
   species: PokemonSpeciesData[] = [];
 
+  // State
+  errors: ZodError<typeof PokemonDataSchema> | null = null;
+
   constructor(data?: Partial<IPokemonData>, id = uuid()) {
     makeAutoObservable(this, {
       id: false,
     });
 
-    this.id = id;
     if (data) {
       Object.assign(this, {
         ...data,
         species:
           data.species?.map((species) => new PokemonSpeciesData(species)) || [],
       });
+    }
+    this.id = id;
+    if (this.species.length === 0) {
+      const defaultSpecies = new PokemonSpeciesData();
+      this.species.push(defaultSpecies);
+    }
+
+    this.performErrorCheck();
+  }
+
+  updatePath<Path extends NestedPath<this>>(newValue: any, path: Path) {
+    doUpdatePath(this, newValue, path);
+    this.performErrorCheck();
+  }
+
+  getErrorForPath(path: NestedPath<this>) {
+    return getErrorByPath(this.errors, path);
+  }
+
+  performErrorCheck() {
+    const errorCheck = PokemonDataSchema.safeParse(this);
+    if (!errorCheck.success) {
+      console.log(`#${this.nationalDexNumber}`, errorCheck, this);
+      this.errors = errorCheck.error;
+    } else {
+      this.errors = null;
     }
   }
 }
@@ -148,13 +210,29 @@ export class PokemonStore {
 
     ipc.on('pokemon-source-data', (data) => {
       this.pokemon = data.pokemon.map((p) => new PokemonData(p));
-      console.log('dependencies', getObserverTree(this, 'selectedPokemonId'));
+      console.log('raw data', data.source);
     });
   }
 
-  addPokemon(data?: IPokemonData) {
-    const pokemon = new PokemonData(data);
+  addPokemon(data?: Partial<IPokemonData>) {
+    let copyFrom = data;
+    if (!copyFrom && this.selectedPokemon) {
+      copyFrom = {
+        ...this.selectedPokemon,
+        species: this.selectedPokemon.species.map((species) => ({
+          ...species,
+          name: `${species.name} Copy`,
+          species: `${species.species}_COPY`,
+        })),
+      };
+    }
+    const pokemon = new PokemonData({
+      ...copyFrom,
+      nationalDexNumber: this.pokemon.length,
+    });
+    console.log('New pokemon', pokemon);
     this.pokemon = [...this.pokemon, pokemon];
+    this.setSelectedPokemon(pokemon.id);
   }
 
   removePokemon(pokemon: PokemonData) {
@@ -185,14 +263,29 @@ export class PokemonStore {
     );
   }
 
+  get selectedSpeciesIdx() {
+    if (!this.selectedPokemon) {
+      return -1;
+    }
+    return this.selectedPokemon.species.findIndex(
+      (s) => s.id === this.selectedSpeciesId
+    );
+  }
+
   get availableSpecies() {
     return this.selectedPokemon?.species;
   }
 
-  addSpecies(species: Partial<IPokemonSpeciesData>) {
+  addSpecies() {
     const pokemon = this.selectedPokemon;
     if (pokemon) {
-      pokemon.species = [...pokemon.species, new PokemonSpeciesData(species)];
+      const newSpecies = new PokemonSpeciesData({
+        ...this.selectedSpecies,
+        species: `${this.selectedSpecies?.species || ''}_NEW`,
+      });
+      newSpecies.manualSpecies = true;
+      pokemon.species = [...pokemon.species, newSpecies];
+      this.selectedSpeciesId = newSpecies.id;
     }
   }
 }

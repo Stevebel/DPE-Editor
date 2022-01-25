@@ -1,76 +1,64 @@
-import { FormControlLabel, Grid, Switch, TextField } from '@mui/material';
-import { runInAction } from 'mobx';
+import { Box, InputAdornment } from '@mui/material';
 import { observer } from 'mobx-react-lite';
-import { ChangeEvent } from 'react';
+import { ObservableNumberField } from '../../../common/forms/ObservableNumberField';
+import { ObservableSwitch } from '../../../common/forms/ObservableSwitch';
+import { ObservableTextField } from '../../../common/forms/ObservableTextField';
+import { SPECIES_LABEL } from '../../../consts';
 import { usePokemonStoreContext } from '../../pokemon.store';
 
-export interface PokedexTabProps {
-  onNameChange?: (name: string) => void;
-  onSpeciesChange?: (species: string) => void;
-}
-
-export const PokedexTab = observer(
-  ({ onSpeciesChange, onNameChange }: PokedexTabProps) => {
-    const pokemonStore = usePokemonStoreContext();
-
-    const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
-      if (!pokemonStore.selectedSpecies) {
-        return;
-      }
-      const newName = e.target.value;
-      pokemonStore.selectedSpecies.setPokemonName(newName);
-      if (onNameChange) {
-        onNameChange(newName);
-      }
-    };
-    const handleSpeciesChange = (e: ChangeEvent<HTMLInputElement>) => {
-      if (!pokemonStore.selectedSpecies) {
-        return;
-      }
-      const newSpecies = e.target.value;
-      pokemonStore.selectedSpecies.setSpeciesConst(newSpecies);
-      if (onSpeciesChange) {
-        onSpeciesChange(newSpecies);
-      }
-    };
-    const handleSpeciesOverrideChange = (e: ChangeEvent<HTMLInputElement>) => {
-      runInAction(() => {
-        if (!pokemonStore.selectedSpecies) {
-          return;
-        }
-        const newSpeciesOverride = e.target.checked;
-
-        pokemonStore.selectedSpecies.manualSpecies = newSpeciesOverride;
-      });
-    };
-
+export const PokedexTab = observer(() => {
+  const pokemonStore = usePokemonStoreContext();
+  const pokemon = pokemonStore.selectedPokemon;
+  const species = pokemonStore.selectedSpecies;
+  if (pokemon && species) {
     return (
-      <Grid id="pokedex">
-        <TextField
+      <Box id="pokedex" className="common-form">
+        <ObservableTextField
           label="Pokémon Name"
-          variant="standard"
-          required
-          value={pokemonStore.selectedSpecies?.name || ''}
-          onChange={handleNameChange}
+          store={species}
+          path={['name']}
+          setter="setPokemonName"
         />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={pokemonStore.selectedSpecies?.manualSpecies || false}
-              onChange={handleSpeciesOverrideChange}
-            />
-          }
+        <ObservableSwitch
           label="Override Constant"
+          store={species}
+          path={['manualSpecies']}
         />
-        <TextField
-          label="Variant Constant"
-          variant="standard"
-          required
-          disabled={!pokemonStore.selectedSpecies?.manualSpecies}
-          value={pokemonStore.selectedSpecies?.species || ''}
-          onChange={handleSpeciesChange}
+        <ObservableTextField
+          label={`${SPECIES_LABEL} Constant`}
+          store={species}
+          path={['species']}
+          setter="setSpeciesConst"
+          disabled={!pokemonStore.selectedSpecies?.manualSpecies || false}
         />
-      </Grid>
+        <ObservableTextField
+          label="Category"
+          store={pokemon}
+          path={['categoryName']}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">Pokémon</InputAdornment>
+            ),
+          }}
+        />
+        <ObservableNumberField
+          label="Height"
+          store={pokemon}
+          path={['height']}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">m</InputAdornment>,
+          }}
+        />
+        <ObservableNumberField
+          label="Weight"
+          store={pokemon}
+          path={['weight']}
+          InputProps={{
+            endAdornment: <InputAdornment position="end">kg</InputAdornment>,
+          }}
+        />
+      </Box>
     );
   }
-);
+  return null;
+});

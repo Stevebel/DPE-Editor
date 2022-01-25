@@ -17,6 +17,7 @@ import { observer } from 'mobx-react-lite';
 import { SyntheticEvent } from 'react';
 import PokedexIconSvg from '../../../../assets/icons/pokedex.svg';
 import { usePokemonStoreContext } from '../pokemon.store';
+import { AddPokemonMenu } from './AddPokemonMenu';
 import { PokemonSelect } from './PokemonSelect';
 import { SpeciesSelect } from './SpeciesSelect';
 
@@ -67,6 +68,7 @@ export const PokemonNavBar = observer(
             </Box>
           </ThemeProvider>
 
+          <AddPokemonMenu />
           <IconButton
             size="large"
             aria-label="Settings"
