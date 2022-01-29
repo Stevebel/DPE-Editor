@@ -24,7 +24,10 @@ export const IconTableSourceDef: SourceFileDefinition<IconTable> = {
       definition: 'const u8* const gMonIconTable[NUM_SPECIES]',
       indexProperty: 'species',
       indexPrefix: 'SPECIES_',
-      propHandler: getProp('icon', new ConstHandler({ suffix: 'Tiles' })),
+      propHandler: getProp(
+        'icon',
+        new ConstHandler({ prefix: 'gIconSprite', suffix: 'Tiles' })
+      ),
     }),
   },
 };

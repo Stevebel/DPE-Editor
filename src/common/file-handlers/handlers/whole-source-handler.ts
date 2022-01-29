@@ -6,7 +6,7 @@ import {
 } from '../file-handler.interface';
 
 export default class WholeSourceHandler<T> implements SourceValueHandler<T> {
-  private parseData: Partial<{
+  parseData: Partial<{
     [K in Extract<keyof T, string>]: ParseData<T[K]>;
   }> = {};
 

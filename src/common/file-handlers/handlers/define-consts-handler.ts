@@ -24,26 +24,27 @@ export default class DefineCountHandler implements SourceValueHandler<string> {
   }
 
   parse(raw: string): ParseData<string> {
+    this.re.lastIndex = 0;
     const match = this.re.exec(raw);
     if (!match) {
-      return {
-        start: -1,
-        end: -1,
-        value: '',
-      };
+      throw new Error(`Could not find count ${this.re}`);
     }
 
     return {
       start: match.index,
       end: match.index + match[0].length,
-      value: match[1],
+      value: match[1].replace(this.config.countPrefix || '', ''),
     };
   }
 
   format(value: string): string {
     if (this.config.addOne === false) {
-      return `#define ${this.config.constName} ${value}`;
+      return `#define ${this.config.constName} ${
+        this.config.countPrefix || ''
+      }${value}`;
     }
-    return `#define ${this.config.constName} (${value} + 1)`;
+    return `#define ${this.config.constName} (${
+      this.config.countPrefix || ''
+    }${value} + 1)`;
   }
 }

@@ -11,11 +11,17 @@ export type LevelUpMove = {
   move: string;
 };
 export type LevelUpMoves = {
-  species: string;
+  learnset: string;
   levelUpMoves: LevelUpMove[];
 };
+export type Learnset = {
+  species: string;
+  learnset: string;
+};
+
 export type Learnsets = {
   learnsets: LevelUpMoves[];
+  learnsetConsts: Learnset[];
 };
 
 export const LearnsetsSourceDef: SourceFileDefinition<Learnsets> = {
@@ -28,8 +34,8 @@ export const LearnsetsSourceDef: SourceFileDefinition<Learnsets> = {
   schema: {
     learnsets: new ConstDefinitionHandler<LevelUpMoves>({
       definitionPrefix: 'static const struct LevelUpMove s',
-      indexProperty: 'species',
-      definitionSuffix: 'LevelUpLearnset[]',
+      indexProperty: 'learnset',
+      definitionSuffix: '[]',
       propHandler: getProp(
         'levelUpMoves',
         new ArrayHandler<LevelUpMove>({
@@ -43,6 +49,13 @@ export const LearnsetsSourceDef: SourceFileDefinition<Learnsets> = {
           }),
         })
       ),
+    }),
+    learnsetConsts: new ArrayHandler<Learnset>({
+      definition:
+        'const struct LevelUpMove* const gLevelUpLearnsets[NUM_SPECIES]',
+      indexProperty: 'species',
+      indexPrefix: 'SPECIES_',
+      propHandler: getProp('learnset', new ConstHandler({ prefix: 's' })),
     }),
   },
 };

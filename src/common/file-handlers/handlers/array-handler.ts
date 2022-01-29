@@ -12,6 +12,7 @@ export type ArrayHandlerConfig<T> = {
   terminator?: string;
   indexProperty?: KeyOfType<T, string>;
   indexPrefix?: string;
+  indexSuffix?: string;
   itemHandler?: SourceValueHandler<T>;
   propHandler?: StructProp<T>;
 };
@@ -32,7 +33,9 @@ export class ArrayHandler<T> implements SourceValueHandler<T[]> {
     );
     if (config.indexProperty) {
       this.indexRe = new RegExp(
-        `\\[${config.indexPrefix || ''}(\\w+)\\]\\s*=\\s*`
+        `\\[${config.indexPrefix || ''}(\\w+)${regExpEscape(
+          config.indexSuffix || ''
+        )}\\]\\s*=\\s*`
       );
     } else if (!config.itemHandler) {
       throw new Error(
@@ -115,21 +118,21 @@ export class ArrayHandler<T> implements SourceValueHandler<T[]> {
         'Must provide at least one of itemHandler or propHandler'
       );
     }
-    return `
-      ${this.config.definition ? `${this.config.definition} = ` : ''}{
-        ${value
-          .map((v) => {
-            let out = '';
-            if (this.config.indexProperty) {
-              out += `[${this.config.indexPrefix}${
-                v[this.config.indexProperty]
-              }] = `;
-            }
-            out += `${itemHandler.format(v)},\n`;
-            return out;
-          })
-          .join('')}
-        ${this.config.terminator || ''}
-      }`;
+    return `${
+      this.config.definition ? `${this.config.definition} = ` : ''
+    }{\n${value
+      .map((v) => {
+        let out = '\t';
+        if (this.config.indexProperty) {
+          out += `[${this.config.indexPrefix}${v[this.config.indexProperty]}${
+            this.config.indexSuffix || ''
+          }] = `;
+        }
+        out += `${itemHandler.format(v).replace(/\n/g, '\n\t')},\n`;
+        return out;
+      })
+      .join('')}${
+      this.config.terminator ? `\t${this.config.terminator}\n` : ''
+    }}`;
   }
 }

@@ -31,4 +31,7 @@
     "source.fixAll.eslint"
   ],
   "jest.jestCommandLine": "npx jest",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
 }

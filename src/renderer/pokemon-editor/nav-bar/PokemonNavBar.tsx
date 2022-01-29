@@ -19,6 +19,7 @@ import PokedexIconSvg from '../../../../assets/icons/pokedex.svg';
 import { usePokemonStoreContext } from '../pokemon.store';
 import { AddPokemonMenu } from './AddPokemonMenu';
 import { PokemonSelect } from './PokemonSelect';
+import { SaveButton } from './SaveButton';
 import { SpeciesSelect } from './SpeciesSelect';
 
 export interface PokemonNavBarProps {
@@ -69,6 +70,7 @@ export const PokemonNavBar = observer(
           </ThemeProvider>
 
           <AddPokemonMenu />
+          <SaveButton />
           <IconButton
             size="large"
             aria-label="Settings"

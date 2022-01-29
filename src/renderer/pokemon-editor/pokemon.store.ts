@@ -230,7 +230,6 @@ export class PokemonStore {
       ...copyFrom,
       nationalDexNumber: this.pokemon.length,
     });
-    console.log('New pokemon', pokemon);
     this.pokemon = [...this.pokemon, pokemon];
     this.setSelectedPokemon(pokemon.id);
   }

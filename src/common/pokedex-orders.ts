@@ -21,7 +21,9 @@ function getTypeOrder(type: string | undefined) {
 
 // eslint-disable-next-line import/prefer-default-export
 export function getPokedexOrders(data: AllPokemonData): PokedexOrders {
-  const pokemon = data.pokemon.slice(0, data.lastNationalDex + 1);
+  const pokemon = data.pokemon
+    .slice(0, data.lastNationalDex + 1)
+    .filter((p) => p.nationalDexNumber > 0);
   return {
     regional: getPokedexOrder(pokemon, (p) => p.regionalDexNumber),
     alphabetical: getPokedexOrder(pokemon, (p) => p.species[0].name),

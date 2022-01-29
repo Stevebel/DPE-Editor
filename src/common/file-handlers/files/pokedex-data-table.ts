@@ -1,6 +1,6 @@
 import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
-import { AddressOrConstHandler } from '../handlers/const-handler';
+import { AddressOrConstHandler, ConstHandler } from '../handlers/const-handler';
 import { FunctionArrayHandler } from '../handlers/function-array-handler';
 import { messageHandler } from '../handlers/message-handler';
 import { IntHandler } from '../handlers/number-handlers';
@@ -23,6 +23,10 @@ export interface PokedexEntry {
   trainerOffset: number;
 }
 
+const descriptionConstHandler = new ConstHandler({
+  prefix: 'DEX_ENTRY_',
+});
+
 export const PokedexDataSourceDef: SourceFileDefinition<PokedexDataTable> = {
   location: [
     {
@@ -41,8 +45,14 @@ export const PokedexDataSourceDef: SourceFileDefinition<PokedexDataTable> = {
           getProp('categoryName', messageHandler()),
           getProp('height', IntHandler),
           getProp('weight', IntHandler),
-          getProp('description', AddressOrConstHandler),
-          getProp('unusedDescription', AddressOrConstHandler),
+          getProp(
+            'description',
+            new AddressOrConstHandler(descriptionConstHandler)
+          ),
+          getProp(
+            'unusedDescription',
+            new AddressOrConstHandler(descriptionConstHandler)
+          ),
           getProp('pokemonScale', IntHandler),
           getProp('pokemonOffset', IntHandler),
           getProp('trainerScale', IntHandler),

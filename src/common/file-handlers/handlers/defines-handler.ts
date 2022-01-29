@@ -14,6 +14,7 @@ export type DefinesHandlerConfig<T> = {
 
 export type DefineCountHandlerConfig = {
   constName: string;
+  countPrefix?: string;
   addOne?: boolean;
 };
 

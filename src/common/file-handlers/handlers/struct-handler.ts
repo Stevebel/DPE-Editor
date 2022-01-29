@@ -96,7 +96,7 @@ export class StructHandler<T> implements SourceValueHandler<T> {
       .map((p) => {
         const formattedProp = p.format(data);
         if (formattedProp.length > 0) {
-          return `    ${
+          return `\t${
             this.config.namedProps !== false ? `.${p.key} = ` : ''
           }${formattedProp},\n`;
         }
@@ -104,9 +104,7 @@ export class StructHandler<T> implements SourceValueHandler<T> {
       })
       .join('');
     if (props.length > 0) {
-      return `{
-          ${props}
-        }`;
+      return `{\n${props}}`;
     }
     return `{0}`;
   }

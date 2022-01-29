@@ -10,11 +10,10 @@ describe('ExternConstHandler', () => {
     constSuffix: 'Tiles',
   };
 
-  const SAMPLE_SOURCE = `
-    extern const u8 gFrontSprite001BulbasaurTiles[];
+  const SAMPLE_SOURCE = `extern const u8 gFrontSprite001BulbasaurTiles[];
   extern const u8 gFrontSprite002IvysaurTiles[];
-  extern const u8 gFrontSprite003VenusaurTiles[];
-  `;
+  extern const u8 gFrontSprite003VenusaurTiles[];`;
+
   const SAMPLE_DATA = ['001Bulbasaur', '002Ivysaur', '003Venusaur'];
 
   it('should parse a list of external consts', () => {
@@ -47,5 +46,12 @@ describe('ExternConstHandler', () => {
       extern const u8 gFrontSprite001BulbasaurPal[];
     `);
     expect(result.value).toEqual(SAMPLE_DATA);
+  });
+
+  it('should determine the start and end of the list', () => {
+    const handler = new ExternConstHandler(DEFAULT_CONFIG);
+    const result = handler.parse(SAMPLE_SOURCE);
+    expect(result.start).toBe(0);
+    expect(result.end).toBe(SAMPLE_SOURCE.length);
   });
 });

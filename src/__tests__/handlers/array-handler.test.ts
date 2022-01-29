@@ -3,6 +3,7 @@ import {
   Evolution,
   Evolutions,
 } from '../../common/file-handlers/files/evolution-table';
+import { IconPalette } from '../../common/file-handlers/files/icon-palette-table';
 import {
   ArrayHandler,
   ArrayHandlerConfig,
@@ -124,33 +125,33 @@ describe('ArrayHandler', () => {
     },
   ];
 
-  type TestDataByProp = {
-    species: string;
-    elevation: number;
-  };
-
-  const DEFAULT_CONFIG_BY_PROP: ArrayHandlerConfig<TestDataByProp> = {
-    definition: 'const u8 gEnemyMonElevation[NUM_SPECIES]',
+  const DEFAULT_CONFIG_BY_PROP: ArrayHandlerConfig<IconPalette> = {
+    definition: 'const u8 gMonIconPaletteIndices[NUM_SPECIES]',
     indexProperty: 'species',
     indexPrefix: 'SPECIES_',
-    propHandler: getProp('elevation', IntHandler),
+    propHandler: getProp('palette', IntHandler),
   };
 
   const SAMPLE_SOURCE_BY_PROP = `
-    const u8 gEnemyMonElevation[NUM_SPECIES] = {
+    const u8 gMonIconPaletteIndices[NUM_SPECIES] = {
       [SPECIES_NONE] = 0,
       [SPECIES_BULBASAUR] = 1,
+      [SPECIES_CHARMANDER] = 0,
     }
   `;
 
-  const SAMPLE_DATA_BY_PROP: TestDataByProp[] = [
+  const SAMPLE_DATA_BY_PROP: IconPalette[] = [
     {
       species: 'NONE',
-      elevation: 0,
+      palette: 0,
     },
     {
       species: 'BULBASAUR',
-      elevation: 1,
+      palette: 1,
+    },
+    {
+      species: 'CHARMANDER',
+      palette: 0,
     },
   ];
 
@@ -219,13 +220,13 @@ describe('ArrayHandler', () => {
   });
 
   it('should parse an array by prop', () => {
-    const handler = new ArrayHandler<TestDataByProp>(DEFAULT_CONFIG_BY_PROP);
+    const handler = new ArrayHandler(DEFAULT_CONFIG_BY_PROP);
     const result = handler.parse(SAMPLE_SOURCE_BY_PROP);
     expect(result.value).toEqual(SAMPLE_DATA_BY_PROP);
   });
 
   it('should format an array by prop', () => {
-    const handler = new ArrayHandler<TestDataByProp>(DEFAULT_CONFIG_BY_PROP);
+    const handler = new ArrayHandler(DEFAULT_CONFIG_BY_PROP);
     const result = handler.format(SAMPLE_DATA_BY_PROP);
 
     expect(trimMultiline(result)).toBe(trimMultiline(SAMPLE_SOURCE_BY_PROP));

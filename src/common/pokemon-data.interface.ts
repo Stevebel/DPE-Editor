@@ -104,9 +104,10 @@ export const PokemonSpeciesDataSchema = z.object({
   frontCoords: PicCoordsSchema.omit({ species: true }).optional(),
   backCoords: PicCoordsSchema.omit({ species: true }).optional(),
   enemyElevation: z.number().nonnegative(),
-  baseStats: BaseStatSchema.optional(),
+  baseStats: BaseStatSchema.partial().optional(),
   evolutions: z.array(EvolutionSchema).optional(),
   learnset: z.array(LevelUpMoveSchema).optional(),
+  learnsetConst: zConst.optional(),
   eggMoves: z.array(zConst).optional(),
   cryData: ToneDataSchema.omit({ species: true, type: true }).optional(),
   footprint: zAddress.optional(),
@@ -135,7 +136,7 @@ export type IPokemonData = z.infer<typeof PokemonDataSchema>;
 
 export type AllPokemonData = {
   pokemon: IPokemonData[];
-  species: SpeciesData[];
+  species?: SpeciesData[];
   lastNationalDex: number;
 
   source?: PokemonSourceData;
