@@ -16,7 +16,8 @@ export type CompressedSpriteSheet = {
 
 function getPicTableSourceDef(
   fileName: string,
-  definition: string
+  definition: string,
+  prefix: string
 ): SourceFileDefinition<PicTable> {
   return {
     location: [
@@ -33,7 +34,7 @@ function getPicTableSourceDef(
         itemHandler: new StructHandler({
           namedProps: false,
           props: [
-            getProp('sprite', new ConstHandler({ suffix: 'Tiles' })),
+            getProp('sprite', new ConstHandler({ prefix, suffix: 'Tiles' })),
             getProp('size', IntHandler),
             getProp('species', new ConstHandler({ prefix: 'SPECIES_' })),
           ],
@@ -46,11 +47,13 @@ function getPicTableSourceDef(
 export const BackPicTableSourceDef: SourceFileDefinition<PicTable> =
   getPicTableSourceDef(
     'src/Back_Pic_Table.c',
-    'const struct CompressedSpriteSheet gMonBackPicTable[NUM_SPECIES]'
+    'const struct CompressedSpriteSheet gMonBackPicTable[NUM_SPECIES]',
+    'gBackShinySprite'
   );
 
 export const FrontPicTableSourceDef: SourceFileDefinition<PicTable> =
   getPicTableSourceDef(
     'src/Front_Pic_Table.c',
-    'const struct CompressedSpriteSheet gMonFrontPicTable[NUM_SPECIES]'
+    'const struct CompressedSpriteSheet gMonFrontPicTable[NUM_SPECIES]',
+    'gFrontSprite'
   );

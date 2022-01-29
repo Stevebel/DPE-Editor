@@ -8,9 +8,11 @@ import { autoUpdater } from 'electron-updater';
 import path from 'path';
 import 'regenerator-runtime/runtime';
 import { AppConfig } from '../common/config.interface';
+import { convertToSource } from '../common/convert-to-source';
 import { SourceFileDefinition } from '../common/file-handlers/file-handler.interface';
+import { formatSourceData } from '../common/format-source-data';
 import { IPCChannel } from '../common/ipc.interface';
-import { formatSourceData } from '../common/pokemon-source-converter';
+import { AllPokemonData } from '../common/pokemon-data.interface';
 import {
   PokemonSourceData,
   PokemonSourceHandlers,
@@ -52,8 +54,6 @@ const handlers: PokemonSourceHandlers = {} as any;
 
 async function loadFiles() {
   if (store.get('cfruFolder') && store.get('dpeFolder')) {
-    console.log('CFRU', store.get('cfruFolder'));
-    console.log('DPE', store.get('dpeFolder'));
     Object.entries(SOURCE_DEFS).forEach(([name, def]) => {
       handlers[name as keyof SourceDefStruct] = getHandler(def as any) as any;
     });
@@ -66,9 +66,8 @@ async function loadFiles() {
     const rawData: PokemonSourceData = Object.fromEntries(
       await Promise.all(promises)
     );
-    const data = formatSourceData(rawData);
 
-    console.log(data);
+    const data = formatSourceData(rawData);
     // Just for testing
     data.source = rawData;
     const channel: IPCChannel = 'pokemon-source-data';
@@ -78,24 +77,24 @@ async function loadFiles() {
   }
 }
 
-// async function saveFiles(data: AllPokemonData) {
-//   const sourceData = convertToSource(data);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function saveFiles(data: AllPokemonData) {
+  const sourceData = convertToSource(data);
 
-//   const promises = Object.entries(handlers).map(async ([name, handler]) => {
-//     return handler.save(sourceData[name as keyof PokemonSourceData] as any);
-//   });
+  const promises = Object.entries(handlers).map(async ([name, handler]) => {
+    return handler.save(sourceData[name as keyof PokemonSourceData] as any);
+  });
 
-//   await Promise.all(promises);
-// }
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
+  await Promise.all(promises);
+}
 
 ipcMain.on('load-files', async () => {
   await loadFiles();
+});
+
+ipcMain.on('pokemon-source-data', async (event, data: AllPokemonData) => {
+  await saveFiles(data);
+  event.reply('data-saved', true);
 });
 
 ipcMain.on('locate-dpe', async (event) => {

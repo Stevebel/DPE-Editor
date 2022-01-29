@@ -56,11 +56,8 @@ export class FunctionArrayHandler implements SourceValueHandler<string[]> {
   }
 
   format(value: string[]): string {
-    return `
-      ${this.config.definition} = {
-        ${value.map((v) => `${this.config.functionName}(${v}),\n`).join('')}
-        ${this.config.terminator}
-      };
-    `;
+    return `${this.config.definition} = {\n${value
+      .map((v) => `\t${this.config.functionName}(${v}),\n`)
+      .join('')}\n\t${this.config.terminator}\n}`;
   }
 }

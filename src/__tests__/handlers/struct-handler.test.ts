@@ -21,13 +21,11 @@ describe('StructHandler', () => {
     ],
   };
 
-  const SAMPLE_SOURCE = `
-      {
-        .categoryName = {_U, _n, _k, _n, _o, _w, _n, _END, _SPACE, _SPACE, _SPACE, _SPACE},
-        .height = 1,
-        .weight = 2,
-      }
-    `;
+  const SAMPLE_SOURCE = `{
+      .categoryName = {_U, _n, _k, _n, _o, _w, _n, _END, _SPACE, _SPACE, _SPACE, _SPACE},
+      .height = 1,
+      .weight = 2,
+    }`;
 
   const SAMPLE_DATA: TestData = {
     categoryName: 'Unknown',
@@ -60,6 +58,7 @@ describe('StructHandler', () => {
   it('should format a struct', () => {
     const handler = new StructHandler(DEFAULT_CONFIG);
     const result = handler.format(SAMPLE_DATA);
+    console.log(result);
     expect(trimMultiline(result)).toEqual(trimMultiline(SAMPLE_SOURCE));
   });
 

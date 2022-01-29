@@ -1,6 +1,6 @@
 import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
-import { AddressOrConstHandler } from '../handlers/const-handler';
+import { DefaultAddressOrConstHandler } from '../handlers/const-handler';
 import { IntHandler } from '../handlers/number-handlers';
 import { getProp, StructHandler } from '../handlers/struct-handler';
 
@@ -39,7 +39,7 @@ export const CryTableSourceDef: SourceFileDefinition<CryTable> = {
           getProp('key', IntHandler),
           getProp('length', IntHandler),
           getProp('pan_sweep', IntHandler),
-          getProp('wav', AddressOrConstHandler),
+          getProp('wav', DefaultAddressOrConstHandler),
           getProp('attack', IntHandler),
           getProp('decay', IntHandler),
           getProp('sustain', IntHandler),

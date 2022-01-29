@@ -16,7 +16,7 @@ describe('FunctionArrayHandler', () => {
       ALTERNATE_ENTRY(RATTATA_A),
       ALTERNATE_ENTRY(RATICATE_A),
       {SPECIES_TABLES_TERMIN, 0}
-    };
+    }
   `;
 
   const DEFAULT_DATA = ['RATTATA_A', 'RATICATE_A'];

@@ -16,7 +16,8 @@ export type PaletteTable = {
 
 function getPaletteTableSourceDef(
   fileName: string,
-  definition: string
+  definition: string,
+  prefix: string
 ): SourceFileDefinition<PaletteTable> {
   return {
     location: [
@@ -33,7 +34,7 @@ function getPaletteTableSourceDef(
         itemHandler: new StructHandler({
           namedProps: false,
           props: [
-            getProp('sprite', new ConstHandler({ suffix: 'Pal' })),
+            getProp('sprite', new ConstHandler({ prefix, suffix: 'Pal' })),
             getProp('species', new ConstHandler({ prefix: 'SPECIES_' })),
             getProp('unused', IntHandler),
           ],
@@ -45,10 +46,12 @@ function getPaletteTableSourceDef(
 
 export const PaletteTableSourceDef = getPaletteTableSourceDef(
   'src/Palette_Table.c',
-  'const struct CompressedSpritePalette gMonPaletteTable[NUM_SPECIES]'
+  'const struct CompressedSpritePalette gMonPaletteTable[NUM_SPECIES]',
+  'gFrontSprite'
 );
 
 export const ShinyPaletteTableSourceDef = getPaletteTableSourceDef(
   'src/Shiny_Palette_Table.c',
-  'const struct CompressedSpritePalette gMonShinyPaletteTable[NUM_SPECIES]'
+  'const struct CompressedSpritePalette gMonShinyPaletteTable[NUM_SPECIES]',
+  'gBackShinySprite'
 );

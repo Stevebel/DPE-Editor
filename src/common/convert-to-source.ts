@@ -1,4 +1,4 @@
-import { isString } from 'lodash';
+import { isString, uniq, uniqBy } from 'lodash';
 import { BaseStats } from './file-handlers/files/base-stats';
 import { CryTable } from './file-handlers/files/cry-table';
 import { EggMovesStructure } from './file-handlers/files/egg-moves';
@@ -31,11 +31,7 @@ import { SpeciesData } from './file-handlers/files/species';
 import { SpeciesToPokedex } from './file-handlers/files/species-to-pokedex';
 import { SpriteData } from './file-handlers/files/sprite-data';
 import { getPokedexOrders } from './pokedex-orders';
-import {
-  AllPokemonData,
-  IPokemonData,
-  IPokemonSpeciesData,
-} from './pokemon-data.interface';
+import { AllPokemonData } from './pokemon-data.interface';
 import { PokemonSourceData } from './pokemon-source-data.interface';
 import { notUndefined } from './ts-utils';
 
@@ -113,8 +109,9 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
     alternateDexEntries: pokemon.flatMap((p) =>
       p.species
         .slice(1)
-        .map((s) => s.dexEntryConst as string | undefined)
-        .filter(notUndefined)
+        .map((s) => s.dexEntryConst)
+        .filter(isString)
+        .filter((s) => s !== p.species[0].dexEntryConst)
     ),
   };
 
@@ -136,8 +133,16 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
     })),
   };
 
+  const speciesWithEntries = pokemon
+    .flatMap((p) => [
+      p.species[0],
+      ...p.species.filter(
+        (s) => s.dexEntryConst !== p.species[0].dexEntryConst
+      ),
+    ])
+    .sort((a, b) => a.speciesNumber - b.speciesNumber);
   const pokedexDataString: PokedexDataString = {
-    pokedexData: pokemonSpecies
+    pokedexData: speciesWithEntries
       .map(({ dexEntry, dexEntryConst }) => {
         if (dexEntry && isString(dexEntryConst)) {
           return {
@@ -152,34 +157,40 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
 
   const speciesToPokedex: SpeciesToPokedex = {
     mappings: pokemon.flatMap((p) =>
-      p.species.map((s) => ({
-        nationalDex: p.nationalDex,
-        species: s.species,
-      }))
+      p.species
+        .map((s) => ({
+          nationalDex: p.nationalDex,
+          species: s.species,
+        }))
+        .filter((s) => s.species !== 'NONE')
     ),
   };
 
-  const dexEntryConsts = pokemonSpecies
-    .map((s) => s.dexEntryConst)
-    .filter(isString);
-  const pokedexConsts: PokedexConsts = {
-    nationalDexConsts: pokemon.map(({ nationalDex, nationalDexNumber }) => ({
+  const nationalDexConsts = pokemon.map(
+    ({ nationalDex, nationalDexNumber }) => ({
       nationalDex,
       number: nationalDexNumber,
-    })),
+    })
+  );
+  const dexEntryConsts = pokedexDataString.pokedexData.map(
+    (s) => s.dexEntryConst
+  );
+
+  const pokedexConsts: PokedexConsts = {
+    nationalDexConsts,
     dexEntryConsts,
-    finalDexEntry: dexEntryConsts[dexEntryConsts.length - 1],
+    finalDexEntry: nationalDexConsts[nationalDexConsts.length - 1].nationalDex,
   };
 
-  const frontSprites = pokemonSpecies
-    .map((s) => s.frontSprite)
-    .filter(notUndefined);
-  const backShinySprites = pokemonSpecies
-    .map((s) => s.backShinySprite)
-    .filter(notUndefined);
-  const iconSprites = pokemonSpecies
-    .map((s) => s.iconSprite)
-    .filter(notUndefined);
+  const frontSprites = uniq(
+    pokemonSpecies.map((s) => s.frontSprite).filter(notUndefined)
+  );
+  const backShinySprites = uniq(
+    pokemonSpecies.map((s) => s.backShinySprite).filter(notUndefined)
+  );
+  const iconSprites = uniq(
+    pokemonSpecies.map((s) => s.iconSprite).filter(notUndefined)
+  );
   const spriteData: SpriteData = {
     frontSprites,
     frontSpritePals: frontSprites,
@@ -227,7 +238,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
   const iconPaletteTable: IconPaletteTable = {
     iconPalettes: pokemonSpecies
       .map((p) =>
-        p.iconPalette
+        p.iconPalette != null
           ? { species: p.species, palette: p.iconPalette }
           : undefined
       )
@@ -241,7 +252,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
           ? {
               ...p.baseStats,
               species: p.species,
-              noFlip: true,
+              noFlip: p.baseStats.type1 ? true : undefined,
             }
           : undefined
       )
@@ -260,12 +271,25 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
       .filter(notUndefined),
   };
   const learnsets: Learnsets = {
-    learnsets: pokemonSpecies
+    learnsets: uniqBy(
+      pokemonSpecies
+        .map((p) =>
+          p.learnset && p.learnsetConst
+            ? {
+                learnset: p.learnsetConst,
+                levelUpMoves: p.learnset,
+              }
+            : undefined
+        )
+        .filter(notUndefined),
+      'learnset'
+    ),
+    learnsetConsts: pokemonSpecies
       .map((p) =>
-        p.learnset
+        p.learnsetConst
           ? {
               species: p.species,
-              levelUpMoves: p.learnset,
+              learnset: p.learnsetConst,
             }
           : undefined
       )
@@ -318,7 +342,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
   const enemyElevationTable: EnemyElevationTable = {
     elevations: pokemonSpecies
       .map((p) =>
-        p.enemyElevation
+        p.enemyElevation != null
           ? { species: p.species, elevation: p.enemyElevation }
           : undefined
       )
@@ -364,175 +388,5 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
     enemyElevationTable,
     pokedexOrders,
     specialInserts,
-  };
-}
-
-export function formatSourceData(
-  sourceData: PokemonSourceData
-): AllPokemonData {
-  const {
-    pokedexDataTable,
-    pokemonNameTable,
-    pokedexDataString,
-    species,
-    pokedexConsts,
-    speciesToPokedex,
-    frontPicCoords,
-    backPicCoords,
-    frontPicTable,
-    backPicTable,
-    iconTable,
-    iconPaletteTable,
-
-    baseStats: allBaseStats,
-    evolutionTable,
-    learnsets: allLearnsets,
-    eggMoves: allEggMoves,
-
-    cryTable,
-    footprintTable,
-    itemAnimationTable,
-
-    enemyElevationTable,
-    specialInserts,
-  } = sourceData;
-
-  const pokedexToSpecies: { [key: string]: string[] } = {};
-  speciesToPokedex.mappings.forEach(({ species: s, nationalDex }) => {
-    pokedexToSpecies[nationalDex] = pokedexToSpecies[nationalDex] || [];
-    pokedexToSpecies[nationalDex].push(s);
-  });
-
-  const pokemon: IPokemonData[] = pokedexDataTable.pokedexEntries.map(
-    ({
-      nationalDex,
-      description,
-      height,
-      weight,
-      categoryName,
-      pokemonScale,
-      pokemonOffset,
-      trainerScale,
-      trainerOffset,
-    }) => {
-      const nationDexConst = pokedexConsts.nationalDexConsts.find(
-        (c) => c.nationalDex === nationalDex
-      );
-      if (!nationDexConst) {
-        throw new Error(`No national dex const for ${nationalDex}`);
-      }
-      const nationalDexNumber = nationDexConst.number;
-      const pokemonSpecies: IPokemonSpeciesData[] = pokedexToSpecies[
-        nationalDex
-      ].map((speciesName) => {
-        const sp = species.species.find((s) => s.species === speciesName);
-        if (!sp) {
-          throw new Error(`Could not find species ${speciesName}`);
-        }
-        const name = pokemonNameTable.pokemonNames[sp.number];
-        const dexEntry = pokedexDataString.pokedexData.find(
-          (c) => c.dexEntryConst === speciesName
-        );
-
-        const frontSprite = frontPicTable.pics.find(
-          (pic) => pic.species === speciesName
-        )?.sprite;
-        const backShinySprite = backPicTable.pics.find(
-          (pic) => pic.species === speciesName
-        )?.sprite;
-        const iconSprite = iconTable.icons.find(
-          (icon) => icon.species === speciesName
-        )?.icon;
-        const iconPalette = iconPaletteTable.iconPalettes.find(
-          (palette) => palette.species === speciesName
-        )?.palette;
-
-        const frontCoords = frontPicCoords.picCoords.find(
-          (c) => c.species === speciesName
-        );
-        const backCoords = backPicCoords.picCoords.find(
-          (c) => c.species === speciesName
-        );
-        const enemyElevation =
-          enemyElevationTable.elevations.find((e) => e.species === speciesName)
-            ?.elevation || 0;
-
-        const baseStats = allBaseStats.baseStats.find(
-          (b) => b.species === speciesName
-        );
-        const evolutions = evolutionTable.evolutions.find(
-          (e) => e.species === speciesName
-        )?.evolutions;
-        const learnset = allLearnsets.learnsets.find(
-          (l) => l.species === speciesName
-        )?.levelUpMoves;
-        const eggMoves = allEggMoves.eggMoves.find(
-          (e) => e.species === speciesName
-        )?.moves;
-
-        const cryData = cryTable.cryTable.find(
-          (c) => c.species === speciesName
-        );
-        const footprint = footprintTable.footprints.find(
-          (f) => f.species === speciesName
-        )?.footprint;
-        const itemAnimation = itemAnimationTable.itemAnimations.find(
-          (i) => i.species === speciesName
-        );
-
-        return {
-          species: speciesName,
-          speciesNumber: sp.number,
-
-          name: name.name,
-          nameConst: name.nameConst,
-
-          dexEntry: dexEntry?.dexEntry,
-          dexEntryConst: dexEntry?.dexEntryConst || description,
-
-          frontSprite,
-          backShinySprite,
-          iconSprite,
-          iconPalette,
-
-          frontCoords,
-          backCoords,
-          enemyElevation,
-
-          baseStats,
-          evolutions,
-          learnset,
-          eggMoves,
-
-          cryData,
-          footprint,
-          itemAnimation,
-        };
-      });
-
-      return {
-        nationalDex,
-        nationalDexNumber,
-
-        categoryName,
-        height: height / 10,
-        weight: weight / 10,
-        description,
-        pokemonScale,
-        pokemonOffset,
-        trainerScale,
-        trainerOffset,
-
-        species: pokemonSpecies,
-      };
-    }
-  );
-
-  pokemon.sort((a, b) => a.nationalDexNumber - b.nationalDexNumber);
-
-  return {
-    pokemon,
-    species: species.species,
-    lastNationalDex: specialInserts.finalDexEntry,
   };
 }

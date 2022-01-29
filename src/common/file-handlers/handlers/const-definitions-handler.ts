@@ -37,7 +37,7 @@ export class ConstDefinitionHandler<T> implements SourceValueHandler<T[]> {
     const data: T[] = [];
 
     let rawData = raw;
-    let overallStart = raw.length + 1;
+    let overallStart: number | null = null;
     let overallEnd = 0;
     while (rawData.length > 0) {
       const match = this.definitionRe.exec(rawData);
@@ -47,9 +47,9 @@ export class ConstDefinitionHandler<T> implements SourceValueHandler<T[]> {
 
       const index = match[1];
       const start = match.index;
-      const end = start + nextIndexOf(rawData.substring(start), ';');
+      const end = start + nextIndexOf(rawData.substring(start), ';') + 1;
 
-      const rawItem = rawData.substring(start + match[0].length, end);
+      const rawItem = rawData.substring(start + match[0].length, end - 1);
       let item: T = {} as T;
       if (this.config.itemHandler) {
         item = this.config.itemHandler.parse(rawItem).value;
@@ -59,15 +59,17 @@ export class ConstDefinitionHandler<T> implements SourceValueHandler<T[]> {
       setProperty(item, this.config.indexProperty, index);
       data.push(item);
 
-      overallStart = Math.min(overallStart, start);
-      overallEnd = Math.max(overallEnd, end);
+      if (overallStart == null) {
+        overallStart = start;
+      }
+      overallEnd += end;
 
       rawData = rawData.substring(end);
     }
 
     return {
       value: data,
-      start: overallStart,
+      start: overallStart || 0,
       end: overallEnd,
     };
   }

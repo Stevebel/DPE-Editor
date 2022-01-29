@@ -38,24 +38,20 @@ describe('ConstDefinitionsHandler', () => {
     ),
   };
 
-  const SAMPLE_SOURCE = `
-  static const struct LevelUpMove sBulbasaurLevelUpLearnset[] =
-  {
+  const SAMPLE_SOURCE = `static const struct LevelUpMove sBulbasaurLevelUpLearnset[] = {
     LEVEL_UP_MOVE(1, MOVE_TACKLE),
     LEVEL_UP_MOVE(3, MOVE_GROWL),
     LEVEL_UP_MOVE(7, MOVE_LEECHSEED),
     LEVEL_UP_END
   };
 
-  static const struct LevelUpMove sIvysaurLevelUpLearnset[] =
-  {
+  static const struct LevelUpMove sIvysaurLevelUpLearnset[] = {
     LEVEL_UP_MOVE(1, MOVE_TACKLE),
     LEVEL_UP_MOVE(1, MOVE_GROWL),
     LEVEL_UP_MOVE(1, MOVE_LEECHSEED),
     LEVEL_UP_MOVE(3, MOVE_GROWL),
     LEVEL_UP_END
-  };
-  `;
+  };`;
 
   const SAMPLE_DATA = [
     {
@@ -87,5 +83,12 @@ describe('ConstDefinitionsHandler', () => {
     const handler = new ConstDefinitionHandler<LevelUpMoves>(DEFAULT_CONFIG);
     const data = handler.format(SAMPLE_DATA);
     expect(trimMultiline(data)).toEqual(trimMultiline(SAMPLE_SOURCE));
+  });
+
+  it('should determine start and end of constant definitions', () => {
+    const handler = new ConstDefinitionHandler<LevelUpMoves>(DEFAULT_CONFIG);
+    const data = handler.parse(SAMPLE_SOURCE);
+    expect(data.start).toEqual(0);
+    expect(data.end).toEqual(SAMPLE_SOURCE.length);
   });
 });

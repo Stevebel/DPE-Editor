@@ -30,6 +30,7 @@ export const SpeciesSourceDef: SourceFileDefinition<SpeciesStructure> = {
     }),
     lastEntry: new DefineCountHandler({
       constName: 'NUM_SPECIES',
+      countPrefix: 'SPECIES_',
     }),
   },
 };

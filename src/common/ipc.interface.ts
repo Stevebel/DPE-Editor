@@ -7,6 +7,7 @@ export type IPCConfigs = {
   'set-cfru-location': () => string;
   'load-files': () => void;
   'pokemon-source-data': (data: AllPokemonData) => AllPokemonData;
+  'data-saved': () => boolean;
 };
 
 export type IPCChannel = keyof IPCConfigs;

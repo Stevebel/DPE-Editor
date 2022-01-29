@@ -28,6 +28,7 @@ export const PokedexConstsSourceDef: SourceFileDefinition<PokedexConsts> = {
     }),
     finalDexEntry: new DefineCountHandler({
       constName: 'FINAL_DEX_ENTRY',
+      countPrefix: 'NATIONAL_DEX_',
       addOne: false,
     }),
     dexEntryConsts: new ExternConstHandler({
