@@ -81,7 +81,7 @@ export class AddressOrConstHandler
     if (typeof value === 'string') {
       return this.constHandler.format(value);
     }
-    return `(const u8*) 0x${value.toString(16)}`;
+    return `(u8*) 0x${value.toString(16)}`;
   }
 }
 

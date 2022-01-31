@@ -39,7 +39,7 @@ describe('ConstHandler', () => {
 
 describe('AddressOrConstHandler', () => {
   it('should parse a hex address', () => {
-    const result = DefaultAddressOrConstHandler.parse('(const u8*) 0x123a4b');
+    const result = DefaultAddressOrConstHandler.parse('(u8*) 0x123a4b');
     expect(result.value).toBe(0x123a4b);
   });
   it('should parse a const', () => {
@@ -55,7 +55,7 @@ describe('AddressOrConstHandler', () => {
   });
   it('should format a hex address', () => {
     expect(DefaultAddressOrConstHandler.format(0x123a4b)).toBe(
-      '(const u8*) 0x123a4b'
+      '(u8*) 0x123a4b'
     );
   });
   it('should format a const', () => {

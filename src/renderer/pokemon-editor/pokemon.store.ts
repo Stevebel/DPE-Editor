@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+import { flatMap } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
@@ -41,7 +42,7 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   speciesNumber = -1;
 
-  dexEntry?: string;
+  dexEntry = '';
 
   dexEntryConst: string | number = -1;
 
@@ -78,9 +79,17 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   // State
   manualSpecies = false;
 
+  pokemon: PokemonData;
+
   errors: ZodError<typeof PokemonSpeciesDataSchema> | null = null;
 
-  constructor(data?: Partial<IPokemonSpeciesData>, id = uuid()) {
+  constructor(
+    pokemon: PokemonData,
+    data?: Partial<IPokemonSpeciesData>,
+    id = uuid()
+  ) {
+    this.pokemon = pokemon;
+
     makeAutoObservable(this);
     if (data) {
       Object.assign(this, data);
@@ -96,6 +105,7 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
     this.name = name;
     if (!this.manualSpecies) {
       this.setSpeciesConst(name);
+    } else {
       this.performErrorCheck();
     }
   }
@@ -103,6 +113,17 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   setSpeciesConst(species: string) {
     this.species = formatSpeciesConst(species);
     this.nameConst = this.species;
+    this.pokemon.updatePath(this.species, ['nationalDex']);
+    if (this.dexEntry) {
+      this.dexEntryConst = this.species;
+    }
+    this.performErrorCheck();
+  }
+
+  setDexEntry(dexEntry: string) {
+    console.log('Dex entry:', dexEntry);
+    this.dexEntry = dexEntry;
+    this.dexEntryConst = this.species;
     this.performErrorCheck();
   }
 
@@ -166,14 +187,12 @@ export class PokemonData implements IPokemonData, CanUpdatePath {
       Object.assign(this, {
         ...data,
         species:
-          data.species?.map((species) => new PokemonSpeciesData(species)) || [],
+          data.species?.map(
+            (species) => new PokemonSpeciesData(this, species)
+          ) || [],
       });
     }
     this.id = id;
-    if (this.species.length === 0) {
-      const defaultSpecies = new PokemonSpeciesData();
-      this.species.push(defaultSpecies);
-    }
 
     this.performErrorCheck();
   }
@@ -214,22 +233,37 @@ export class PokemonStore {
     });
   }
 
-  addPokemon(data?: Partial<IPokemonData>) {
-    let copyFrom = data;
-    if (!copyFrom && this.selectedPokemon) {
+  addPokemon() {
+    let copyFrom = {} as IPokemonData;
+    if (this.selectedPokemon) {
       copyFrom = {
         ...this.selectedPokemon,
-        species: this.selectedPokemon.species.map((species) => ({
-          ...species,
-          name: `${species.name} Copy`,
-          species: `${species.species}_COPY`,
-        })),
+        species: [],
       };
     }
     const pokemon = new PokemonData({
       ...copyFrom,
       nationalDexNumber: this.pokemon.length,
     });
+    if (this.selectedPokemon) {
+      const copySpecies = {
+        ...this.selectedPokemon.species[0],
+        pokemon,
+      };
+      pokemon.species = [
+        new PokemonSpeciesData(pokemon, {
+          ...copySpecies,
+          speciesNumber: this.nextSpeciesNumber,
+          name: `${copySpecies.name} Copy`,
+          species: `${copySpecies.species}_COPY`,
+        }),
+      ];
+    } else if (pokemon.species.length === 0) {
+      const defaultSpecies = new PokemonSpeciesData(pokemon, {
+        speciesNumber: this.nextSpeciesNumber,
+      });
+      pokemon.species = [defaultSpecies];
+    }
     this.pokemon = [...this.pokemon, pokemon];
     this.setSelectedPokemon(pokemon.id);
   }
@@ -275,12 +309,21 @@ export class PokemonStore {
     return this.selectedPokemon?.species;
   }
 
+  get allSpecies() {
+    return flatMap(this.pokemon, (p) => p.species);
+  }
+
+  get nextSpeciesNumber() {
+    return this.allSpecies.length;
+  }
+
   addSpecies() {
     const pokemon = this.selectedPokemon;
     if (pokemon) {
-      const newSpecies = new PokemonSpeciesData({
+      const newSpecies = new PokemonSpeciesData(pokemon, {
         ...this.selectedSpecies,
         species: `${this.selectedSpecies?.species || ''}_NEW`,
+        speciesNumber: this.nextSpeciesNumber,
       });
       newSpecies.manualSpecies = true;
       pokemon.species = [...pokemon.species, newSpecies];

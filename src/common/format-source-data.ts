@@ -14,6 +14,7 @@ export function formatSourceData(
     pokedexDataString,
     species,
     pokedexConsts,
+    pokedexOrders,
     speciesToPokedex,
     frontPicCoords,
     backPicCoords,
@@ -64,6 +65,7 @@ export function formatSourceData(
         throw new Error(`No national dex const for ${nationalDex}`);
       }
       const nationalDexNumber = nationDexConst.number;
+      let regionalDexNumber: number | undefined;
       const pokemonSpecies: IPokemonSpeciesData[] = pokedexToSpecies[
         nationalDex
       ].map((speciesName) => {
@@ -77,6 +79,13 @@ export function formatSourceData(
         const dexEntry = pokedexDataString.pokedexData.find(
           (c) => c.dexEntryConst === dexEntryConst
         )?.dexEntry;
+
+        if (regionalDexNumber === undefined) {
+          const idx = pokedexOrders.regional.indexOf(speciesName);
+          if (idx > -1) {
+            regionalDexNumber = idx + 1;
+          }
+        }
 
         const frontSprite = frontPicTable.pics.find(
           (pic) => pic.species === speciesName
@@ -161,6 +170,7 @@ export function formatSourceData(
       return {
         nationalDex,
         nationalDexNumber,
+        regionalDexNumber,
 
         categoryName,
         height: height / 10,
@@ -176,6 +186,12 @@ export function formatSourceData(
     }
   );
 
+  // pokemon.sort(
+  //   (a, b) =>
+  //     (a.regionalDexNumber || 1000) * 1000 +
+  //     a.nationalDexNumber -
+  //     ((b.regionalDexNumber || 1000) * 1000 + b.nationalDexNumber)
+  // );
   pokemon.sort((a, b) => a.nationalDexNumber - b.nationalDexNumber);
 
   return {

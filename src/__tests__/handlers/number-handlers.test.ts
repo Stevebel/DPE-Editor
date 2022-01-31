@@ -33,13 +33,13 @@ describe('IntHandler', () => {
 
 describe('HexAddressHandler', () => {
   it('should parse a hex address', () => {
-    const result = HexAddressHandler.parse('(const u8*) 0x123a4b');
+    const result = HexAddressHandler.parse('(u8*) 0x123a4b');
     expect(result.value).toBe(0x123a4b);
   });
   it('should throw an error if no hex address is found', () => {
     expect(() => HexAddressHandler.parse('')).toThrow();
   });
   it('should format a hex address', () => {
-    expect(HexAddressHandler.format(0x123a4b)).toBe('(const u8*) 0x123a4b');
+    expect(HexAddressHandler.format(0x123a4b)).toBe('(u8*) 0x123a4b');
   });
 });
