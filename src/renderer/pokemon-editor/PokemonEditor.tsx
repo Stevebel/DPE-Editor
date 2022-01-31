@@ -5,6 +5,7 @@ import { TabPanel } from '../common/TabPanel';
 import { SettingsDialog } from '../SettingsDialog';
 import { PokemonNavBar } from './nav-bar/PokemonNavBar';
 import { usePokemonStoreContext } from './pokemon.store';
+import { GraphicsTab } from './tabs/graphics/GraphicsTab';
 import { PokedexTab } from './tabs/pokedex/PokedexTab';
 
 // eslint-disable-next-line import/prefer-default-export
@@ -39,7 +40,7 @@ export const PokemonEditor = observer(() => {
             <PokedexTab />
           </TabPanel>
           <TabPanel value={tab} index={1}>
-            Item Two
+            <GraphicsTab />
           </TabPanel>
           <TabPanel value={tab} index={2}>
             Item Three

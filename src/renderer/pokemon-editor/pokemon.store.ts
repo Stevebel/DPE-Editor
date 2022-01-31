@@ -18,6 +18,7 @@ import {
   PokemonSpeciesDataSchema,
 } from '../../common/pokemon-data.interface';
 import { NestedPath } from '../../common/ts-utils';
+import { snakeCaseToCamelCase } from '../../common/utils';
 import {
   CanUpdatePath,
   doUpdatePath,
@@ -31,6 +32,12 @@ function formatSpeciesConst(species: string): string {
     return clean.replace(/_$/, '');
   }
   return clean;
+}
+
+function formatSpriteConst(species: string, speciesNumber: number) {
+  return `${speciesNumber.toString().padStart(3, '0')}${snakeCaseToCamelCase(
+    species
+  )}`;
 }
 
 export class PokemonSpeciesData implements IPokemonSpeciesData {
@@ -79,6 +86,10 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   // State
   manualSpecies = false;
 
+  spriteConst = '';
+
+  manualSpriteConst = false;
+
   pokemon: PokemonData;
 
   errors: ZodError<typeof PokemonSpeciesDataSchema> | null = null;
@@ -94,6 +105,13 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
     if (data) {
       Object.assign(this, data);
       if (this.species !== formatSpeciesConst(this.name)) {
+        this.manualSpecies = true;
+      }
+      this.spriteConst =
+        this.frontSprite || formatSpriteConst(this.species, this.speciesNumber);
+      if (
+        this.spriteConst !== formatSpriteConst(this.species, this.speciesNumber)
+      ) {
         this.manualSpecies = true;
       }
     }
@@ -117,13 +135,25 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
     if (this.dexEntry) {
       this.dexEntryConst = this.species;
     }
-    this.performErrorCheck();
+    if (!this.manualSpriteConst) {
+      this.setSpriteConst(formatSpriteConst(this.species, this.speciesNumber));
+    } else {
+      this.performErrorCheck();
+    }
   }
 
   setDexEntry(dexEntry: string) {
     console.log('Dex entry:', dexEntry);
     this.dexEntry = dexEntry;
     this.dexEntryConst = this.species;
+    this.performErrorCheck();
+  }
+
+  setSpriteConst(spriteConst: string) {
+    this.spriteConst = spriteConst;
+    this.frontSprite = spriteConst;
+    this.backShinySprite = spriteConst;
+    this.iconSprite = spriteConst;
     this.performErrorCheck();
   }
 
@@ -256,6 +286,7 @@ export class PokemonStore {
           speciesNumber: this.nextSpeciesNumber,
           name: `${copySpecies.name} Copy`,
           species: `${copySpecies.species}_COPY`,
+          frontSprite: undefined,
         }),
       ];
     } else if (pokemon.species.length === 0) {
@@ -324,6 +355,7 @@ export class PokemonStore {
         ...this.selectedSpecies,
         species: `${this.selectedSpecies?.species || ''}_NEW`,
         speciesNumber: this.nextSpeciesNumber,
+        frontSprite: undefined,
       });
       newSpecies.manualSpecies = true;
       pokemon.species = [...pokemon.species, newSpecies];
