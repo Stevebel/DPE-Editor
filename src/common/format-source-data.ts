@@ -186,6 +186,12 @@ export function formatSourceData(
     }
   );
 
+  // pokemon.sort(
+  //   (a, b) =>
+  //     (a.regionalDexNumber || 1000) * 1000 +
+  //     a.nationalDexNumber -
+  //     ((b.regionalDexNumber || 1000) * 1000 + b.nationalDexNumber)
+  // );
   pokemon.sort((a, b) => a.nationalDexNumber - b.nationalDexNumber);
 
   return {

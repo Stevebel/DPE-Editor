@@ -54,7 +54,7 @@ export const HexAddressHandler: SourceValueHandler<number> = {
       value,
     };
   },
-  format: (value) => `(const u8*) 0x${value.toString(16)}`,
+  format: (value) => `(u8*) 0x${value.toString(16)}`,
 };
 
 export const BooleanHandler: SourceValueHandler<boolean> = {

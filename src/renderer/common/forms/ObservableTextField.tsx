@@ -7,6 +7,9 @@ export const ObservableTextField = observer(
   <T extends CanUpdatePath>(
     props: CommonObservableFieldProps<T> & {
       InputProps?: TextFieldProps['InputProps'];
+      multiline?: boolean;
+      rows?: number;
+      className?: string;
     }
   ) => {
     return (
@@ -27,6 +30,9 @@ export const ObservableTextField = observer(
               onChange={handleChange}
               disabled={o.disabled}
               InputProps={props.InputProps}
+              multiline={props.multiline}
+              rows={props.rows}
+              className={props.className}
             />
           );
         }}

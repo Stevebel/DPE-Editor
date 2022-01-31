@@ -57,6 +57,18 @@ export const PokedexTab = observer(() => {
             endAdornment: <InputAdornment position="end">kg</InputAdornment>,
           }}
         />
+        <ObservableTextField
+          className="full-line"
+          label="Pokédex Entry"
+          store={species}
+          path={['dexEntry']}
+          setter="setDexEntry"
+          multiline
+          rows={3}
+          InputProps={{
+            className: 'dex-entry',
+          }}
+        />
       </Box>
     );
   }

@@ -32,7 +32,7 @@ export const SaveButton = observer(() => {
   const save = () => {
     const pokemon: IPokemonData[] = pokemonStore.pokemon.map((p) => ({
       ...p,
-      species: p.species.map((s) => ({ ...s })),
+      species: p.species.map((s) => ({ ...s, pokemon: null })),
     }));
 
     const data = {

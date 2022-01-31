@@ -22,3 +22,14 @@ body {
   gap: 15px;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
+.full-line {
+  grid-column: 1/-1;
+}
+
+.dex-entry {
+  width: 370px;
+  textarea{
+  font-family: 'Pokemon', monospace;
+  white-space: nowrap;
+}
+}
