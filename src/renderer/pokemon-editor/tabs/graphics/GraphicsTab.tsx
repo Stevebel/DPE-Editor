@@ -38,6 +38,11 @@ export const GraphicsTab = observer(() => {
           store={species}
           path={['backCoords', 'y_offset']}
         />
+        <ObservableNumberField
+          label="Icon Palette"
+          store={species}
+          path={['iconPalette']}
+        />
       </Box>
     );
   }
