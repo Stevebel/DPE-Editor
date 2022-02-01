@@ -1,14 +1,12 @@
 /* eslint-disable max-classes-per-file */
-import { flatMap } from 'lodash';
+import { cloneDeep, flatMap, omit } from 'lodash';
 import { makeAutoObservable } from 'mobx';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { ZodError } from 'zod';
 import { ToneData } from '../../common/file-handlers/files/cry-table';
 import { Evolution } from '../../common/file-handlers/files/evolution-table';
-import { ItemAnimation } from '../../common/file-handlers/files/item-animation-table';
 import { LevelUpMove } from '../../common/file-handlers/files/learnsets';
-import { PicCoords } from '../../common/file-handlers/files/pic-coords-table';
 import { AppIPC } from '../../common/ipc.interface';
 import {
   BaseStatData,
@@ -53,33 +51,45 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   dexEntryConst: string | number = -1;
 
-  frontSprite?: string;
+  frontSprite = '';
 
-  backShinySprite?: string;
+  backShinySprite = '';
 
-  iconSprite?: string;
+  iconSprite = '';
 
-  iconPalette?: number;
+  iconPalette = 0;
 
-  frontCoords?: Omit<PicCoords, 'species'>;
+  frontCoords = {
+    size: 0,
+    y_offset: 0,
+  };
 
-  backCoords?: Omit<PicCoords, 'species'>;
+  backCoords = {
+    size: 0,
+    y_offset: 0,
+  };
 
   enemyElevation = 0;
 
-  baseStats?: BaseStatData;
+  baseStats = {} as BaseStatData;
 
-  evolutions?: Evolution[];
+  evolutions: Evolution[] = [];
 
-  learnset?: LevelUpMove[];
+  learnset: LevelUpMove[] = [];
 
-  eggMoves?: string[];
+  eggMoves: string[] = [];
 
-  cryData?: Omit<ToneData, 'species' | 'type'>;
+  cryData = {} as Omit<ToneData, 'species' | 'type'>;
 
-  footprint?: number;
+  footprint = 0;
 
-  itemAnimation?: Omit<ItemAnimation, 'species'>;
+  itemAnimation = {
+    anim1: 22,
+    anim2: 27,
+    anim3: 48,
+    anim4: 22,
+    anim5: 41,
+  };
 
   id: string;
 
@@ -277,7 +287,9 @@ export class PokemonStore {
     });
     if (this.selectedPokemon) {
       const copySpecies = {
-        ...this.selectedPokemon.species[0],
+        ...cloneDeep(
+          omit(this.selectedPokemon.species[0], ['pokemon', 'frontSprite'])
+        ),
         pokemon,
       };
       pokemon.species = [
@@ -286,7 +298,6 @@ export class PokemonStore {
           speciesNumber: this.nextSpeciesNumber,
           name: `${copySpecies.name} Copy`,
           species: `${copySpecies.species}_COPY`,
-          frontSprite: undefined,
         }),
       ];
     } else if (pokemon.species.length === 0) {
