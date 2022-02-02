@@ -11,6 +11,7 @@ import {
   Snackbar,
 } from '@mui/material';
 import { Box } from '@mui/system';
+import { cloneDeep, omit } from 'lodash';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
 import { IPokemonData } from '../../../common/pokemon-data.interface';
@@ -32,7 +33,7 @@ export const SaveButton = observer(() => {
   const save = () => {
     const pokemon: IPokemonData[] = pokemonStore.pokemon.map((p) => ({
       ...p,
-      species: p.species.map((s) => ({ ...s, pokemon: null })),
+      species: p.species.map((s) => cloneDeep(omit(s, 'pokemon'))),
     }));
 
     const data = {
