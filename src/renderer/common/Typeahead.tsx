@@ -2,6 +2,11 @@ import { Autocomplete, AutocompleteProps, TextField } from '@mui/material';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 
+export type SelectOption = {
+  label: string;
+  value: string;
+};
+
 export default function Typeahead<
   T extends { label: string },
   Multiple extends boolean | undefined,
@@ -10,6 +15,8 @@ export default function Typeahead<
   ...args
 }: Omit<AutocompleteProps<T, Multiple, false, FreeSolo>, 'renderInput'> & {
   label: string;
+  error?: boolean;
+  helperText?: string | null;
 }) {
   return (
     <Autocomplete
@@ -18,7 +25,13 @@ export default function Typeahead<
       autoHighlight
       includeInputInList={false}
       renderInput={(params) => (
-        <TextField {...params} label={args.label} variant="standard" />
+        <TextField
+          {...params}
+          error={args.error || false}
+          helperText={args.helperText}
+          label={args.label}
+          variant="standard"
+        />
       )}
       renderOption={(props, option, { inputValue }) => {
         const matches = match(option.label, inputValue);

@@ -5,6 +5,7 @@ import { TabPanel } from '../common/TabPanel';
 import { SettingsDialog } from '../SettingsDialog';
 import { PokemonNavBar } from './nav-bar/PokemonNavBar';
 import { usePokemonStoreContext } from './pokemon.store';
+import { BaseStatsTab } from './tabs/base-stats/BaseStatsTab';
 import { GraphicsTab } from './tabs/graphics/GraphicsTab';
 import { PokedexTab } from './tabs/pokedex/PokedexTab';
 
@@ -43,7 +44,7 @@ export const PokemonEditor = observer(() => {
             <GraphicsTab />
           </TabPanel>
           <TabPanel value={tab} index={2}>
-            Item Three
+            <BaseStatsTab />
           </TabPanel>
           <TabPanel value={tab} index={3}>
             Item Four

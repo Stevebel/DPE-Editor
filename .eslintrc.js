@@ -15,6 +15,7 @@ module.exports = {
     'prefer-destructuring': 'warn',
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
     'import/prefer-default-export': 'off',
+    'react/require-default-props': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
