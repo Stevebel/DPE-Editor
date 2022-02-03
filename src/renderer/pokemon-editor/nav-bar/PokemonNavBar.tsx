@@ -1,3 +1,4 @@
+import CalculateIcon from '@mui/icons-material/Calculate';
 import EggIcon from '@mui/icons-material/Egg';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import ImageIcon from '@mui/icons-material/Image';
@@ -93,12 +94,17 @@ export const PokemonNavBar = observer(
             <Tab label="Pokédex" {...a11yProps(0)} icon={<PokedexIcon />} />
             <Tab label="Graphics" {...a11yProps(1)} icon={<ImageIcon />} />
             <Tab
+              label="Base Stats"
+              {...a11yProps(1)}
+              icon={<CalculateIcon />}
+            />
+            <Tab
               label="Learnset"
-              {...a11yProps(2)}
+              {...a11yProps(3)}
               icon={<FormatListNumberedIcon />}
             />
-            <Tab label="Egg Moves" {...a11yProps(3)} icon={<EggIcon />} />
-            {/* <Tab label="TMs" {...a11yProps(4)} icon={<AlbumIcon />} /> */}
+            <Tab label="Egg Moves" {...a11yProps(4)} icon={<EggIcon />} />
+            {/* <Tab label="TMs" {...a11yProps(5)} icon={<AlbumIcon />} /> */}
           </Tabs>
         )}
       </AppBar>

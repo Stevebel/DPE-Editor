@@ -1,11 +1,6 @@
 import { observer } from 'mobx-react-lite';
-import Typeahead from '../../common/Typeahead';
+import Typeahead, { SelectOption } from '../../common/Typeahead';
 import { PokemonData, usePokemonStoreContext } from '../pokemon.store';
-
-type SelectOption = {
-  label: string;
-  value: string;
-};
 
 // eslint-disable-next-line import/prefer-default-export
 export const PokemonSelect = observer(() => {
