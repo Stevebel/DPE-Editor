@@ -91,6 +91,8 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
     anim5: 41,
   };
 
+  isAdditional = false;
+
   id: string;
 
   // State
@@ -117,13 +119,12 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
       if (this.species !== formatSpeciesConst(this.name)) {
         this.manualSpecies = true;
       }
-      this.spriteConst =
-        this.frontSprite || formatSpriteConst(this.species, this.speciesNumber);
-      if (
-        this.spriteConst !== formatSpriteConst(this.species, this.speciesNumber)
-      ) {
-        this.manualSpecies = true;
-      }
+      const expectedSpriteConst = formatSpriteConst(
+        this.species,
+        this.speciesNumber
+      );
+      this.spriteConst = this.frontSprite || expectedSpriteConst;
+      this.manualSpriteConst = this.spriteConst !== expectedSpriteConst;
     }
     this.id = id;
     this.performErrorCheck();
@@ -298,6 +299,7 @@ export class PokemonStore {
           speciesNumber: this.nextSpeciesNumber,
           name: `${copySpecies.name} Copy`,
           species: `${copySpecies.species}_COPY`,
+          isAdditional: false,
         }),
       ];
     } else if (pokemon.species.length === 0) {
@@ -356,7 +358,7 @@ export class PokemonStore {
   }
 
   get nextSpeciesNumber() {
-    return this.allSpecies.length;
+    return this.allSpecies.filter((s) => !s.isAdditional).length;
   }
 
   addSpecies() {

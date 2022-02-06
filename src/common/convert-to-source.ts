@@ -117,14 +117,25 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
 
   const pokemonSpecies = pokemon
     .flatMap((p) => p.species)
-    .sort((a, b) => a.speciesNumber - b.speciesNumber);
+    .sort((a, b) => {
+      if (a.isAdditional !== b.isAdditional) {
+        return a.isAdditional ? 1 : -1;
+      }
+      return a.speciesNumber - b.speciesNumber;
+    });
 
-  const speciesData: SpeciesData[] = pokemonSpecies.map(
-    ({ species, speciesNumber }) => ({
+  const speciesData: SpeciesData[] = pokemonSpecies
+    .filter(({ isAdditional }) => !isAdditional)
+    .map(({ species, speciesNumber }) => ({
       species,
       number: speciesNumber,
-    })
-  );
+    }));
+  const additionalSpecies: SpeciesData[] = pokemonSpecies
+    .filter(({ isAdditional }) => isAdditional)
+    .map(({ species, speciesNumber }) => ({
+      species,
+      number: speciesNumber,
+    }));
 
   const pokemonNameTable: PokemonNameTable = {
     pokemonNames: pokemonSpecies.map(({ name, nameConst }) => ({
@@ -362,6 +373,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
     species: {
       species: speciesData,
       lastEntry: speciesData[speciesData.length - 1].species,
+      additionalSpecies,
     },
     pokedexConsts,
     speciesToPokedex,
