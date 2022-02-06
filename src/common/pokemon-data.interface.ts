@@ -112,6 +112,7 @@ export const PokemonSpeciesDataSchema = z.object({
   cryData: ToneDataSchema.omit({ species: true, type: true }).optional(),
   footprint: zAddress.optional(),
   itemAnimation: ItemAnimationSchema.omit({ species: true }).optional(),
+  isAdditional: z.boolean(),
 });
 
 export const PokemonDataSchema = z.object({

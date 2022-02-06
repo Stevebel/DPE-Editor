@@ -1,15 +1,17 @@
 import { isNumber } from 'lodash';
 import { KeyOfType } from '../../ts-utils';
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
+import { regExpEscape } from '../parse-utils';
 import { IntHandler } from './number-handlers';
 
 export const DEFINE_BASE_RE = /#define\s+/g;
-const DEFINE_NUMBER_END_RE = /(\w+)\s+([x0-9A-Fa-f]+)\s*$/g;
+const DEFINE_NUMBER_END_RE = /([x0-9A-Fa-f]+)\s*$/g;
 
 export type DefinesHandlerConfig<T> = {
   constPrefix: string;
   constProperty: KeyOfType<T, string>;
   numberProperty: KeyOfType<T, number>;
+  numberPrefix?: string;
 };
 
 export type DefineCountHandlerConfig = {
@@ -23,9 +25,11 @@ export class DefinesHandler<T> implements SourceValueHandler<T[]> {
 
   constructor(private config: DefinesHandlerConfig<T>) {
     this.re = new RegExp(
-      DEFINE_BASE_RE.source +
-        this.config.constPrefix +
-        DEFINE_NUMBER_END_RE.source,
+      `${
+        DEFINE_BASE_RE.source + this.config.constPrefix
+      }(\\w+)\\s+${regExpEscape(config.numberPrefix || '')}${
+        DEFINE_NUMBER_END_RE.source
+      }`,
       'gm'
     );
   }
@@ -64,7 +68,9 @@ export class DefinesHandler<T> implements SourceValueHandler<T[]> {
         (item) =>
           `#define ${this.config.constPrefix}${
             item[this.config.constProperty]
-          } ${IntHandler.format(this.getNumber(item))}\n`
+          } ${this.config.numberPrefix || ''}${IntHandler.format(
+            this.getNumber(item)
+          )}\n`
       )
       .join('');
   }
