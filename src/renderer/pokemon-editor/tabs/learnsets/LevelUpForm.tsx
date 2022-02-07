@@ -1,46 +1,51 @@
 import { Box, Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import { ObservableNumberField } from '../../../common/forms/ObservableNumberField';
-import { ObservableDropdownField } from '../../../common/forms/ObservableDropdownField';
 import { usePokemonStoreContext } from '../../pokemon.store';
+import { ObservableTextField } from '../../../common/forms/ObservableTextField';
 
 export interface LevelUpFormProps {
-  level: number | null;
-  move: string;
-  addMoveHandler: () => void;
+  index: number;
+  addMoveHandler: (e: React.MouseEvent<HTMLElement>) => void;
+  deleteMoveHandler: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
 export function LevelUpForm(props: LevelUpFormProps) {
   const pokemonStore = usePokemonStoreContext();
   const species = pokemonStore.selectedSpecies;
-  const { level, move, addMoveHandler } = props;
+  const { index, addMoveHandler, deleteMoveHandler } = props;
 
   if (species) {
     return (
-      <Box className="common-form">
-        <ObservableNumberField
-          label={`Level ${level}`}
-          store={species}
-          path={['baseStats', 'baseHP']}
-        />
-        <ObservableDropdownField
-          label={`Move: ${move}`}
-          store={species}
-          path={['spriteConst']}
-          setter="setSpriteConst"
-          options={[
-            { value: 'MOVE_BABYDOLLEYES', label: 'BABYDOLLEYES' },
-            { value: 'MOVE_TACKLE', label: 'TACKLE' },
-          ]}
-        />
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={addMoveHandler}
-        >
-          Add Move
-        </Button>
-      </Box>
+      <>
+        <Box className="common-form">
+          <ObservableNumberField
+            label="Level"
+            store={species}
+            path={['learnset', index, 'level']}
+          />
+          <ObservableTextField
+            label="Move"
+            store={species}
+            path={['learnset', index, 'move']}
+          />
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            data-index={index}
+            onClick={addMoveHandler}
+            color="success"
+          />
+          <Button
+            variant="contained"
+            startIcon={<RemoveIcon />}
+            data-index={index}
+            onClick={deleteMoveHandler}
+            color="error"
+          />
+        </Box>
+      </>
     );
   }
   return null;

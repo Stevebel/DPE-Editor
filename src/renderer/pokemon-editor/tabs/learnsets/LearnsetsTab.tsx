@@ -7,26 +7,36 @@ import { LevelUpForm } from './LevelUpForm';
 export const LearnsetsTab = observer(() => {
   const pokemonStore = usePokemonStoreContext();
   const species = pokemonStore.selectedSpecies;
-  const initialState = [{ level: 1, move: 'Test' }];
-
-  type LevelUpMove = {
-    level: number | null;
-    move: string;
-  };
-
-  const [levelUpMoves, setLevelUpMoves] =
-    React.useState<LevelUpMove[]>(initialState);
-
-  const addMove = () => {
-    setLevelUpMoves([...levelUpMoves, { move: '', level: null }]);
-  };
 
   if (species) {
-    const levelUpMoveForms = levelUpMoves.map((levelUpMove) => (
+    const levelUpMoves = species.learnset;
+    const emptyLevelUpMove = { level: 0, move: 'NONE' };
+
+    if (levelUpMoves.length === 0) {
+      levelUpMoves.replace([emptyLevelUpMove]);
+    }
+
+    const addMove = (e: React.MouseEvent<HTMLElement>) => {
+      const index: number = parseInt(e.target.dataset.index, 10);
+      const newLevelUpMoves = levelUpMoves.slice();
+
+      newLevelUpMoves.splice(index + 1, 0, emptyLevelUpMove);
+      levelUpMoves.replace(newLevelUpMoves);
+    };
+
+    const deleteMove = (e: React.MouseEvent<HTMLElement>) => {
+      const index: number = parseInt(e.target.dataset.index, 10);
+      const newLevelUpMoves = levelUpMoves.slice();
+
+      newLevelUpMoves.splice(index, 1);
+      levelUpMoves.replace(newLevelUpMoves);
+    };
+
+    const levelUpMoveForms = levelUpMoves.map((_levelUpMove, index) => (
       <LevelUpForm
-        move={levelUpMove.move}
-        level={levelUpMove.level}
+        index={index}
         addMoveHandler={addMove}
+        deleteMoveHandler={deleteMove}
       />
     ));
 
