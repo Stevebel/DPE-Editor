@@ -20,7 +20,7 @@ export function LevelUpForm(props: LevelUpFormProps) {
   if (species) {
     return (
       <>
-        <Box className="common-form">
+        <Box className="common-form" sx={{ maxWidth: 700 }}>
           <ObservableNumberField
             label="Level"
             store={species}
@@ -35,6 +35,7 @@ export function LevelUpForm(props: LevelUpFormProps) {
             sx={{
               button: {
                 marginRight: 1,
+                marginTop: 1,
               },
             }}
           >
