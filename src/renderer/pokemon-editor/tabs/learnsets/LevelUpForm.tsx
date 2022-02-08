@@ -31,20 +31,32 @@ export function LevelUpForm(props: LevelUpFormProps) {
             store={species}
             path={['learnset', index, 'move']}
           />
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            data-index={index}
-            color="success"
-            onClick={addMoveHandler}
-          />
-          <Button
-            variant="contained"
-            startIcon={<RemoveIcon />}
-            data-index={index}
-            onClick={deleteMoveHandler}
-            color="error"
-          />
+          <Box
+            sx={{
+              button: {
+                marginRight: 1,
+              },
+            }}
+          >
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              data-index={index}
+              color="primary"
+              onClick={addMoveHandler}
+            >
+              Add
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<RemoveIcon />}
+              data-index={index}
+              onClick={deleteMoveHandler}
+              color="error"
+            >
+              Remove
+            </Button>
+          </Box>
         </Box>
       </>
     );
