@@ -37,6 +37,12 @@ export function formatSourceData(
   } = sourceData;
 
   const pokedexToSpecies: { [key: string]: string[] } = {};
+  species.species.forEach((s, i) => {
+    s.index = i;
+  });
+  species.additionalSpecies.forEach((s, i) => {
+    s.index = i + species.species.length;
+  });
   speciesToPokedex.mappings.push({
     nationalDex: 'NONE',
     species: 'NONE',
@@ -69,11 +75,16 @@ export function formatSourceData(
       const pokemonSpecies: IPokemonSpeciesData[] = pokedexToSpecies[
         nationalDex
       ].map((speciesName) => {
-        const sp = species.species.find((s) => s.species === speciesName);
+        let isAdditional = false;
+        let sp = species.species.find((s) => s.species === speciesName);
+        if (!sp) {
+          sp = species.additionalSpecies.find((s) => s.species === speciesName);
+          isAdditional = true;
+        }
         if (!sp) {
           throw new Error(`Could not find species ${speciesName}`);
         }
-        const pokemonName = pokemonNameTable.pokemonNames[sp.number];
+        const pokemonName = pokemonNameTable.pokemonNames[sp.index!];
         const dexEntryConst =
           alternateDexEntries.find((a) => a === speciesName) || description;
         const dexEntry = pokedexDataString.pokedexData.find(
@@ -164,6 +175,8 @@ export function formatSourceData(
           cryData,
           footprint,
           itemAnimation,
+
+          isAdditional,
         };
       });
 
