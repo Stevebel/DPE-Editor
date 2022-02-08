@@ -20,7 +20,16 @@ export function LevelUpForm(props: LevelUpFormProps) {
   if (species) {
     return (
       <>
-        <Box className="common-form" sx={{ maxWidth: 700 }}>
+        <Box
+          className="common-form"
+          sx={{
+            maxWidth: 700,
+            '&:hover': {
+              cursor: 'pointer',
+              backgroundColor: 'rgba(0, 0, 0, 0.05)',
+            },
+          }}
+        >
           <ObservableNumberField
             label="Level"
             store={species}
