@@ -16,23 +16,23 @@ export const LearnsetsTab = observer(() => {
       levelUpMoves.push(emptyLevelUpMove);
     }
 
-    const addMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-      const index = Number(e.currentTarget.dataset.index);
-      const level = Number(e.currentTarget.dataset.level);
+    const levelUpMoveIndex = (e: React.MouseEvent<HTMLButtonElement>) => {
+      return Number(e.currentTarget.dataset.index);
+    };
 
-      levelUpMoves.splice(index + 1, 0, { level, move: 'NONE' });
+    const addMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+      const { level } = levelUpMoves[levelUpMoveIndex(e)];
+
+      levelUpMoves.splice(levelUpMoveIndex(e) + 1, 0, { level, move: 'NONE' });
     };
 
     const deleteMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-      const index = Number(e.currentTarget.dataset.index);
-
-      levelUpMoves.splice(index, 1);
+      levelUpMoves.splice(levelUpMoveIndex(e), 1);
     };
 
-    const levelUpMoveForms = levelUpMoves.map((levelUpMove, index) => (
+    const levelUpMoveForms = levelUpMoves.map((_levelUpMove, index) => (
       <LevelUpForm
         index={index}
-        levelUpMove={levelUpMove}
         addMoveHandler={addMove}
         deleteMoveHandler={deleteMove}
       />
