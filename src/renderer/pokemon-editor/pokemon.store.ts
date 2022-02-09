@@ -125,6 +125,10 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
       );
       this.spriteConst = this.frontSprite || expectedSpriteConst;
       this.manualSpriteConst = this.spriteConst !== expectedSpriteConst;
+
+      this.learnset.forEach((l) => {
+        l.id = uuid();
+      });
     }
     this.id = id;
     this.performErrorCheck();

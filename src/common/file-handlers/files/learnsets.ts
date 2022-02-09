@@ -9,6 +9,7 @@ import { getProp } from '../handlers/struct-handler';
 export type LevelUpMove = {
   level: number;
   move: string;
+  id?: string;
 };
 export type LevelUpMoves = {
   learnset: string;

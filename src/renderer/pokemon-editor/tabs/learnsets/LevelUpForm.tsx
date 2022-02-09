@@ -1,10 +1,10 @@
-import { Box, Button } from '@mui/material';
-import React from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import { Box, IconButton } from '@mui/material';
+import React from 'react';
 import { ObservableNumberField } from '../../../common/forms/ObservableNumberField';
-import { usePokemonStoreContext } from '../../pokemon.store';
 import { ObservableTextField } from '../../../common/forms/ObservableTextField';
+import { usePokemonStoreContext } from '../../pokemon.store';
 
 export interface LevelUpFormProps {
   index: number;
@@ -48,24 +48,22 @@ export function LevelUpForm(props: LevelUpFormProps) {
               },
             }}
           >
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
+            <IconButton
               data-index={index}
               color="primary"
               onClick={addMoveHandler}
+              title="Add new move"
             >
-              Add
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<RemoveIcon />}
+              <AddIcon />
+            </IconButton>
+            <IconButton
               data-index={index}
               onClick={deleteMoveHandler}
               color="error"
+              title="Remove this move"
             >
-              Remove
-            </Button>
+              <RemoveIcon />
+            </IconButton>
           </Box>
         </Box>
       </>
