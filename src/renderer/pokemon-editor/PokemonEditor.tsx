@@ -8,6 +8,7 @@ import { usePokemonStoreContext } from './pokemon.store';
 import { BaseStatsTab } from './tabs/base-stats/BaseStatsTab';
 import { GraphicsTab } from './tabs/graphics/GraphicsTab';
 import { PokedexTab } from './tabs/pokedex/PokedexTab';
+import { LearnsetsTab } from './tabs/learnsets/LearnsetsTab';
 
 // eslint-disable-next-line import/prefer-default-export
 export const PokemonEditor = observer(() => {
@@ -47,7 +48,7 @@ export const PokemonEditor = observer(() => {
             <BaseStatsTab />
           </TabPanel>
           <TabPanel value={tab} index={3}>
-            Item Four
+            <LearnsetsTab />
           </TabPanel>
           <TabPanel value={tab} index={4}>
             Item Five
