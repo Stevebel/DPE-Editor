@@ -1,6 +1,30 @@
 import { z } from 'zod';
+import { SourceFileHandler } from '../main/source-file-handler';
+import { SourceFileDefinition } from './file-handlers/file-handler.interface';
+import { AttackNameTableSourceDef } from './file-handlers/files/attack_name_table';
+import { BattleMovesSourceDef } from './file-handlers/files/battle-moves';
 import { SubType } from './ts-utils';
 import { zConst } from './zod-common';
+
+export const LOOKUP_DEFS = {
+  battleMoves: BattleMovesSourceDef,
+  attackNameTable: AttackNameTableSourceDef,
+} as const;
+
+export type LookupDefStruct = typeof LOOKUP_DEFS;
+
+export type LookupDefReturnType<K extends keyof LookupDefStruct> =
+  LookupDefStruct[K] extends SourceFileDefinition<infer T> ? T : never;
+
+export type LookupHandlers = {
+  -readonly [K in keyof LookupDefStruct]: SourceFileHandler<
+    LookupDefReturnType<K>
+  >;
+};
+
+export type LookupData = {
+  -readonly [K in keyof LookupDefStruct]: LookupDefReturnType<K>;
+};
 
 export const TypeLks = [
   { type: 'NONE', name: '', order: -1 },

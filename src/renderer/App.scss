@@ -39,3 +39,46 @@ body {
     margin-bottom: 10px;
   }
 }
+
+.move-option {
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  svg {
+    width: 24px;
+    height: 24px;
+    padding-right: 4px;
+  }
+  &:hover {
+    background-color: #f0f0f0;
+  }
+  .name {
+    flex-grow: 1;
+  }
+  .split {
+    background: black;
+    color: white;
+    border-radius: 4px;
+    line-height: 18px;
+    width: 18px;
+    font-size: 11px;
+    text-align: center;
+    margin-left: 6px;
+
+    &.PHYSICAL {
+      background-color: rgba(216, 92, 10);
+    }
+    &.SPECIAL {
+      background-color: rgb(35, 93, 148);
+    }
+    &.STATUS {
+      background-color: rgb(122, 122, 122);
+    }
+  }
+  .power {
+    width: 50px;
+    text-align: center;
+    font-size: 13px;
+  }
+}
