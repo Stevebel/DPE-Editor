@@ -2,7 +2,6 @@ import { Autocomplete, TextField } from '@mui/material';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
 import {
   MoveLk,
   useLookupStoreContext,
