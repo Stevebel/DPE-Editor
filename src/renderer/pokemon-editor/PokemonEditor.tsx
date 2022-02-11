@@ -7,8 +7,8 @@ import { PokemonNavBar } from './nav-bar/PokemonNavBar';
 import { usePokemonStoreContext } from './pokemon.store';
 import { BaseStatsTab } from './tabs/base-stats/BaseStatsTab';
 import { GraphicsTab } from './tabs/graphics/GraphicsTab';
-import { PokedexTab } from './tabs/pokedex/PokedexTab';
 import { LearnsetsTab } from './tabs/learnsets/LearnsetsTab';
+import { PokedexTab } from './tabs/pokedex/PokedexTab';
 
 // eslint-disable-next-line import/prefer-default-export
 export const PokemonEditor = observer(() => {
@@ -20,9 +20,20 @@ export const PokemonEditor = observer(() => {
     setTab(newValue);
   };
   useEffect(() => {
+    const clearDataListener = window.electron.ipcRenderer.on(
+      'lookup-values',
+      (data) => {
+        console.log('Lookup data:', data);
+      }
+    );
+
     window.electron.ipcRenderer.send('load-files');
 
     console.log('Pokemon Data:', pokemonData);
+
+    return () => {
+      clearDataListener();
+    };
   }, [pokemonData]);
 
   return (

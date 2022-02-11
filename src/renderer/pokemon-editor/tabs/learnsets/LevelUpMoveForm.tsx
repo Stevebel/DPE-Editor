@@ -2,8 +2,8 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Box, IconButton } from '@mui/material';
 import React from 'react';
+import { MoveDropdown } from '../../../common/forms/MoveDropdown';
 import { ObservableNumberField } from '../../../common/forms/ObservableNumberField';
-import { ObservableTextField } from '../../../common/forms/ObservableTextField';
 import { usePokemonStoreContext } from '../../pokemon.store';
 
 export interface LevelUpFormProps {
@@ -12,7 +12,7 @@ export interface LevelUpFormProps {
   deleteMoveHandler: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-export function LevelUpForm(props: LevelUpFormProps) {
+export function LevelUpMoveForm(props: LevelUpFormProps) {
   const pokemonStore = usePokemonStoreContext();
   const species = pokemonStore.selectedSpecies;
   const { index, addMoveHandler, deleteMoveHandler } = props;
@@ -35,7 +35,7 @@ export function LevelUpForm(props: LevelUpFormProps) {
             store={species}
             path={['learnset', index, 'level']}
           />
-          <ObservableTextField
+          <MoveDropdown
             label="Move"
             store={species}
             path={['learnset', index, 'move']}

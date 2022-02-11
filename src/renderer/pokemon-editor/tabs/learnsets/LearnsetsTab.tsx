@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { usePokemonStoreContext } from '../../pokemon.store';
-import { LevelUpForm } from './LevelUpForm';
+import { LevelUpMoveForm } from './LevelUpMoveForm';
 
 export const LearnsetsTab = observer(() => {
   const pokemonStore = usePokemonStoreContext();
@@ -46,7 +46,7 @@ export const LearnsetsTab = observer(() => {
     };
 
     const levelUpMoveForms = levelUpMoves.map((levelUpMove, index) => (
-      <LevelUpForm
+      <LevelUpMoveForm
         key={levelUpMove.id}
         index={index}
         addMoveHandler={addMove}
