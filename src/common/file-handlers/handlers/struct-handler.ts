@@ -56,7 +56,7 @@ export class StructHandler<T> implements SourceValueHandler<T> {
       }
       const prop = rawProps.substring(0, propEnd);
       let propValue = prop;
-      let propDef: StructProp<T> | undefined = this.config.props[i];
+      let propDef = this.config.props[i];
       if (this.config.namedProps === false || prop.trim() !== '0') {
         if (this.config.namedProps !== false) {
           const propNameMatch = PROP_NAME_RE.exec(prop);
@@ -66,22 +66,18 @@ export class StructHandler<T> implements SourceValueHandler<T> {
           const foundDef = this.config.props.find(
             (p) => p.key === propNameMatch[1]
           );
-          if (foundDef) {
-            propDef = foundDef;
-
-            propValue = prop.substring(
-              propNameMatch.index + propNameMatch[0].length
-            );
-          } else {
-            propDef = undefined;
-            console.warn(
+          if (!foundDef) {
+            throw new Error(
               `Could not find property definition for ${propNameMatch[1]}`
             );
           }
+          propDef = foundDef;
+
+          propValue = prop.substring(
+            propNameMatch.index + propNameMatch[0].length
+          );
         }
-        if (propDef) {
-          propDef.parseAndApply(data, propValue);
-        }
+        propDef.parseAndApply(data, propValue);
       }
 
       rawProps = rawProps.substring(propEnd + 1).trim();
