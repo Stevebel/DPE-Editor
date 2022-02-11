@@ -79,6 +79,7 @@ function populatePalette(
 export function convertToSource(data: AllPokemonData): PokemonSourceData {
   const { pokemon } = data;
 
+  pokemon.sort((a, b) => a.nationalDexNumber - b.nationalDexNumber);
   const pokedexDataTable: PokedexDataTable = {
     pokedexEntries: pokemon.map(
       ({
