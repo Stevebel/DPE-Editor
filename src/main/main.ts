@@ -12,6 +12,12 @@ import { convertToSource } from '../common/convert-to-source';
 import { SourceFileDefinition } from '../common/file-handlers/file-handler.interface';
 import { formatSourceData } from '../common/format-source-data';
 import { IPCChannel } from '../common/ipc.interface';
+import {
+  LookupData,
+  LookupDefStruct,
+  LookupHandlers,
+  LOOKUP_DEFS,
+} from '../common/lookup-values';
 import { AllPokemonData } from '../common/pokemon-data.interface';
 import {
   PokemonSourceData,
@@ -51,9 +57,10 @@ function getHandler<T>(def: SourceFileDefinition<T>): SourceFileHandler<T> {
 }
 
 const handlers: PokemonSourceHandlers = {} as any;
+const lookupHandlers: LookupHandlers = {} as any;
 
 async function loadFiles() {
-  if (store.get('cfruFolder') && store.get('dpeFolder')) {
+  if (store.get('cfruFolder') && store.get('dpeFolder') && mainWindow) {
     Object.entries(SOURCE_DEFS).forEach(([name, def]) => {
       handlers[name as keyof SourceDefStruct] = getHandler(def as any) as any;
     });
@@ -70,10 +77,24 @@ async function loadFiles() {
     const data = formatSourceData(rawData);
     // Just for testing
     data.source = rawData;
-    const channel: IPCChannel = 'pokemon-source-data';
-    mainWindow!.webContents.send(channel, data);
+    let channel: IPCChannel = 'pokemon-source-data';
+    mainWindow.webContents.send(channel, data);
 
-    // await saveFiles(data);
+    Object.entries(LOOKUP_DEFS).forEach(([name, def]) => {
+      lookupHandlers[name as keyof LookupDefStruct] = getHandler(
+        def as any
+      ) as any;
+    });
+    const lookupPromises = Object.entries(lookupHandlers).map(
+      async ([name, handler]) => [name, await handler.load()]
+    );
+
+    const lookups: LookupData = Object.fromEntries(
+      await Promise.all(lookupPromises)
+    );
+
+    channel = 'lookup-values';
+    mainWindow.webContents.send(channel, lookups);
   }
 }
 

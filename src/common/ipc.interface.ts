@@ -1,3 +1,4 @@
+import { LookupData } from './lookup-values';
 import { AllPokemonData } from './pokemon-data.interface';
 
 export type IPCConfigs = {
@@ -8,6 +9,7 @@ export type IPCConfigs = {
   'load-files': () => void;
   'pokemon-source-data': (data: AllPokemonData) => AllPokemonData;
   'data-saved': () => boolean;
+  'lookup-values': () => LookupData;
 };
 
 export type IPCChannel = keyof IPCConfigs;

@@ -1,8 +1,10 @@
-import React from 'react';
 import { Box } from '@mui/material';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
+import { v4 as uuid } from 'uuid';
 import { usePokemonStoreContext } from '../../pokemon.store';
-import { LevelUpForm } from './LevelUpForm';
+import { LevelUpMoveForm } from './LevelUpMoveForm';
 
 export const LearnsetsTab = observer(() => {
   const pokemonStore = usePokemonStoreContext();
@@ -13,7 +15,12 @@ export const LearnsetsTab = observer(() => {
     const emptyLevelUpMove = { level: 0, move: 'NONE' };
 
     if (levelUpMoves.length === 0) {
-      levelUpMoves.push(emptyLevelUpMove);
+      runInAction(() => {
+        levelUpMoves.push({
+          ...emptyLevelUpMove,
+          id: uuid(),
+        });
+      });
     }
 
     const levelUpMoveIndex = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -23,15 +30,24 @@ export const LearnsetsTab = observer(() => {
     const addMove = (e: React.MouseEvent<HTMLButtonElement>) => {
       const { level } = levelUpMoves[levelUpMoveIndex(e)];
 
-      levelUpMoves.splice(levelUpMoveIndex(e) + 1, 0, { level, move: 'NONE' });
+      runInAction(() => {
+        levelUpMoves.splice(levelUpMoveIndex(e) + 1, 0, {
+          level,
+          move: 'NONE',
+          id: uuid(),
+        });
+      });
     };
 
     const deleteMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-      levelUpMoves.splice(levelUpMoveIndex(e), 1);
+      runInAction(() => {
+        levelUpMoves.splice(levelUpMoveIndex(e), 1);
+      });
     };
 
-    const levelUpMoveForms = levelUpMoves.map((_levelUpMove, index) => (
-      <LevelUpForm
+    const levelUpMoveForms = levelUpMoves.map((levelUpMove, index) => (
+      <LevelUpMoveForm
+        key={levelUpMove.id}
         index={index}
         addMoveHandler={addMove}
         deleteMoveHandler={deleteMove}
