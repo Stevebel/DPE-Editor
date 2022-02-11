@@ -289,6 +289,7 @@ export class PokemonStore {
     const pokemon = new PokemonData({
       ...copyFrom,
       nationalDexNumber: this.pokemon.length,
+      regionalDexNumber: this.nextRegionalDexNumber,
     });
     if (this.selectedPokemon) {
       const copySpecies = {
@@ -312,7 +313,11 @@ export class PokemonStore {
       });
       pokemon.species = [defaultSpecies];
     }
-    this.pokemon = [...this.pokemon, pokemon];
+    this.pokemon = [
+      ...this.pokemon.filter((p) => p.regionalDexNumber != null),
+      pokemon,
+      ...this.pokemon.filter((p) => p.regionalDexNumber == null),
+    ];
     this.setSelectedPokemon(pokemon.id);
   }
 
@@ -363,6 +368,10 @@ export class PokemonStore {
 
   get nextSpeciesNumber() {
     return this.allSpecies.filter((s) => !s.isAdditional).length;
+  }
+
+  get nextRegionalDexNumber() {
+    return this.pokemon.filter((p) => p.regionalDexNumber != null).length;
   }
 
   addSpecies() {

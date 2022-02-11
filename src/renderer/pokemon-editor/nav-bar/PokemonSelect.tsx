@@ -9,7 +9,7 @@ export const PokemonSelect = observer(() => {
   function toOption(p: PokemonData): SelectOption {
     const s = p.species[0] || {};
     return {
-      label: `#${p.nationalDexNumber} - ${s.name}`,
+      label: `${s.name}`,
       value: p.id,
     };
   }
