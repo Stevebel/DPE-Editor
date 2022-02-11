@@ -38,6 +38,10 @@ function formatSpriteConst(species: string, speciesNumber: number) {
   )}`;
 }
 
+function formatLearnsetConst(species: string) {
+  return `${snakeCaseToCamelCase(species)}LevelUpLearnset`;
+}
+
 export class PokemonSpeciesData implements IPokemonSpeciesData {
   name = '';
 
@@ -77,6 +81,8 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   learnset: LevelUpMove[] = [];
 
+  learnsetConst = '';
+
   eggMoves: string[] = [];
 
   cryData = {} as Omit<ToneData, 'species' | 'type'>;
@@ -102,6 +108,8 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   manualSpriteConst = false;
 
+  manualLearnsetConst = false;
+
   pokemon: PokemonData;
 
   errors: ZodError<typeof PokemonSpeciesDataSchema> | null = null;
@@ -126,9 +134,17 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
       this.spriteConst = this.frontSprite || expectedSpriteConst;
       this.manualSpriteConst = this.spriteConst !== expectedSpriteConst;
 
-      this.learnset.forEach((l) => {
+      if (
+        this.learnsetConst !== formatLearnsetConst(this.species) &&
+        this.pokemon?.regionalDexNumber === undefined
+      ) {
+        this.manualLearnsetConst = true;
+      }
+      this.learnset?.forEach((l) => {
         l.id = uuid();
       });
+
+      this.setSpeciesConst(this.species);
     }
     this.id = id;
     this.performErrorCheck();
@@ -149,6 +165,9 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
     this.pokemon.updatePath(this.species, ['nationalDex']);
     if (this.dexEntry) {
       this.dexEntryConst = this.species;
+    }
+    if (!this.manualLearnsetConst) {
+      this.learnsetConst = formatLearnsetConst(this.species);
     }
     if (!this.manualSpriteConst) {
       this.setSpriteConst(formatSpriteConst(this.species, this.speciesNumber));
@@ -198,7 +217,7 @@ export class PokemonData implements IPokemonData, CanUpdatePath {
 
   regionalDexNumber?: number;
 
-  nationalDexNumber = -1;
+  nationalDexNumber = 0;
 
   // Pokédex data
   categoryName = 'Unknown';
@@ -231,11 +250,13 @@ export class PokemonData implements IPokemonData, CanUpdatePath {
     if (data) {
       Object.assign(this, {
         ...data,
-        species:
-          data.species?.map(
-            (species) => new PokemonSpeciesData(this, species)
-          ) || [],
+        species: [],
       });
+      if (data?.species) {
+        this.species = data.species?.map(
+          (species) => new PokemonSpeciesData(this, species)
+        );
+      }
     }
     this.id = id;
 
