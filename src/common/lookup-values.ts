@@ -64,6 +64,26 @@ export const TypeOrder = TypeLks.reduce((order, t) => {
 
 export const MAX_TYPE_ORDER = TypeLks[TypeLks.length - 1].order;
 
+export const HabitatLks = [
+  { habitat: 'Grassland', name: 'Grassland', order: 1 },
+  { habitat: 'Forest', name: 'Forest', order: 2 },
+  { habitat: 'WatersEdge', name: 'Waters Edge', order: 3 },
+  { habitat: 'Sea', name: 'Sea', order: 4 },
+  { habitat: 'Cave', name: 'Cave', order: 5 },
+  { habitat: 'Mountain', name: 'Mountain', order: 6 },
+  { habitat: 'RoughTerrain', name: 'Rough Terrain', order: 7 },
+  { habitat: 'Urban', name: 'Urban', order: 8 },
+  { habitat: 'Rare', name: 'Rare', order: 9 },
+] as const;
+
+export type HabitatLk = typeof HabitatLks[number]['habitat'];
+
+export type HabitatConsts = SubType<typeof HabitatLks, 'habitat'>;
+
+export const habitatConsts: HabitatConsts = HabitatLks.map(
+  (lk) => lk.habitat
+) as any;
+
 export const evolutionMethods = [
   'EVO_NONE',
   'EVO_FRIENDSHIP',

@@ -1,10 +1,11 @@
 import { z } from 'zod';
 import { SpeciesData } from './file-handlers/files/species';
-import { typeConsts } from './lookup-values';
+import { habitatConsts, typeConsts } from './lookup-values';
 import { PokemonSourceData } from './pokemon-source-data.interface';
 import { zAddress, zConst, zDexNumber, zLevel, zUByte } from './zod-common';
 
 export const zType = z.enum(typeConsts);
+export const zHabitat = z.enum(habitatConsts);
 export const zEVYield = z.number().nonnegative().lte(3);
 
 export const BaseStatSchema = z.object({
@@ -113,6 +114,8 @@ export const PokemonSpeciesDataSchema = z.object({
   footprint: zAddress.optional(),
   itemAnimation: ItemAnimationSchema.omit({ species: true }).optional(),
   isAdditional: z.boolean(),
+  habitat: zHabitat.optional(),
+  regionalDexNumber: zDexNumber.optional(),
 });
 
 export const PokemonDataSchema = z.object({

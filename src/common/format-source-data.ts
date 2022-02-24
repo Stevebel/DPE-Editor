@@ -1,3 +1,4 @@
+import { HabitatLk } from './lookup-values';
 import {
   AllPokemonData,
   IPokemonData,
@@ -34,6 +35,7 @@ export function formatSourceData(
 
     enemyElevationTable,
     specialInserts,
+    habitatTable,
   } = sourceData;
 
   const pokedexToSpecies: { [key: string]: string[] } = {};
@@ -146,6 +148,12 @@ export function formatSourceData(
         const itemAnimation = itemAnimationTable.itemAnimations.find(
           (i) => i.species === speciesName
         );
+        const rawHabitat = habitatTable.pages.find(
+          (pg) => pg.species.indexOf(speciesName) >= 0
+        )?.name;
+        const habitat = rawHabitat
+          ? (rawHabitat.substring(0, rawHabitat.indexOf('Page')) as HabitatLk)
+          : undefined;
 
         return {
           species: speciesName,
@@ -177,6 +185,8 @@ export function formatSourceData(
           itemAnimation,
 
           isAdditional,
+          habitat,
+          regionalDexNumber,
         };
       });
 

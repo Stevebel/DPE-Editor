@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { SourceValueHandler } from '../file-handler.interface';
+import { regExpEscape } from '../parse-utils';
 import { HEX_RE, IntHandler, NUMBER_RE } from './number-handlers';
 
 const CONST_RE = /([a-zA-Z_]\w*)/;
@@ -21,7 +22,9 @@ export class ConstHandler<T extends string = string>
     this.prefix = prefix || '';
     this.suffix = suffix || '';
     this.re = new RegExp(
-      `${this.prefix}${this.prefix ? '(\\w+)' : CONST_RE.source}${this.suffix}`
+      `${regExpEscape(this.prefix)}${
+        this.prefix ? '(\\w+)' : CONST_RE.source
+      }${regExpEscape(this.suffix)}`
     );
   }
 
