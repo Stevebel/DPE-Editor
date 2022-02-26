@@ -15,13 +15,12 @@ function groupIntoPages(
   const pages: IPokemonSpeciesData[][] = [];
   let page: IPokemonSpeciesData[] = [];
   let lastDexNumber = -1;
-  let lastSpecies: IPokemonSpeciesData;
   let groupPage = false;
 
   species.forEach((s) => {
     if (
       lastDexNumber === s.regionalDexNumber! ||
-      lastSpecies?.evolutions?.some((e) => e.targetSpecies === s.species)
+      page.some((p) => p.evolutions?.some((e) => e.targetSpecies === s.species))
     ) {
       page.push(s);
       groupPage = true;
@@ -35,7 +34,6 @@ function groupIntoPages(
     }
 
     lastDexNumber = s.regionalDexNumber!;
-    lastSpecies = s;
 
     if (page.length >= 4) {
       pages.push(page);
@@ -69,6 +67,13 @@ export function getHabitatTable(species: IPokemonSpeciesData[]): HabitatTable {
       name: `${h}Page${i + 1}`,
       species: pg.map((s) => s.species),
     }));
+
+    if (habitatPages.pages.length === 0) {
+      habitatPages.pages.push({
+        name: `${h}Page1`,
+        species: ['NONE'],
+      });
+    }
 
     habitatTable.pages = [...habitatTable.pages, ...habitatPages.pages];
     habitatTable.habitats.push(habitatPages);
