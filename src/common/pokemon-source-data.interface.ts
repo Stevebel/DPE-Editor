@@ -7,6 +7,7 @@ import { EggMovesSourceDef } from './file-handlers/files/egg-moves';
 import { EnemyElevationTableSourceDef } from './file-handlers/files/enemy-elevation-table';
 import { EvolutionTableSourceDef } from './file-handlers/files/evolution-table';
 import { FootprintTableSourceDef } from './file-handlers/files/footprint-table';
+import { HabitatTableSourceDef } from './file-handlers/files/habitat-table';
 import { IconPaletteTableSourceDef } from './file-handlers/files/icon-palette-table';
 import { IconTableSourceDef } from './file-handlers/files/icon-table';
 import { ItemAnimationTableSourceDef } from './file-handlers/files/item-animation-table';
@@ -60,6 +61,7 @@ export const SOURCE_DEFS = {
   paletteTable: PaletteTableSourceDef,
   shinyPaletteTable: ShinyPaletteTableSourceDef,
   pokedexOrders: PokedexOrderSourceDef,
+  habitatTable: HabitatTableSourceDef,
 } as const;
 
 export type SourceDefStruct = typeof SOURCE_DEFS;

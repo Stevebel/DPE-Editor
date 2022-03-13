@@ -5,6 +5,7 @@ import { EggMovesStructure } from './file-handlers/files/egg-moves';
 import { EnemyElevationTable } from './file-handlers/files/enemy-elevation-table';
 import { EvolutionTable } from './file-handlers/files/evolution-table';
 import { FootprintTable } from './file-handlers/files/footprint-table';
+import { HabitatTable } from './file-handlers/files/habitat-table';
 import { IconPaletteTable } from './file-handlers/files/icon-palette-table';
 import { IconTable } from './file-handlers/files/icon-table';
 import { ItemAnimationTable } from './file-handlers/files/item-animation-table';
@@ -30,6 +31,7 @@ import { SpecialInserts } from './file-handlers/files/special-inserts';
 import { SpeciesData } from './file-handlers/files/species';
 import { SpeciesToPokedex } from './file-handlers/files/species-to-pokedex';
 import { SpriteData } from './file-handlers/files/sprite-data';
+import { getHabitatTable } from './habitats';
 import { getPokedexOrders } from './pokedex-orders';
 import { AllPokemonData } from './pokemon-data.interface';
 import { PokemonSourceData } from './pokemon-source-data.interface';
@@ -367,6 +369,8 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
 
   const pokedexOrders: PokedexOrders = getPokedexOrders(data);
 
+  const habitats: HabitatTable = getHabitatTable(pokemonSpecies);
+
   return {
     pokedexDataTable,
     pokemonNameTable,
@@ -401,5 +405,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
     enemyElevationTable,
     pokedexOrders,
     specialInserts,
+
+    habitatTable: habitats,
   };
 }

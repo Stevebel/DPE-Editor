@@ -14,6 +14,7 @@ import { Box } from '@mui/system';
 import { cloneDeep, omit } from 'lodash';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
+import { convertToSource } from '../../../common/convert-to-source';
 import { IPokemonData } from '../../../common/pokemon-data.interface';
 import { usePokemonStoreContext } from '../pokemon.store';
 
@@ -40,6 +41,7 @@ export const SaveButton = observer(() => {
       pokemon,
       lastNationalDex: pokemon.length - 1,
     };
+    convertToSource(data);
     window.electron.ipcRenderer.send('pokemon-source-data', data);
     close();
   };

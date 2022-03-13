@@ -8,6 +8,7 @@ import { ToneData } from '../../common/file-handlers/files/cry-table';
 import { Evolution } from '../../common/file-handlers/files/evolution-table';
 import { LevelUpMove } from '../../common/file-handlers/files/learnsets';
 import { AppIPC } from '../../common/ipc.interface';
+import { HabitatLk } from '../../common/lookup-values';
 import {
   BaseStatData,
   IPokemonData,
@@ -98,6 +99,10 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   };
 
   isAdditional = false;
+
+  habitat?: HabitatLk = 'Grassland';
+
+  regionalDexNumber = 0;
 
   id: string;
 
