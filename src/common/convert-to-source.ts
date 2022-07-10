@@ -45,6 +45,7 @@ function populateCoords(
     return {
       ...coords,
       species,
+      size: 0,
     };
   }
   return undefined;
