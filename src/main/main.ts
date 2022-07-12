@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint global-require: off, no-console: off, promise/always-return: off */
 import 'core-js/stable';
-import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, protocol, shell } from 'electron';
 import log from 'electron-log';
 import ElectronStore from 'electron-store';
 import { autoUpdater } from 'electron-updater';
@@ -146,6 +146,20 @@ ipcMain.on('locate-cfru', async (event) => {
   }
 });
 
+ipcMain.on('locate-assets', async (event) => {
+  const result = dialog.showOpenDialogSync(mainWindow!, {
+    properties: ['openDirectory'],
+    message: 'Select Assets Location',
+    title: 'Select Assets Folder',
+    defaultPath: store.get('assetsFolder'),
+  });
+  if (result && result.length > 0) {
+    store.set('assetsFolder', result[0]);
+    event.reply('set-assets-location', result[0]);
+    await loadFiles();
+  }
+});
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -183,6 +197,12 @@ const createWindow = async () => {
   const getAssetPath = (...paths: string[]): string => {
     return path.join(RESOURCES_PATH, ...paths);
   };
+
+  protocol.registerFileProtocol('asset', (request, callback) => {
+    const relativePath = request.url.replace('asset://', '');
+    const absolutePath = path.join(store.get('assetsFolder'), relativePath);
+    callback(absolutePath);
+  });
 
   mainWindow = new BrowserWindow({
     show: false,

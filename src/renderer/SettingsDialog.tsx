@@ -37,12 +37,18 @@ const folderInputStyle: SxProps<Theme> = {
 export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
   const [dpeFolder, setDPEFolder] = React.useState(Config.get('dpeFolder'));
   const [cfruFolder, setCFRUFolder] = React.useState(Config.get('cfruFolder'));
+  const [assetsFolder, setAssetsFolder] = React.useState(
+    Config.get('assetsFolder')
+  );
 
   const handleDPESelect = () => {
     window.electron.ipcRenderer.send('locate-dpe');
   };
   const handleCFRUSelect = () => {
     window.electron.ipcRenderer.send('locate-cfru');
+  };
+  const handleAssetsSelect = () => {
+    window.electron.ipcRenderer.send('locate-assets');
   };
 
   useEffect(() => {
@@ -54,9 +60,15 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
       'set-cfru-location',
       setCFRUFolder
     );
+    const clearAssetsListener = window.electron.ipcRenderer.on(
+      'set-assets-location',
+      setAssetsFolder
+    );
+
     return () => {
       clearDpeListener();
       clearCfruListener();
+      clearAssetsListener();
     };
   }, [setDPEFolder, setCFRUFolder]);
 
@@ -100,6 +112,16 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
               sx={{ flexGrow: 1 }}
             />
             <Button onClick={handleCFRUSelect}>Select</Button>
+          </FormControl>
+
+          <FormControl variant="outlined" sx={folderInputStyle}>
+            <TextField
+              disabled
+              label="Assets Folder"
+              value={assetsFolder}
+              sx={{ flexGrow: 1 }}
+            />
+            <Button onClick={handleAssetsSelect}>Select</Button>
           </FormControl>
         </Box>
       </Box>
