@@ -1,3 +1,4 @@
+import { flatMap } from 'lodash';
 import { z } from 'zod';
 import { SourceFileHandler } from '../main/source-file-handler';
 import { SourceFileDefinition } from './file-handlers/file-handler.interface';
@@ -84,65 +85,139 @@ export const habitatConsts: HabitatConsts = HabitatLks.map(
   (lk) => lk.habitat
 ) as any;
 
-export const evolutionMethods = [
-  'EVO_NONE',
-  'EVO_FRIENDSHIP',
-  'EVO_FRIENDSHIP_DAY',
-  'EVO_FRIENDSHIP_NIGHT',
-  'EVO_LEVEL',
-  'EVO_TRADE',
-  'EVO_TRADE_ITEM',
-  'EVO_ITEM',
-  'EVO_LEVEL_ATK_GT_DEF',
-  'EVO_LEVEL_ATK_EQ_DEF',
-  'EVO_LEVEL_ATK_LT_DEF',
-  'EVO_LEVEL_SILCOON',
-  'EVO_LEVEL_CASCOON',
-  'EVO_LEVEL_NINJASK',
-  'EVO_LEVEL_SHEDINJA',
-  'EVO_BEAUTY',
-
-  'EVO_RAINY_FOGGY_OW',
-  'EVO_MOVE_TYPE',
-  'EVO_TYPE_IN_PARTY',
-  'EVO_MAP',
-  'EVO_MALE_LEVEL',
-  'EVO_FEMALE_LEVEL',
-  'EVO_LEVEL_NIGHT',
-  'EVO_LEVEL_DAY',
-  'EVO_HOLD_ITEM_NIGHT',
-  'EVO_HOLD_ITEM_DAY',
-  'EVO_MOVE',
-  'EVO_OTHER_PARTY_MON',
-  'EVO_LEVEL_SPECIFIC_TIME_RANGE',
-  'EVO_FLAG_SET',
-  'EVO_CRITICAL_HIT',
-  'EVO_NATURE_HIGH',
-  'EVO_NATURE_LOW',
-  'EVO_DAMAGE_LOCATION',
-  'EVO_ITEM_LOCATION',
-] as const;
-export type EvolutionMethod = typeof evolutionMethods[number];
-
-function evoMethods<M extends [...args: EvolutionMethod[]]>(...args: M): M {
-  return args;
-}
-
-export const zEvoMethodLevel = z.object({
-  method: z.enum(
-    evoMethods(
-      'EVO_LEVEL',
-      'EVO_LEVEL_ATK_EQ_DEF',
-      'EVO_LEVEL_ATK_GT_DEF',
-      'EVO_LEVEL_ATK_LT_DEF'
-    )
-  ),
+const EvoByLevel = z.object({
+  method: z.enum([
+    'LEVEL',
+    'LEVEL_ATK_EQ_DEF',
+    'LEVEL_ATK_GT_DEF',
+    'LEVEL_ATK_LT_DEF',
+    'LEVEL_SILCOON',
+    'LEVEL_CASCOON',
+    'LEVEL_NINJASK',
+    'LEVEL_SHEDINJA',
+    'RAINY_FOGGY_OW',
+    'MALE_LEVEL',
+    'FEMALE_LEVEL',
+    'LEVEL_NIGHT',
+    'LEVEL_DAY',
+    'LEVEL_SPATK_GT_SPDEF',
+  ]),
+  targetSpecies: zConst,
   param: z.number().positive().lte(100),
-  extra: z.literal(0).or(zConst),
+  extra: z.literal(0),
 });
 
-export const zEvoMethodItem = z.object({
-  method: z.enum(evoMethods('EVO_ITEM')),
+const EvoByItem = z.object({
+  method: z.enum(['ITEM', 'TRADE_ITEM', 'HOLD_ITEM_NIGHT', 'HOLD_ITEM_DAY']),
+  targetSpecies: zConst,
   param: zConst,
-  extra: z.literal(0).or(zConst),
+  extra: z.literal(0).or(z.enum(['MON_MALE', 'MON_FEMALE'])),
 });
+
+export const EvoByType = z.object({
+  method: z.enum(['MOVE_TYPE', 'TYPE_IN_PARTY']),
+  targetSpecies: zConst,
+  param: zConst,
+  extra: z.number().nonnegative().lte(100),
+});
+
+const EvoByMap = z.object({
+  method: z.enum(['MAP']),
+  targetSpecies: zConst,
+  param: zConst,
+  extra: z.literal(0),
+});
+
+const EvoByMove = z.object({
+  method: z.enum(['MOVE']),
+  targetSpecies: zConst,
+  param: zConst,
+  extra: z.literal(0),
+});
+
+export const EvoByOtherSpecies = z.object({
+  method: z.enum(['OTHER_PARTY_MON']),
+  targetSpecies: zConst,
+  param: zConst,
+  extra: z.literal(0),
+});
+
+const EvoByLevelAndTime = z.object({
+  method: z.enum(['LEVEL_SPECIFIC_TIME_RANGE']),
+  targetSpecies: zConst,
+  param: z.number().positive().lte(100),
+  extra: z.number().nonnegative().lte(255),
+});
+
+const EvoByFlag = z.object({
+  method: z.enum(['FLAG_SET']),
+  targetSpecies: zConst,
+  param: zConst,
+  extra: zConst,
+});
+
+const EvoMega = z.object({
+  method: z.enum(['MEGA']),
+  targetSpecies: zConst,
+  param: zConst,
+  extra: z.enum([
+    'MEGA_VARIANT_STANDARD',
+    'MEGA_VARIANT_PRIMAL',
+    'MEGA_VARIANT_WISH',
+    'MEGA_VARIANT_ULTRA_BURST',
+  ]),
+});
+
+const EvoNoParams = z.object({
+  method: z.enum(['TRADE', 'FRIENDSHIP', 'FRIENDSHIP_DAY', 'FRIENDSHIP_NIGHT']),
+  targetSpecies: zConst,
+  param: z.literal(0),
+  extra: z.literal(0),
+});
+
+export const EvoMethodGroups = {
+  level: EvoByLevel.shape.method.options,
+  item: EvoByItem.shape.method.options,
+  type: EvoByType.shape.method.options,
+  map: EvoByMap.shape.method.options,
+  move: EvoByMove.shape.method.options,
+  flag: EvoByFlag.shape.method.options,
+  otherSpecies: EvoByOtherSpecies.shape.method.options,
+  levelAndTime: EvoByLevelAndTime.shape.method.options,
+  mega: EvoMega.shape.method.options,
+  noParams: EvoNoParams.shape.method.options,
+};
+
+const evoTypes = [
+  EvoByLevel,
+  EvoByItem,
+  EvoNoParams,
+  EvoByType,
+  EvoByMap,
+  EvoByMove,
+  EvoByOtherSpecies,
+  EvoByLevelAndTime,
+  EvoByFlag,
+  EvoMega,
+] as const;
+export const EvolutionSchema = z.union(evoTypes).and(
+  z.object({
+    id: z.string().optional(),
+    targetSpecies: zConst,
+  })
+);
+
+export const EvolutionMethods = flatMap(
+  evoTypes,
+  (o) => o.shape.method.options
+);
+
+export function getMethodGroup(evoMethod: string) {
+  const entry = Object.entries(EvoMethodGroups).find(([_, methods]) => {
+    return (methods as string[]).includes(evoMethod);
+  });
+  if (entry) {
+    return entry[0];
+  }
+  return null;
+}

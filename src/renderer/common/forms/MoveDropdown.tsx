@@ -14,6 +14,7 @@ export const MoveDropdown = observer(
   <T extends CanUpdatePath>(props: CommonObservableFieldProps<T>) => {
     const lookupStore = useLookupStoreContext();
     const { moves } = lookupStore;
+    console.log(moves.map((m) => m.name).join('\n'));
 
     return (
       <ObservableField

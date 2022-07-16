@@ -1,5 +1,5 @@
+import { TrendingUp } from '@mui/icons-material';
 import CalculateIcon from '@mui/icons-material/Calculate';
-import EggIcon from '@mui/icons-material/Egg';
 import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import ImageIcon from '@mui/icons-material/Image';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -103,7 +103,8 @@ export const PokemonNavBar = observer(
               {...a11yProps(3)}
               icon={<FormatListNumberedIcon />}
             />
-            <Tab label="Egg Moves" {...a11yProps(4)} icon={<EggIcon />} />
+            {/* <Tab label="Egg Moves" {...a11yProps(4)} icon={<EggIcon />} /> */}
+            <Tab label="Evolutions" {...a11yProps(4)} icon={<TrendingUp />} />
             {/* <Tab label="TMs" {...a11yProps(5)} icon={<AlbumIcon />} /> */}
           </Tabs>
         )}

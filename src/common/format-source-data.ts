@@ -1,4 +1,11 @@
-import { HabitatLk } from './lookup-values';
+/* eslint-disable no-case-declarations */
+import { z } from 'zod';
+import {
+  EvoByOtherSpecies,
+  EvoByType,
+  getMethodGroup,
+  HabitatLk,
+} from './lookup-values';
 import {
   AllPokemonData,
   IPokemonData,
@@ -126,9 +133,30 @@ export function formatSourceData(
         const baseStats = allBaseStats.baseStats.find(
           (b) => b.species === speciesName
         );
-        const evolutions = evolutionTable.evolutions.find(
-          (e) => e.species === speciesName
-        )?.evolutions;
+        const evolutions = evolutionTable.evolutions
+          .find((e) => e.species === speciesName)
+          ?.evolutions.map((evo) => {
+            const methodGroup = getMethodGroup(evo.method);
+            switch (methodGroup) {
+              case 'otherSpecies':
+                const evoByOtherSpecies = evo as z.infer<
+                  typeof EvoByOtherSpecies
+                >;
+                return {
+                  ...evoByOtherSpecies,
+                  param: evoByOtherSpecies.param.replace('SPECIES_', ''),
+                };
+              case 'type':
+                const evoByType = evo as z.infer<typeof EvoByType>;
+                return {
+                  ...evoByType,
+                  param: evoByType.param.replace('TYPE_', ''),
+                };
+              default:
+                return evo;
+            }
+          });
+
         const learnsetConst = allLearnsets.learnsetConsts.find(
           (l) => l.species === speciesName
         )?.learnset;

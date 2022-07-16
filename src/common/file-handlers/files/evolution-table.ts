@@ -1,14 +1,11 @@
+import { z } from 'zod';
+import { EvolutionSchema } from '../../lookup-values';
 import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
 import { ConstHandler, IntOrConstHandler } from '../handlers/const-handler';
 import { getProp, StructHandler } from '../handlers/struct-handler';
 
-export type Evolution = {
-  method: string;
-  param: string | number;
-  targetSpecies: string;
-  extra: string | number;
-};
+export type Evolution = z.infer<typeof EvolutionSchema>;
 
 export type Evolutions = {
   species: string;

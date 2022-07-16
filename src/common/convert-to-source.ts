@@ -1,4 +1,5 @@
 import { isString, uniq, uniqBy } from 'lodash';
+import { z } from 'zod';
 import { BaseStats } from './file-handlers/files/base-stats';
 import { CryTable } from './file-handlers/files/cry-table';
 import { EggMovesStructure } from './file-handlers/files/egg-moves';
@@ -32,6 +33,7 @@ import { SpeciesData } from './file-handlers/files/species';
 import { SpeciesToPokedex } from './file-handlers/files/species-to-pokedex';
 import { SpriteData } from './file-handlers/files/sprite-data';
 import { getHabitatTable } from './habitats';
+import { EvoByOtherSpecies, EvoByType, getMethodGroup } from './lookup-values';
 import { getPokedexOrders } from './pokedex-orders';
 import { AllPokemonData } from './pokemon-data.interface';
 import { PokemonSourceData } from './pokemon-source-data.interface';
@@ -279,7 +281,23 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
         p.evolutions
           ? {
               species: p.species,
-              evolutions: p.evolutions,
+              evolutions: p.evolutions.map((evo) => {
+                const methodGroup = getMethodGroup(evo.method);
+                switch (methodGroup) {
+                  case 'otherSpecies':
+                    return {
+                      ...(evo as z.infer<typeof EvoByOtherSpecies>),
+                      param: `SPECIES_${evo.param}`,
+                    };
+                  case 'type':
+                    return {
+                      ...(evo as z.infer<typeof EvoByType>),
+                      param: `TYPE_${evo.param}`,
+                    };
+                  default:
+                    return evo;
+                }
+              }),
             }
           : undefined
       )

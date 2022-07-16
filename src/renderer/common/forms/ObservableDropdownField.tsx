@@ -14,7 +14,7 @@ export const ObservableDropdownField = observer(
         {...props}
         field={(o) => {
           const getOption = (value: string) =>
-            props.options.find((opt) => opt.value === value);
+            props.options.find((opt) => opt.value === value) || null;
 
           const handleSelect = (option: SelectOption) =>
             o.onChange(option?.value || null);

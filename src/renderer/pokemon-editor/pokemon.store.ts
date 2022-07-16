@@ -148,6 +148,12 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
       this.learnset?.forEach((l) => {
         l.id = uuid();
       });
+      if (!this.evolutions) {
+        this.evolutions = [];
+      }
+      this.evolutions.forEach((e) => {
+        e.id = uuid();
+      });
 
       this.setSpeciesConst(this.species);
     }

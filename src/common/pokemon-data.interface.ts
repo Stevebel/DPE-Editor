@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SpeciesData } from './file-handlers/files/species';
-import { habitatConsts, typeConsts } from './lookup-values';
+import { EvolutionSchema, habitatConsts, typeConsts } from './lookup-values';
 import { PokemonSourceData } from './pokemon-source-data.interface';
 import { zAddress, zConst, zDexNumber, zLevel, zUByte } from './zod-common';
 
@@ -46,13 +46,6 @@ export const PicCoordsSchema = z.object({
   species: zConst,
   size: zUByte,
   y_offset: zUByte,
-});
-
-export const EvolutionSchema = z.object({
-  method: zConst,
-  param: zConst.or(z.number().nonnegative()),
-  targetSpecies: zConst,
-  extra: zConst.or(z.number().nonnegative()),
 });
 
 export const LevelUpMoveSchema = z.object({
@@ -136,6 +129,7 @@ export const PokemonDataSchema = z.object({
 
 export type BaseStatData = z.infer<typeof BaseStatSchema>;
 export type IPokemonSpeciesData = z.infer<typeof PokemonSpeciesDataSchema>;
+export type Evo = z.infer<typeof EvolutionSchema>;
 export type IPokemonData = z.infer<typeof PokemonDataSchema>;
 
 export type AllPokemonData = {
