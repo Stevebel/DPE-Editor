@@ -40,6 +40,9 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
   const [assetsFolder, setAssetsFolder] = React.useState(
     Config.get('assetsFolder')
   );
+  const [googleKeyLocation, setGoogleKeyLocation] = React.useState(
+    Config.get('googleKeyLocation')
+  );
 
   const handleDPESelect = () => {
     window.electron.ipcRenderer.send('locate-dpe');
@@ -49,6 +52,10 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
   };
   const handleAssetsSelect = () => {
     window.electron.ipcRenderer.send('locate-assets');
+  };
+
+  const handleGoogleKeySelect = () => {
+    window.electron.ipcRenderer.send('locate-google-key');
   };
 
   useEffect(() => {
@@ -64,11 +71,16 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
       'set-assets-location',
       setAssetsFolder
     );
+    const clearGoogleKeyListener = window.electron.ipcRenderer.on(
+      'set-google-key-location',
+      setGoogleKeyLocation
+    );
 
     return () => {
       clearDpeListener();
       clearCfruListener();
       clearAssetsListener();
+      clearGoogleKeyListener();
     };
   }, [setDPEFolder, setCFRUFolder]);
 
@@ -122,6 +134,16 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
               sx={{ flexGrow: 1 }}
             />
             <Button onClick={handleAssetsSelect}>Select</Button>
+          </FormControl>
+
+          <FormControl variant="outlined" sx={folderInputStyle}>
+            <TextField
+              disabled
+              label="Google Key File"
+              value={googleKeyLocation}
+              sx={{ flexGrow: 1 }}
+            />
+            <Button onClick={handleGoogleKeySelect}>Select</Button>
           </FormControl>
         </Box>
       </Box>

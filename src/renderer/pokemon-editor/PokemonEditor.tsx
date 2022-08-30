@@ -27,8 +27,9 @@ export const PokemonEditor = observer(() => {
         console.log('Lookup data:', data);
       }
     );
-
-    window.electron.ipcRenderer.send('load-files');
+    if (!pokemonData.pokemon || pokemonData.pokemon.length === 0) {
+      window.electron.ipcRenderer.send('load-files');
+    }
 
     console.log('Pokemon Data:', pokemonData);
 

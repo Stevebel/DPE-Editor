@@ -32,6 +32,34 @@ export const SaveButton = observer(() => {
   };
 
   const save = () => {
+    // Fix species number
+    // let speciesNumber = 415;
+    // const regionalMons = pokemonStore.pokemon.filter(
+    //   (mon) => mon.regionalDexNumber
+    // );
+    // sortBy(regionalMons, 'regionalDexNumber');
+
+    // regionalMons.forEach((mon) =>
+    //   mon.species.forEach((species) => {
+    //     species.speciesNumber = speciesNumber;
+    //     species.manualLearnsetConst = false;
+    //     species.manualSpriteConst = false;
+    //     species.setSpeciesConst(species.species);
+    //     speciesNumber += 1;
+    //   })
+    // );
+
+    // const nonregionalMons = pokemonStore.pokemon.filter(
+    //   (mon) => !mon.regionalDexNumber
+    // );
+
+    // nonregionalMons.forEach((mon) =>
+    //   mon.species.forEach((species) => {
+    //     species.manualSpriteConst = true;
+    //     species.setSpriteConst('000None');
+    //   })
+    // );
+
     const pokemon: IPokemonData[] = pokemonStore.pokemon.map((p) => ({
       ...p,
       species: p.species.map((s) => cloneDeep(omit(s, 'pokemon'))),

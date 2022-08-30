@@ -139,3 +139,7 @@ export type AllPokemonData = {
 
   source?: PokemonSourceData;
 };
+
+export type ImportedRow = {
+  basedOn: string;
+} & IPokemonData;

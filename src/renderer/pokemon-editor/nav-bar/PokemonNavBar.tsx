@@ -19,6 +19,7 @@ import { SyntheticEvent } from 'react';
 import PokedexIconSvg from '../../../../assets/icons/pokedex.svg';
 import { usePokemonStoreContext } from '../pokemon.store';
 import { AddPokemonMenu } from './AddPokemonMenu';
+import { DeleteButton } from './DeleteButton';
 import { PokemonSelect } from './PokemonSelect';
 import { SaveButton } from './SaveButton';
 import { SpeciesSelect } from './SpeciesSelect';
@@ -71,6 +72,7 @@ export const PokemonNavBar = observer(
           </ThemeProvider>
 
           <AddPokemonMenu />
+          <DeleteButton />
           <SaveButton />
           <IconButton
             size="large"

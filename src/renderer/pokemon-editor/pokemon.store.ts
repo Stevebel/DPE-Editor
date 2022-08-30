@@ -173,7 +173,9 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   setSpeciesConst(species: string) {
     this.species = formatSpeciesConst(species);
     this.nameConst = this.species;
-    this.pokemon.updatePath(this.species, ['nationalDex']);
+    if (this.pokemon.species[0]?.speciesNumber === this.speciesNumber) {
+      this.pokemon.updatePath(this.species, ['nationalDex']);
+    }
     if (this.dexEntry) {
       this.dexEntryConst = this.species;
     }
@@ -214,7 +216,7 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   performErrorCheck() {
     const errorCheck = PokemonSpeciesDataSchema.safeParse(this);
     if (!errorCheck.success) {
-      this.errors = errorCheck.error;
+      this.errors = errorCheck.error as any;
     } else {
       this.errors = null;
     }
@@ -287,7 +289,7 @@ export class PokemonData implements IPokemonData, CanUpdatePath {
     const errorCheck = PokemonDataSchema.safeParse(this);
     if (!errorCheck.success) {
       console.log(`#${this.nationalDexNumber}`, errorCheck, this);
-      this.errors = errorCheck.error;
+      this.errors = errorCheck.error as any;
     } else {
       this.errors = null;
     }
@@ -310,12 +312,11 @@ export class PokemonStore {
     });
   }
 
-  addPokemon() {
-    let copyFrom = {} as IPokemonData;
-    if (this.selectedPokemon) {
+  addPokemon(base?: IPokemonData) {
+    let copyFrom = base;
+    if (!copyFrom && this.selectedPokemon) {
       copyFrom = {
         ...this.selectedPokemon,
-        species: [],
       };
     }
     const pokemon = new PokemonData({
@@ -323,11 +324,9 @@ export class PokemonStore {
       nationalDexNumber: this.pokemon.length,
       regionalDexNumber: this.nextRegionalDexNumber,
     });
-    if (this.selectedPokemon) {
+    if (copyFrom) {
       const copySpecies = {
-        ...cloneDeep(
-          omit(this.selectedPokemon.species[0], ['pokemon', 'frontSprite'])
-        ),
+        ...cloneDeep(omit(copyFrom.species[0], ['pokemon', 'frontSprite'])),
         pokemon,
       };
       pokemon.species = [
@@ -351,6 +350,7 @@ export class PokemonStore {
       ...this.pokemon.filter((p) => p.regionalDexNumber == null),
     ];
     this.setSelectedPokemon(pokemon.id);
+    return pokemon;
   }
 
   removePokemon(pokemon: PokemonData) {

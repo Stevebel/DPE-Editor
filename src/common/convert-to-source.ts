@@ -232,7 +232,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
   };
   const backPicTable: PicTable = {
     pics: pokemonSpecies
-      .map((p) => populatePic(p.backShinySprite, p.species))
+      .map((p) => populatePic(p.frontSprite, p.species))
       .filter(notUndefined),
   };
   const iconTable: IconTable = {
@@ -249,7 +249,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
   };
   const shinyPaletteTable: PaletteTable = {
     palettes: pokemonSpecies
-      .map((p) => populatePalette(p.backShinySprite, p.species))
+      .map((p) => populatePalette(p.frontSprite, p.species))
       .filter(notUndefined),
   };
   const iconPaletteTable: IconPaletteTable = {
@@ -278,7 +278,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
   const evolutionTable: EvolutionTable = {
     evolutions: pokemonSpecies
       .map((p) =>
-        p.evolutions
+        p.evolutions && p.evolutions.length > 0
           ? {
               species: p.species,
               evolutions: p.evolutions.map((evo) => {

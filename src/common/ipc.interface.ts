@@ -1,5 +1,5 @@
 import { LookupData } from './lookup-values';
-import { AllPokemonData } from './pokemon-data.interface';
+import { AllPokemonData, ImportedRow } from './pokemon-data.interface';
 
 export type IPCConfigs = {
   'locate-dpe': () => void;
@@ -8,10 +8,14 @@ export type IPCConfigs = {
   'set-cfru-location': () => string;
   'locate-assets': () => void;
   'set-assets-location': () => string;
+  'locate-google-key': () => void;
+  'set-google-key-location': () => string;
   'load-files': () => void;
   'pokemon-source-data': (data: AllPokemonData) => AllPokemonData;
   'data-saved': () => boolean;
   'lookup-values': () => LookupData;
+  'request-spreadsheet': () => void;
+  'spreadsheet-data': () => ImportedRow[][];
 };
 
 export type IPCChannel = keyof IPCConfigs;

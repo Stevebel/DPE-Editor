@@ -12,7 +12,7 @@ export const BattlePreview = observer(() => {
   if (species) {
     useEffect(() => {
       function getSprite() {
-        return `asset://${species!.name.toLowerCase()}/sprites.png`;
+        return `asset://${species!.nameConst.toLowerCase()}/sprites.png`;
       }
 
       function getCroppedSpriteCanvas(
@@ -33,7 +33,7 @@ export const BattlePreview = observer(() => {
           const bgBlue = imageData.data[2];
           const bgAlpha = imageData.data[3];
           for (let i = 0; i < imageData.data.length; i += 4) {
-            // is this pixel tbg colored
+            // is this pixel bg colored
             if (
               imageData.data[i] === bgRed &&
               imageData.data[i + 1] === bgGreen &&
@@ -93,7 +93,6 @@ export const BattlePreview = observer(() => {
         style={{
           imageRendering: 'pixelated',
           height: 320,
-          marginTop: 20,
         }}
       />
     );

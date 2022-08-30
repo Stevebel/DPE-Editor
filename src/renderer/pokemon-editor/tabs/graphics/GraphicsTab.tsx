@@ -5,6 +5,7 @@ import { ObservableSwitch } from '../../../common/forms/ObservableSwitch';
 import { ObservableTextField } from '../../../common/forms/ObservableTextField';
 import { usePokemonStoreContext } from '../../pokemon.store';
 import { BattlePreview } from './BattlePreview';
+import { BoxIconPreview } from './BoxIconPreview';
 
 export const GraphicsTab = observer(() => {
   const pokemonStore = usePokemonStoreContext();
@@ -48,7 +49,18 @@ export const GraphicsTab = observer(() => {
           />
         </Box>
 
-        <BattlePreview />
+        <Box
+          id="graphics-preview"
+          style={{
+            display: 'flex',
+            alignItems: 'start',
+            marginTop: '20px',
+            gap: '20px',
+          }}
+        >
+          <BattlePreview />
+          <BoxIconPreview />
+        </Box>
       </Box>
     );
   }
