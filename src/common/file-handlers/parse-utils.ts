@@ -61,7 +61,7 @@ export function nextIndexOf(str: string, target: string): number {
       // Skip single line comment
       i = str.indexOf('\n', i + 1);
       if (i === -1) {
-        throw new Error(`Unterminated line comment`);
+        i = str.length;
       }
     } else if (str[i] === '/' && str[i + 1] === '*') {
       // Skip multi-line comment

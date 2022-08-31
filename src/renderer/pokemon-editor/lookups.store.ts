@@ -8,8 +8,15 @@ export type MoveLk = BattleMove & {
   name: string;
 };
 
+export type TMDef = {
+  num: number;
+  move: string;
+};
+
 export class LookupStore {
   moves: MoveLk[] = [];
+
+  tms: TMDef[] = [];
 
   constructor(ipc: AppIPC) {
     makeAutoObservable(this);
@@ -30,6 +37,14 @@ export class LookupStore {
         name: attackName.name,
       };
     });
+
+    this.tms = data.tmTable.tmMoves.map((move, i) => {
+      return {
+        num: i + 1,
+        move,
+      };
+    });
+    console.log(this.tms);
   }
 }
 

@@ -1,10 +1,12 @@
 /* eslint-disable no-case-declarations */
 import { z } from 'zod';
+import { TMCompatibilityList } from './file-handlers/files/tm-lists';
 import {
   EvoByOtherSpecies,
   EvoByType,
   getMethodGroup,
   HabitatLk,
+  LookupData,
 } from './lookup-values';
 import {
   AllPokemonData,
@@ -14,7 +16,9 @@ import {
 import { PokemonSourceData } from './pokemon-source-data.interface';
 
 export function formatSourceData(
-  sourceData: PokemonSourceData
+  sourceData: PokemonSourceData,
+  tmLists: TMCompatibilityList[],
+  lookups: LookupData
 ): AllPokemonData {
   const {
     pokedexDataTable,
@@ -44,6 +48,25 @@ export function formatSourceData(
     specialInserts,
     habitatTable,
   } = sourceData;
+
+  const { attackNameTable, tmTable } = lookups;
+
+  const speciesToTmMap = new Map<string, string[]>();
+  tmTable.tmMoves.forEach((tmMove, i) => {
+    const move = attackNameTable.attackNames.find(
+      (m) => m.nameConst === tmMove
+    );
+    const tmCompatibility = tmLists.find((tmList) => tmList.tmNumber === i + 1);
+    if (move && tmCompatibility) {
+      // && tmCompatibility.tmName === move.name) {
+      tmCompatibility.species.forEach((s) => {
+        if (!speciesToTmMap.has(s)) {
+          speciesToTmMap.set(s, []);
+        }
+        speciesToTmMap.get(s)!.push(tmMove);
+      });
+    }
+  });
 
   const pokedexToSpecies: { [key: string]: string[] } = {};
   species.species.forEach((s, i) => {
@@ -207,6 +230,7 @@ export function formatSourceData(
           learnsetConst,
           learnset,
           eggMoves,
+          tmCompatibility: speciesToTmMap.get(speciesName) || [],
 
           cryData,
           footprint,

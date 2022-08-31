@@ -91,10 +91,6 @@ describe('nextCommaIndex', () => {
     const str = '/*a,b,c';
     expect(() => nextCommaIndex(str)).toThrow();
   });
-  it('should throw an error if line comments are unbalanced', () => {
-    const str = `//a,b,c`;
-    expect(() => nextCommaIndex(str)).toThrow();
-  });
   it('should find comma with complex string', () => {
     const str =
       '.categoryName = {_U, _n, _k, _n, _o, _w, _n, _END, _SPACE, _SPACE, _SPACE, _SPACE},';

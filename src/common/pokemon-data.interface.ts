@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { SpeciesData } from './file-handlers/files/species';
+import { TMCompatibilityList } from './file-handlers/files/tm-lists';
 import { EvolutionSchema, habitatConsts, typeConsts } from './lookup-values';
 import { PokemonSourceData } from './pokemon-source-data.interface';
 import { zAddress, zConst, zDexNumber, zLevel, zUByte } from './zod-common';
@@ -109,6 +110,7 @@ export const PokemonSpeciesDataSchema = z.object({
   isAdditional: z.boolean(),
   habitat: zHabitat.optional(),
   regionalDexNumber: zDexNumber.optional(),
+  tmCompatibility: z.array(zConst),
 });
 
 export const PokemonDataSchema = z.object({
@@ -136,6 +138,7 @@ export type AllPokemonData = {
   pokemon: IPokemonData[];
   species?: SpeciesData[];
   lastNationalDex: number;
+  tmCompatibility?: TMCompatibilityList[];
 
   source?: PokemonSourceData;
 };

@@ -13,6 +13,7 @@ import 'regenerator-runtime/runtime';
 import { AppConfig } from '../common/config.interface';
 import { convertToSource } from '../common/convert-to-source';
 import { SourceFileDefinition } from '../common/file-handlers/file-handler.interface';
+import { TMListsHandler } from '../common/file-handlers/files/tm-lists';
 import { formatSourceData } from '../common/format-source-data';
 import { wrapToWidth } from '../common/game-text';
 import { IPCChannel } from '../common/ipc.interface';
@@ -71,6 +72,19 @@ async function loadFiles() {
     Object.entries(SOURCE_DEFS).forEach(([name, def]) => {
       handlers[name as keyof SourceDefStruct] = getHandler(def as any) as any;
     });
+    Object.entries(LOOKUP_DEFS).forEach(([name, def]) => {
+      lookupHandlers[name as keyof LookupDefStruct] = getHandler(
+        def as any
+      ) as any;
+    });
+
+    const lookupPromises = Object.entries(lookupHandlers).map(
+      async ([name, handler]) => [name, await handler.load()]
+    );
+
+    const lookups: LookupData = Object.fromEntries(
+      await Promise.all(lookupPromises)
+    );
 
     const promises = Object.entries(handlers).map(async ([name, handler]) => [
       name,
@@ -81,22 +95,13 @@ async function loadFiles() {
       await Promise.all(promises)
     );
 
-    pokemonData = formatSourceData(rawData);
+    const tmListHandler = new TMListsHandler(store.get('dpeFolder'));
+    const tmLists = await tmListHandler.read();
+    console.log(lookups);
+    pokemonData = formatSourceData(rawData, tmLists, lookups);
+    pokemonData.tmCompatibility = tmLists;
     let channel: IPCChannel = 'pokemon-source-data';
     mainWindow.webContents.send(channel, pokemonData);
-
-    Object.entries(LOOKUP_DEFS).forEach(([name, def]) => {
-      lookupHandlers[name as keyof LookupDefStruct] = getHandler(
-        def as any
-      ) as any;
-    });
-    const lookupPromises = Object.entries(lookupHandlers).map(
-      async ([name, handler]) => [name, await handler.load()]
-    );
-
-    const lookups: LookupData = Object.fromEntries(
-      await Promise.all(lookupPromises)
-    );
 
     channel = 'lookup-values';
     mainWindow.webContents.send(channel, lookups);

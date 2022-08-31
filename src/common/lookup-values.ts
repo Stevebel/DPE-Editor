@@ -4,12 +4,14 @@ import { SourceFileHandler } from '../main/source-file-handler';
 import { SourceFileDefinition } from './file-handlers/file-handler.interface';
 import { AttackNameTableSourceDef } from './file-handlers/files/attack_name_table';
 import { BattleMovesSourceDef } from './file-handlers/files/battle-moves';
+import { TMTableSourceDef } from './file-handlers/files/tm_table';
 import { SubType } from './ts-utils';
 import { zConst } from './zod-common';
 
 export const LOOKUP_DEFS = {
   battleMoves: BattleMovesSourceDef,
   attackNameTable: AttackNameTableSourceDef,
+  tmTable: TMTableSourceDef,
 } as const;
 
 export type LookupDefStruct = typeof LOOKUP_DEFS;
