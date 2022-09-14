@@ -1,37 +1,51 @@
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
 import { regExpEscape } from '../parse-utils';
+import { FunctionHandler, FunctionHandlerConfig } from './function-handler';
 
-export type FunctionArrayHandlerConfig = {
-  definition: string;
-  functionName: string;
-  terminator: string;
+export type FunctionArrayHandlerConfig<T = string> = {
+  definition?: string;
+  functionConfig: FunctionHandlerConfig<T> | string;
+  terminator?: string;
 };
 
-export class FunctionArrayHandler implements SourceValueHandler<string[]> {
-  private readonly config: FunctionArrayHandlerConfig;
+export class FunctionArrayHandler<T = string>
+  implements SourceValueHandler<T[]>
+{
+  private readonly config: FunctionArrayHandlerConfig<T>;
 
   private definitionRe: RegExp;
 
   private lineRe: RegExp;
 
-  constructor(config: FunctionArrayHandlerConfig) {
+  private functionHandler?: FunctionHandler<T> | undefined;
+
+  constructor(config: FunctionArrayHandlerConfig<T>) {
     this.config = config;
 
     this.definitionRe = new RegExp(
       `${
-        regExpEscape(this.config.definition) +
-        /\s*=\s*\{\s*([\s\S]+?)/.source +
-        regExpEscape(this.config.terminator)
+        regExpEscape(
+          this.config.definition ? `${this.config.definition} = ` : ''
+        ) +
+        /\{\s*([\s\S]+?)/.source +
+        (this.config.terminator ? regExpEscape(this.config.terminator) : '')
       }\\s*\\}`
     );
 
+    const functionName =
+      typeof this.config.functionConfig === 'string'
+        ? this.config.functionConfig
+        : this.config.functionConfig.functionName;
     this.lineRe = new RegExp(
-      `${this.config.functionName + /\(\s*(\w+)\s*\)/.source}\\s*,?`,
+      `${functionName + /\(\s*(\w+)\s*\)/.source}\\s*,?`,
       'g'
     );
+    if (typeof this.config.functionConfig !== 'string') {
+      this.functionHandler = new FunctionHandler(this.config.functionConfig);
+    }
   }
 
-  parse(source: string): ParseData<string[]> {
+  parse(source: string): ParseData<T[]> {
     const match = this.definitionRe.exec(source);
     if (!match) {
       throw new Error(
@@ -39,13 +53,16 @@ export class FunctionArrayHandler implements SourceValueHandler<string[]> {
       );
     }
 
-    const data: string[] = [];
+    const data: T[] = [];
     const rawFunctions = match[1];
     let lineMatch: RegExpExecArray | null;
     while ((lineMatch = this.lineRe.exec(rawFunctions))) {
-      const param = lineMatch[1];
-
-      data.push(param);
+      if (typeof this.config.functionConfig === 'string') {
+        const param = lineMatch[1];
+        data.push(param as any);
+      } else {
+        data.push(this.functionHandler!.parse(lineMatch[0]).value);
+      }
     }
 
     return {
@@ -55,9 +72,21 @@ export class FunctionArrayHandler implements SourceValueHandler<string[]> {
     };
   }
 
-  format(value: string[]): string {
-    return `${this.config.definition} = {\n${value
-      .map((v) => `\t${this.config.functionName}(${v}),\n`)
-      .join('')}\n\t${this.config.terminator}\n}`;
+  format(value: T[]): string {
+    let out = `${
+      this.config.definition ? `${this.config.definition} = ` : ''
+    }{\n${value
+      .map((v) => {
+        if (typeof this.config.functionConfig === 'string') {
+          return `\t${this.config.functionConfig}(${v}),\n`;
+        }
+        return `\t${this.functionHandler!.format(v)},\n`;
+      })
+      .join('')}`;
+    if (this.config.terminator) {
+      out += `\n\t${this.config.terminator}`;
+    }
+    out += '\n}';
+    return out;
   }
 }

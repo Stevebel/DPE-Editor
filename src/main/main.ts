@@ -55,11 +55,7 @@ export default class AppUpdater {
 let mainWindow: BrowserWindow | null = null;
 
 function getHandler<T>(def: SourceFileDefinition<T>): SourceFileHandler<T> {
-  return new SourceFileHandler(
-    def,
-    store.get('dpeFolder'),
-    store.get('cfruFolder')
-  );
+  return new SourceFileHandler(def, store.get('srcFolder'));
 }
 
 const handlers: PokemonSourceHandlers = {} as any;
@@ -67,7 +63,7 @@ const lookupHandlers: LookupHandlers = {} as any;
 let pokemonData: AllPokemonData | null = null;
 
 async function loadFiles() {
-  if (store.get('cfruFolder') && store.get('dpeFolder') && mainWindow) {
+  if (store.get('srcFolder') && mainWindow) {
     Object.entries(SOURCE_DEFS).forEach(([name, def]) => {
       handlers[name as keyof SourceDefStruct] = getHandler(def as any) as any;
     });
@@ -406,30 +402,16 @@ ipcMain.on('pokemon-source-data', async (event, data: AllPokemonData) => {
   event.reply('data-saved', true);
 });
 
-ipcMain.on('locate-dpe', async (event) => {
+ipcMain.on('locate-src', async (event) => {
   const result = dialog.showOpenDialogSync(mainWindow!, {
     properties: ['openDirectory'],
-    message: 'Select DPE Location',
-    title: 'Select DPE Folder',
-    defaultPath: store.get('dpeFolder'),
+    message: 'Select Pokeemerald Source Location',
+    title: 'Select Source Folder',
+    defaultPath: store.get('srcFolder'),
   });
   if (result && result.length > 0) {
-    store.set('dpeFolder', result[0]);
-    event.reply('set-dpe-location', result[0]);
-    await loadFiles();
-  }
-});
-
-ipcMain.on('locate-cfru', async (event) => {
-  const result = dialog.showOpenDialogSync(mainWindow!, {
-    properties: ['openDirectory'],
-    message: 'Select CFRU Location',
-    title: 'Select CFRU Folder',
-    defaultPath: store.get('cfruFolder'),
-  });
-  if (result && result.length > 0) {
-    store.set('cfruFolder', result[0]);
-    event.reply('set-cfru-location', result[0]);
+    store.set('srcFolder', result[0]);
+    event.reply('set-src-location', result[0]);
     await loadFiles();
   }
 });

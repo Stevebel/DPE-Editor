@@ -12,7 +12,7 @@ export interface AttackName {
 export const AttackNameTableSourceDef: SourceFileDefinition<AttackNameTable> = {
   location: [
     {
-      folder: 'cfru',
+      folder: 'src',
       fileName: 'strings/attack_name_table.string',
     },
   ],

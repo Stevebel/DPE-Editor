@@ -16,7 +16,7 @@ export type EggMoves = {
 export const EggMovesSourceDef: SourceFileDefinition<EggMovesStructure> = {
   location: [
     {
-      folder: 'dpe',
+      folder: 'src',
       fileName: 'src/Egg_Moves.c',
     },
   ],

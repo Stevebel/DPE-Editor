@@ -11,12 +11,12 @@ export type StructHandlerConfig<T> = {
 };
 
 export type StructProp<T> = {
-  key: keyof T;
+  key: keyof T & string;
   parseAndApply: (data: T, raw: string) => void;
   format: (data: T) => string;
 };
 
-export function getProp<T, K extends keyof T>(
+export function getProp<T, K extends keyof T & string>(
   key: K,
   handler: SourceValueHandler<NonNullable<T[K]>>
 ): StructProp<T> {

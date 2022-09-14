@@ -2,7 +2,7 @@ import { flatMap } from 'lodash';
 import { z } from 'zod';
 import { SourceFileHandler } from '../main/source-file-handler';
 import { SourceFileDefinition } from './file-handlers/file-handler.interface';
-import { AttackNameTableSourceDef } from './file-handlers/files/attack_name_table';
+import { AttackNameTableSourceDef } from './file-handlers/files/attack-name-table';
 import { BattleMovesSourceDef } from './file-handlers/files/battle-moves';
 import { SubType } from './ts-utils';
 import { zConst } from './zod-common';
@@ -95,84 +95,67 @@ const EvoByLevel = z.object({
     'LEVEL_CASCOON',
     'LEVEL_NINJASK',
     'LEVEL_SHEDINJA',
-    'RAINY_FOGGY_OW',
-    'MALE_LEVEL',
-    'FEMALE_LEVEL',
+    'LEVEL_RAIN',
+    'LEVEL_MALE',
+    'LEVEL_FEMALE',
     'LEVEL_NIGHT',
     'LEVEL_DAY',
+    'LEVEL_DUSK',
     'LEVEL_SPATK_GT_SPDEF',
+    'LEVEL_DARK_TYPE_MON_IN_PARTY',
+    'LEVEL_NATURE_AMPED',
+    'LEVEL_NATURE_LOW_KEY',
   ]),
   targetSpecies: zConst,
   param: z.number().positive().lte(100),
-  extra: z.literal(0),
 });
 
 const EvoByItem = z.object({
-  method: z.enum(['ITEM', 'TRADE_ITEM', 'HOLD_ITEM_NIGHT', 'HOLD_ITEM_DAY']),
+  method: z.enum([
+    'ITEM',
+    'TRADE_ITEM',
+    'ITEM_HOLD_DAY',
+    'ITEM_HOLD_NIGHT',
+    'ITEM_HOLD',
+  ]),
   targetSpecies: zConst,
   param: zConst,
-  extra: z.literal(0).or(z.enum(['MON_MALE', 'MON_FEMALE'])),
 });
 
 export const EvoByType = z.object({
-  method: z.enum(['MOVE_TYPE', 'TYPE_IN_PARTY']),
+  method: z.enum(['MOVE_TYPE']),
   targetSpecies: zConst,
   param: zConst,
-  extra: z.number().nonnegative().lte(100),
 });
 
 const EvoByMap = z.object({
-  method: z.enum(['MAP']),
+  method: z.enum(['MAPSEC', 'SPECIFIC_MAP']),
   targetSpecies: zConst,
   param: zConst,
-  extra: z.literal(0),
 });
 
 const EvoByMove = z.object({
-  method: z.enum(['MOVE']),
+  method: z.enum(['MOVE', 'MOVE_MEGA_EVOLUTION']),
   targetSpecies: zConst,
   param: zConst,
-  extra: z.literal(0),
 });
 
 export const EvoByOtherSpecies = z.object({
-  method: z.enum(['OTHER_PARTY_MON']),
+  method: z.enum(['SPECIFIC_MON_IN_PARTY', 'TRADE_SPECIFIC_MON']),
   targetSpecies: zConst,
   param: zConst,
-  extra: z.literal(0),
-});
-
-const EvoByLevelAndTime = z.object({
-  method: z.enum(['LEVEL_SPECIFIC_TIME_RANGE']),
-  targetSpecies: zConst,
-  param: z.number().positive().lte(100),
-  extra: z.number().nonnegative().lte(255),
-});
-
-const EvoByFlag = z.object({
-  method: z.enum(['FLAG_SET']),
-  targetSpecies: zConst,
-  param: zConst,
-  extra: zConst,
 });
 
 const EvoMega = z.object({
-  method: z.enum(['MEGA']),
+  method: z.enum(['MEGA_EVOLUTION', 'PRIMAL_REVERSION']),
   targetSpecies: zConst,
   param: zConst,
-  extra: z.enum([
-    'MEGA_VARIANT_STANDARD',
-    'MEGA_VARIANT_PRIMAL',
-    'MEGA_VARIANT_WISH',
-    'MEGA_VARIANT_ULTRA_BURST',
-  ]),
 });
 
 const EvoNoParams = z.object({
   method: z.enum(['TRADE', 'FRIENDSHIP', 'FRIENDSHIP_DAY', 'FRIENDSHIP_NIGHT']),
   targetSpecies: zConst,
   param: z.literal(0),
-  extra: z.literal(0),
 });
 
 export const EvoMethodGroups = {
@@ -181,9 +164,7 @@ export const EvoMethodGroups = {
   type: EvoByType.shape.method.options,
   map: EvoByMap.shape.method.options,
   move: EvoByMove.shape.method.options,
-  flag: EvoByFlag.shape.method.options,
   otherSpecies: EvoByOtherSpecies.shape.method.options,
-  levelAndTime: EvoByLevelAndTime.shape.method.options,
   mega: EvoMega.shape.method.options,
   noParams: EvoNoParams.shape.method.options,
 };
@@ -196,8 +177,6 @@ const evoTypes = [
   EvoByMap,
   EvoByMove,
   EvoByOtherSpecies,
-  EvoByLevelAndTime,
-  EvoByFlag,
   EvoMega,
 ] as const;
 export const EvolutionSchema = z.union(evoTypes).and(

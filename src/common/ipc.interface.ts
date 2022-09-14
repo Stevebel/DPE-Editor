@@ -2,10 +2,8 @@ import { LookupData } from './lookup-values';
 import { AllPokemonData, ImportedRow } from './pokemon-data.interface';
 
 export type IPCConfigs = {
-  'locate-dpe': () => void;
-  'set-dpe-location': () => string;
-  'locate-cfru': () => void;
-  'set-cfru-location': () => string;
+  'locate-src': () => void;
+  'set-src-location': () => string;
   'locate-assets': () => void;
   'set-assets-location': () => string;
   'locate-google-key': () => void;

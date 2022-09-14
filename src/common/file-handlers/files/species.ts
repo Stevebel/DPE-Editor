@@ -17,11 +17,7 @@ export interface SpeciesData {
 export const SpeciesSourceDef: SourceFileDefinition<SpeciesStructure> = {
   location: [
     {
-      folder: 'dpe',
-      fileName: 'include/species.h',
-    },
-    {
-      folder: 'cfru',
+      folder: 'src',
       fileName: 'include/constants/species.h',
     },
   ],

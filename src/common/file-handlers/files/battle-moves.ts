@@ -1,6 +1,6 @@
 import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
-import { ConstHandler, IntOrConstHandler } from '../handlers/const-handler';
+import { ConstHandler } from '../handlers/const-handler';
 import { FlagHandler as FlagsHandler } from '../handlers/flags-handler';
 import { IntHandler } from '../handlers/number-handlers';
 import { getProp, StructHandler } from '../handlers/struct-handler';
@@ -10,15 +10,16 @@ export type BattleMove = {
   effect: string;
   power: number;
   type: string;
-  split: string;
   accuracy: number;
   pp: number;
   secondaryEffectChance: number;
   target: string;
   priority: number;
   flags: string[];
-  z_move_power: number;
-  z_move_effect: string | number;
+  split: string;
+  argument: string;
+  zMovePower: number;
+  zMoveEffect: string;
 };
 
 export type BattleMoves = {
@@ -28,8 +29,8 @@ export type BattleMoves = {
 export const BattleMovesSourceDef: SourceFileDefinition<BattleMoves> = {
   location: [
     {
-      folder: 'cfru',
-      fileName: 'src/Tables/battle_moves.c',
+      folder: 'src',
+      fileName: 'src/data/battle_moves.h',
     },
   ],
   schema: {
@@ -45,12 +46,12 @@ export const BattleMovesSourceDef: SourceFileDefinition<BattleMoves> = {
           getProp('accuracy', IntHandler),
           getProp('pp', IntHandler),
           getProp('secondaryEffectChance', IntHandler),
-          getProp('target', new ConstHandler({ prefix: 'TARGET_' })),
+          getProp('target', new ConstHandler({ prefix: 'MOVE_TARGET_' })),
           getProp('priority', IntHandler),
           getProp('flags', new FlagsHandler({ itemPrefix: 'FLAG_' })),
-          getProp('z_move_power', IntHandler),
           getProp('split', new ConstHandler({ prefix: 'SPLIT_' })),
-          getProp('z_move_effect', IntOrConstHandler),
+          getProp('zMovePower', IntHandler),
+          getProp('zMoveEffect', new ConstHandler({ prefix: 'Z_EFFECT_' })),
         ],
       }),
     }),

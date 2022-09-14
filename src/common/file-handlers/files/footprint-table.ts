@@ -1,11 +1,11 @@
 import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
-import { IntHandler } from '../handlers/number-handlers';
+import { ConstHandler } from '../handlers/const-handler';
 import { getProp } from '../handlers/struct-handler';
 
 export type Footprint = {
   species: string;
-  footprint: number;
+  footprint: string;
 };
 
 export type FootprintTable = {
@@ -15,16 +15,19 @@ export type FootprintTable = {
 export const FootprintTableSourceDef: SourceFileDefinition<FootprintTable> = {
   location: [
     {
-      folder: 'dpe',
-      fileName: 'src/Footprint_Table.c',
+      folder: 'src',
+      fileName: 'src/data/pokemon_graphics/footprint_table.h',
     },
   ],
   schema: {
     footprints: new ArrayHandler<Footprint>({
-      definition: 'const u32 gMonFootprintTable[NUM_SPECIES]',
+      definition: 'const u8 *const gMonFootprintTable[]',
       indexProperty: 'species',
       indexPrefix: 'SPECIES_',
-      propHandler: getProp('footprint', IntHandler),
+      propHandler: getProp(
+        'footprint',
+        new ConstHandler({ prefix: 'gMonFootprint_' })
+      ),
     }),
   },
 };

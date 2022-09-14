@@ -104,7 +104,7 @@ export const SaveButton = observer(() => {
         <DialogTitle id="alert-dialog-title">Save All Pokémon?</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Save all Pokémon to the DPE and CFRU files? This will overwrite many
+            Save all Pokémon to the pokeemerald files? This will overwrite many
             files and cannot be undone.
           </DialogContentText>
         </DialogContent>

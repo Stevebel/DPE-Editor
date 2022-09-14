@@ -1,5 +1,7 @@
 import { SourceFileDefinition } from '../file-handler.interface';
-import { StringDefinitionsHandler } from '../handlers/string-definitions-handler';
+import { ArrayHandler } from '../handlers/array-handler';
+import { messageHandler } from '../handlers/message-handler';
+import { getProp } from '../handlers/struct-handler';
 
 export interface PokemonNameTable {
   pokemonNames: PokemonName[];
@@ -13,15 +15,16 @@ export const PokemonNameTableSourceDef: SourceFileDefinition<PokemonNameTable> =
   {
     location: [
       {
-        folder: 'dpe',
-        fileName: 'strings/Pokemon_Name_Table.string',
+        folder: 'src',
+        fileName: 'src/data/text/species_names.h',
       },
     ],
     schema: {
-      pokemonNames: new StringDefinitionsHandler<PokemonName>({
-        constProperty: 'nameConst',
-        constPrefix: 'NAME_',
-        stringProperty: 'name',
+      pokemonNames: new ArrayHandler<PokemonName>({
+        definition: 'const u8 gSpeciesNames[][POKEMON_NAME_LENGTH + 1]',
+        indexProperty: 'nameConst',
+        indexPrefix: 'SPECIES_',
+        propHandler: getProp('name', messageHandler(10)),
       }),
     },
   };

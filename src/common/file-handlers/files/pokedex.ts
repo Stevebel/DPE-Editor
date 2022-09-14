@@ -1,39 +1,37 @@
 import { SourceFileDefinition } from '../file-handler.interface';
 import DefineCountHandler from '../handlers/define-consts-handler';
-import { DefinesHandler } from '../handlers/defines-handler';
-import { ExternConstHandler } from '../handlers/extern-const-handler';
+import { EnumHandler } from '../handlers/enum-handler';
 
 export type PokedexConsts = {
-  nationalDexConsts: NationalDexConst[];
-  finalDexEntry: string;
-  dexEntryConsts: string[];
-};
-export type NationalDexConst = {
-  nationalDex: string;
-  number: number;
+  nationalDexConsts: string[];
+  regionalDexConsts: string[];
+  nationalDexLastEntry: string;
+  hoennDexLastEntry: string;
 };
 
 export const PokedexConstsSourceDef: SourceFileDefinition<PokedexConsts> = {
   location: [
     {
-      folder: 'dpe',
-      fileName: 'include/pokedex.h',
+      folder: 'src',
+      fileName: 'include/constants/pokedex.h',
     },
   ],
   schema: {
-    nationalDexConsts: new DefinesHandler<NationalDexConst>({
-      constPrefix: 'NATIONAL_DEX_',
-      constProperty: 'nationalDex',
-      numberProperty: 'number',
+    nationalDexConsts: new EnumHandler({
+      itemPrefix: 'NATIONAL_DEX_',
     }),
-    finalDexEntry: new DefineCountHandler({
-      constName: 'FINAL_DEX_ENTRY',
+    regionalDexConsts: new EnumHandler({
+      itemPrefix: 'HOENN_DEX_',
+    }),
+    nationalDexLastEntry: new DefineCountHandler({
+      constName: 'NATIONAL_DEX_COUNT',
       countPrefix: 'NATIONAL_DEX_',
       addOne: false,
     }),
-    dexEntryConsts: new ExternConstHandler({
-      constPrefix: 'DEX_ENTRY_',
-      constSuffix: '',
+    hoennDexLastEntry: new DefineCountHandler({
+      constName: 'HOENN_DEX_COUNT',
+      countPrefix: 'HOENN_DEX_',
+      addOne: true,
     }),
   },
 };

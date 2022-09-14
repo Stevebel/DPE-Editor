@@ -90,7 +90,7 @@ export const PokemonSpeciesDataSchema = z.object({
   name: z.string().max(10),
   nameConst: zConst,
   dexEntry: z.string().max(130).optional(),
-  dexEntryConst: zConst.or(zAddress),
+  dexEntryConst: zConst,
   frontSprite: z.string().optional(),
   backShinySprite: z.string().optional(),
   iconSprite: z.string().optional(),

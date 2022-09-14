@@ -1,6 +1,6 @@
 {
-  "name": "dpe-editor",
-  "description": "GUI for making common changes to DPE and CFRU",
+  "name": "pokeemerald-editor",
+  "description": "GUI for making common changes to pokeemerald",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
@@ -30,8 +30,8 @@
     ]
   },
   "build": {
-    "productName": "DPE Editor",
-    "appId": "com.stevebel.DPEEditor",
+    "productName": "Pokeemerald Expansion Editor",
+    "appId": "com.stevebel.PokeemeraldEditor",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [

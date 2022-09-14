@@ -1,6 +1,5 @@
 export type AppConfig = {
-  dpeFolder: string;
-  cfruFolder: string;
+  srcFolder: string;
   assetsFolder: string;
   googleKeyLocation: string;
 };

@@ -5,7 +5,7 @@ export interface SourceFileDefinition<T> {
   };
 }
 export interface SourceLocation {
-  folder: 'cfru' | 'dpe';
+  folder: 'src';
   fileName: string;
 }
 

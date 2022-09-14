@@ -1,13 +1,11 @@
 import { SourceFileDefinition } from '../file-handler.interface';
-import { ArrayHandler } from '../handlers/array-handler';
-import { ConstHandler } from '../handlers/const-handler';
-import { IntHandler } from '../handlers/number-handlers';
-import { getProp, StructHandler } from '../handlers/struct-handler';
+import { ConstHandler, DefaultConstHandler } from '../handlers/const-handler';
+import { FunctionArrayHandler } from '../handlers/function-array-handler';
+import { getProp } from '../handlers/struct-handler';
 
 export type CompressedSpritePalette = {
   species: string;
   sprite: string;
-  unused: number;
 };
 
 export type PaletteTable = {
@@ -17,41 +15,55 @@ export type PaletteTable = {
 function getPaletteTableSourceDef(
   fileName: string,
   definition: string,
+  functionName: string,
   prefix: string
 ): SourceFileDefinition<PaletteTable> {
   return {
     location: [
       {
-        folder: 'dpe',
+        folder: 'src',
         fileName,
       },
     ],
     schema: {
-      palettes: new ArrayHandler<CompressedSpritePalette>({
-        definition,
-        indexProperty: 'species',
-        indexPrefix: 'SPECIES_',
-        itemHandler: new StructHandler({
-          namedProps: false,
-          props: [
-            getProp('sprite', new ConstHandler({ prefix, suffix: 'Pal' })),
-            getProp('species', new ConstHandler({ prefix: 'SPECIES_' })),
-            getProp('unused', IntHandler),
+      palettes: new FunctionArrayHandler<CompressedSpritePalette>({
+        definition: `const struct CompressedSpritePalette ${definition}[]`,
+        functionConfig: {
+          functionName,
+          parameterProps: [
+            getProp('species', DefaultConstHandler),
+            getProp('sprite', new ConstHandler({ prefix })),
           ],
-        }),
+        },
       }),
     },
   };
 }
 
 export const PaletteTableSourceDef = getPaletteTableSourceDef(
-  'src/Palette_Table.c',
-  'const struct CompressedSpritePalette gMonPaletteTable[NUM_SPECIES]',
-  'gFrontSprite'
+  'src/data/pokemon_graphics/palette_table.h',
+  'gMonPaletteTable',
+  'SPECIES_PAL',
+  'gMonPalette_'
+);
+
+export const PaletteTableFemaleSourceDef = getPaletteTableSourceDef(
+  'src/data/pokemon_graphics/palette_table.h',
+  'gMonPaletteTableFemale',
+  'SPECIES_PAL',
+  'gMonPalette_'
 );
 
 export const ShinyPaletteTableSourceDef = getPaletteTableSourceDef(
-  'src/Shiny_Palette_Table.c',
-  'const struct CompressedSpritePalette gMonShinyPaletteTable[NUM_SPECIES]',
-  'gBackShinySprite'
+  'src/data/pokemon_graphics/shiny_palette_table.h',
+  'gMonShinyPaletteTable',
+  'SPECIES_SHINY_PAL',
+  'gMonShinyPalette_'
+);
+
+export const ShinyPaletteTableFemaleSourceDef = getPaletteTableSourceDef(
+  'src/data/pokemon_graphics/shiny_palette_table.h',
+  'gMonShinyPaletteTableFemale',
+  'SPECIES_SHINY_PAL',
+  'gMonShinyPalette_'
 );

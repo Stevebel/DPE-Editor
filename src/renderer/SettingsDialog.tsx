@@ -35,8 +35,7 @@ const folderInputStyle: SxProps<Theme> = {
 };
 
 export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
-  const [dpeFolder, setDPEFolder] = React.useState(Config.get('dpeFolder'));
-  const [cfruFolder, setCFRUFolder] = React.useState(Config.get('cfruFolder'));
+  const [srcFolder, setSrcFolder] = React.useState(Config.get('srcFolder'));
   const [assetsFolder, setAssetsFolder] = React.useState(
     Config.get('assetsFolder')
   );
@@ -44,11 +43,8 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
     Config.get('googleKeyLocation')
   );
 
-  const handleDPESelect = () => {
-    window.electron.ipcRenderer.send('locate-dpe');
-  };
-  const handleCFRUSelect = () => {
-    window.electron.ipcRenderer.send('locate-cfru');
+  const handleSrcSelect = () => {
+    window.electron.ipcRenderer.send('locate-src');
   };
   const handleAssetsSelect = () => {
     window.electron.ipcRenderer.send('locate-assets');
@@ -59,13 +55,9 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
   };
 
   useEffect(() => {
-    const clearDpeListener = window.electron.ipcRenderer.on(
-      'set-dpe-location',
-      setDPEFolder
-    );
-    const clearCfruListener = window.electron.ipcRenderer.on(
-      'set-cfru-location',
-      setCFRUFolder
+    const clearSrcListener = window.electron.ipcRenderer.on(
+      'set-src-location',
+      setSrcFolder
     );
     const clearAssetsListener = window.electron.ipcRenderer.on(
       'set-assets-location',
@@ -77,12 +69,11 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
     );
 
     return () => {
-      clearDpeListener();
-      clearCfruListener();
+      clearSrcListener();
       clearAssetsListener();
       clearGoogleKeyListener();
     };
-  }, [setDPEFolder, setCFRUFolder]);
+  }, [setSrcFolder]);
 
   return (
     <Modal
@@ -109,21 +100,11 @@ export const SettingsDialog = ({ open, onClose }: SettingsDialogProps) => {
           <FormControl variant="outlined" sx={folderInputStyle}>
             <TextField
               disabled
-              label="DPE Folder"
-              value={dpeFolder}
+              label="Source Folder"
+              value={srcFolder}
               sx={{ flexGrow: 1 }}
             />
-            <Button onClick={handleDPESelect}>Select</Button>
-          </FormControl>
-
-          <FormControl variant="outlined" sx={folderInputStyle}>
-            <TextField
-              disabled
-              label="CFRU Folder"
-              value={cfruFolder}
-              sx={{ flexGrow: 1 }}
-            />
-            <Button onClick={handleCFRUSelect}>Select</Button>
+            <Button onClick={handleSrcSelect}>Select</Button>
           </FormControl>
 
           <FormControl variant="outlined" sx={folderInputStyle}>

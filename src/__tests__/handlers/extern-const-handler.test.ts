@@ -6,8 +6,8 @@ import { trimMultiline } from '../../common/test-utils';
 
 describe('ExternConstHandler', () => {
   const DEFAULT_CONFIG: ExternConstHandlerConfig = {
-    constPrefix: 'gFrontSprite',
-    constSuffix: 'Tiles',
+    constPrefix: 'u8 gFrontSprite',
+    constSuffix: 'Tiles[]',
   };
 
   const SAMPLE_SOURCE = `extern const u8 gFrontSprite001BulbasaurTiles[];

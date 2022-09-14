@@ -25,9 +25,9 @@ import {
   FrontPicTableSourceDef,
 } from './file-handlers/files/pic-table';
 import { PokedexConstsSourceDef } from './file-handlers/files/pokedex';
-import { PokedexDataStringSourceDef } from './file-handlers/files/pokedex-data-string';
-import { PokedexDataSourceDef } from './file-handlers/files/pokedex-data-table';
+import { PokedexEntriesSourceDef } from './file-handlers/files/pokedex-entries';
 import { PokedexOrderSourceDef } from './file-handlers/files/pokedex-order';
+import { PokedexTextSourceDef } from './file-handlers/files/pokedex-text';
 import { PokemonNameTableSourceDef } from './file-handlers/files/pokemon-name-table';
 import { SpecialInsertsSourceDef } from './file-handlers/files/special-inserts';
 import { SpeciesSourceDef } from './file-handlers/files/species';
@@ -35,9 +35,9 @@ import { SpeciesToPokedexSourceDef } from './file-handlers/files/species-to-poke
 import { SpriteDataSourceDef } from './file-handlers/files/sprite-data';
 
 export const SOURCE_DEFS = {
-  pokedexDataTable: PokedexDataSourceDef,
+  pokedexEntries: PokedexEntriesSourceDef,
   pokemonNameTable: PokemonNameTableSourceDef,
-  pokedexDataString: PokedexDataStringSourceDef,
+  pokedexText: PokedexTextSourceDef,
   species: SpeciesSourceDef,
   pokedexConsts: PokedexConstsSourceDef,
   speciesToPokedex: SpeciesToPokedexSourceDef,

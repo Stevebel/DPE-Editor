@@ -16,8 +16,7 @@ export class SourceFileHandler<T> {
 
   constructor(
     private definition: SourceFileDefinition<T>,
-    private dpeFolder: string,
-    private cfruFolder: string
+    private srcFolder: string
   ) {
     this.handlers = definition.location.map(
       () => new WholeSourceHandler(definition.schema)
@@ -25,11 +24,8 @@ export class SourceFileHandler<T> {
   }
 
   getFileLocation(loc: SourceLocation) {
-    if (loc.folder === 'cfru') {
-      return path.join(this.cfruFolder, loc.fileName);
-    }
-    if (loc.folder === 'dpe') {
-      return path.join(this.dpeFolder, loc.fileName);
+    if (loc.folder === 'src') {
+      return path.join(this.srcFolder, loc.fileName);
     }
     throw new Error(`Unknown folder ${loc.folder}`);
   }

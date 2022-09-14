@@ -3,7 +3,7 @@ import {
   Evolution,
   Evolutions,
 } from '../../common/file-handlers/files/evolution-table';
-import { IconPalette } from '../../common/file-handlers/files/icon-palette-table';
+import { IconPalette } from '../../common/file-handlers/files/icon-table';
 import {
   ArrayHandler,
   ArrayHandlerConfig,
@@ -48,12 +48,12 @@ describe('ArrayHandler', () => {
   const SAMPLE_SOURCE = `
       const struct PokedexEntry gPokedexEntries[NATIONAL_DEX_COUNT] = {
         [NATIONAL_DEX_NONE] = {
-          .categoryName = {_U, _n, _k, _n, _o, _w, _n, _END, _SPACE, _SPACE, _SPACE, _SPACE},
+          .categoryName = _("Unknown"),
           .height = 1,
           .weight = 2,
         },
         [NATIONAL_DEX_BULBASAUR] = {
-          .categoryName = {_S, _e, _e, _d, _END, _SPACE, _SPACE, _SPACE, _SPACE, _SPACE, _SPACE, _SPACE},
+          .categoryName = _("Seed"),
           .height = 3,
           .weight = 4,
         },
@@ -96,12 +96,12 @@ describe('ArrayHandler', () => {
 
   const SAMPLE_SOURCE_WITHOUT_NAMED_INDEX_AND_WITHOUT_DEFINITION = `{
       {
-        .categoryName = {_U, _n, _k, _n, _o, _w, _n, _END, _SPACE, _SPACE, _SPACE, _SPACE},
+        .categoryName = _("Unknown"),
         .height = 1,
         .weight = 2,
       },
       {
-        .categoryName = {_S, _e, _e, _d, _END, _SPACE, _SPACE, _SPACE, _SPACE, _SPACE, _SPACE, _SPACE},
+        .categoryName = _("Seed"),
         .height = 3,
         .weight = 4,
       },
@@ -345,7 +345,6 @@ describe('ArrayHandler', () => {
                 'targetSpecies',
                 new ConstHandler({ prefix: 'SPECIES_' })
               ),
-              getProp('extra', IntOrConstHandler),
             ],
           }),
         })
@@ -354,13 +353,13 @@ describe('ArrayHandler', () => {
     const result = handler.parse(`
     const struct Evolution gEvolutionTable[NUM_SPECIES][EVOS_PER_MON] =
     {
-      [SPECIES_BULBASAUR] =        {{EVO_LEVEL, 16, SPECIES_IVYSAUR, 0}},
-      [SPECIES_IVYSAUR] =          {{EVO_LEVEL, 32, SPECIES_VENUSAUR, 0}},
-      [SPECIES_VENUSAUR] =         {{EVO_MEGA, ITEM_VENUSAURITE, SPECIES_VENUSAUR_MEGA, MEGA_VARIANT_STANDARD},
-                      {EVO_GIGANTAMAX, TRUE, SPECIES_VENUSAUR_GIGA, 0}},
-      [SPECIES_FEEBAS] =           {/*{EVO_BEAUTY, 0, SPECIES_MILOTIC, 0},*/
-								  {EVO_ITEM, ITEM_PRISM_SCALE, SPECIES_MILOTIC, 0},
-								  {EVO_TRADE_ITEM, ITEM_PRISM_SCALE, SPECIES_MILOTIC, 0}},
+      [SPECIES_BULBASAUR] =        {{EVO_LEVEL, 16, SPECIES_IVYSAUR}},
+      [SPECIES_IVYSAUR] =          {{EVO_LEVEL, 32, SPECIES_VENUSAUR}},
+      [SPECIES_VENUSAUR] =         {{EVO_MEGA, ITEM_VENUSAURITE, SPECIES_VENUSAUR_MEGA},
+                      {EVO_GIGANTAMAX, TRUE, SPECIES_VENUSAUR_GIGA}},
+      [SPECIES_FEEBAS] =           {/*{EVO_BEAUTY, 0, SPECIES_MILOTIC},*/
+								  {EVO_ITEM, ITEM_PRISM_SCALE, SPECIES_MILOTIC},
+								  {EVO_TRADE_ITEM, ITEM_PRISM_SCALE, SPECIES_MILOTIC}},
     }
     `);
 
@@ -372,7 +371,6 @@ describe('ArrayHandler', () => {
             method: 'LEVEL',
             param: 16,
             targetSpecies: 'IVYSAUR',
-            extra: 0,
           },
         ],
       },
@@ -383,7 +381,6 @@ describe('ArrayHandler', () => {
             method: 'LEVEL',
             param: 32,
             targetSpecies: 'VENUSAUR',
-            extra: 0,
           },
         ],
       },
@@ -394,13 +391,11 @@ describe('ArrayHandler', () => {
             method: 'MEGA',
             param: 'ITEM_VENUSAURITE',
             targetSpecies: 'VENUSAUR_MEGA',
-            extra: 'MEGA_VARIANT_STANDARD',
           },
           {
             method: 'GIGANTAMAX',
             param: 'TRUE',
             targetSpecies: 'VENUSAUR_GIGA',
-            extra: 0,
           },
         ],
       },
@@ -411,13 +406,11 @@ describe('ArrayHandler', () => {
             method: 'ITEM',
             param: 'ITEM_PRISM_SCALE',
             targetSpecies: 'MILOTIC',
-            extra: 0,
           },
           {
             method: 'TRADE_ITEM',
             param: 'ITEM_PRISM_SCALE',
             targetSpecies: 'MILOTIC',
-            extra: 0,
           },
         ],
       },

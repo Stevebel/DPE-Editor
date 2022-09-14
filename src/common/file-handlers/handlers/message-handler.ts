@@ -1,72 +1,52 @@
 import { SourceValueHandler } from '../file-handler.interface';
 
-export function swap<T>(input: Map<T, T>): Map<T, T> {
-  const out = new Map<T, T>();
-  input.forEach((value, key) => out.set(value, key));
-  return out;
-}
+/* Handle messages in format _("Flabébé"), with input/output of 'Flabébé'
+ * and multi-line messages in format:
+ * _(
+ *  "Test message\n"
+ *  "Showing off multi-line messages")
+ * with input/output of:
+ * "Test message\nShowing off multi-line messages"
+ */
+const WHOLE_MSG_RE = /_\(\s*(".*?")+\s*\)/gs;
+const MSG_LINE_RE = /\s*"(.*)"\s*/g;
 
-const WHOLE_MSG_RE = /{(.+?)}/;
-const SPLIT_MSG_RE = /\s*,\s*/;
-const MSG_SYMBOL_MAPPING = new Map<string, string>([
-  ['_SPACE', ' '],
-  ['_NEWLINE', '\n'],
-  ['_EXCLAMATION', '!'],
-  ['_APOSTROPHE', `'`],
-  ['_QUESION', '?'],
-  ['_PERIOD', '.'],
-  ['_HYPHEN', '-'],
-]);
-const MSG_SYMBOL_REVERSE_MAPPING = swap(MSG_SYMBOL_MAPPING);
-
-export function messageHandler(fixedLength = 12): SourceValueHandler<string> {
+export function messageHandler(
+  fixedLength?: number
+): SourceValueHandler<string> {
   return {
     parse: (raw) => {
-      const rawMsg = (WHOLE_MSG_RE.exec(raw) || ['', ''])[1].trim();
-      if (!rawMsg) {
-        throw new Error(`Could not find message in ${raw}`);
+      // Clear WHOLE_MSG_RE
+      WHOLE_MSG_RE.lastIndex = 0;
+      const match = WHOLE_MSG_RE.exec(raw.trim());
+      if (!match) {
+        throw new Error(`Could not find messages in ${raw}`);
       }
-      const symbols = rawMsg.split(SPLIT_MSG_RE);
-      let str = '';
-      for (let i = 0; i < symbols.length; i++) {
-        const symbol = symbols[i];
-        if (symbol === '_END') {
-          break;
-        } else if (MSG_SYMBOL_MAPPING.has(symbol)) {
-          str += MSG_SYMBOL_MAPPING.get(symbol);
-        } else if (symbol.length === 2) {
-          str += symbol.substring(1);
-        } else {
-          str += '?';
-        }
-      }
+      const msgLines = match[1];
+      let msg = msgLines.replace(MSG_LINE_RE, '$1\n');
+      // Remove last newline
+      msg = msg.slice(0, -1);
+
       return {
-        start: 0,
-        end: raw.length,
-        value: str,
+        start: match.index,
+        end: match.index + match[0].length,
+        value: msg,
       };
     },
     format: (value) => {
-      const symbols: string[] = [];
       let val = value;
-      if (val.length > fixedLength) {
+      if (fixedLength && val.length > fixedLength) {
         val = val.substring(0, fixedLength);
       }
-      for (let i = 0; i < val.length; i++) {
-        const char = val[i];
-        if (MSG_SYMBOL_REVERSE_MAPPING.has(char)) {
-          symbols.push(MSG_SYMBOL_REVERSE_MAPPING.get(char)!);
-        } else {
-          symbols.push(`_${char}`);
-        }
+      if (val.includes('\n')) {
+        // Multi-line message
+        const lines = val.split('\n');
+        const formattedLines = lines.map((line, i) =>
+          i < lines.length - 1 ? `\t"${line.trim()}\\n"` : `\t"${line.trim()}"`
+        );
+        return `_(\n${formattedLines.join('\n')})`;
       }
-      if (symbols.length < fixedLength) {
-        symbols.push('_END');
-        while (symbols.length < fixedLength) {
-          symbols.push('_SPACE');
-        }
-      }
-      return `{${symbols.join(', ')}}`;
+      return `_("${val}")`;
     },
   };
 }

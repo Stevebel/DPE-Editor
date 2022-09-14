@@ -17,9 +17,9 @@ export function formatSourceData(
   sourceData: PokemonSourceData
 ): AllPokemonData {
   const {
-    pokedexDataTable,
+    pokedexEntries,
     pokemonNameTable,
-    pokedexDataString,
+    pokedexText,
     species,
     pokedexConsts,
     pokedexOrders,
@@ -60,8 +60,7 @@ export function formatSourceData(
     pokedexToSpecies[nationalDex] = pokedexToSpecies[nationalDex] || [];
     pokedexToSpecies[nationalDex].push(s);
   });
-  const { alternateDexEntries } = pokedexDataTable;
-  const pokemon: IPokemonData[] = pokedexDataTable.pokedexEntries.map(
+  const pokemon: IPokemonData[] = pokedexEntries.pokedexEntries.map(
     ({
       nationalDex,
       description,
@@ -94,10 +93,8 @@ export function formatSourceData(
           throw new Error(`Could not find species ${speciesName}`);
         }
         const pokemonName = pokemonNameTable.pokemonNames[sp.index!];
-        const dexEntryConst =
-          alternateDexEntries.find((a) => a === speciesName) || description;
-        const dexEntry = pokedexDataString.pokedexData.find(
-          (c) => c.dexEntryConst === dexEntryConst
+        const dexEntry = pokedexText.pokedexData.find(
+          (c) => c.dexEntryConst === description
         )?.dexEntry;
 
         if (regionalDexNumber === undefined) {
@@ -191,7 +188,7 @@ export function formatSourceData(
           nameConst: pokemonName.nameConst,
 
           dexEntry,
-          dexEntryConst,
+          dexEntryConst: description,
 
           frontSprite,
           backShinySprite,

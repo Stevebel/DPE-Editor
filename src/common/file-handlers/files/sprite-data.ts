@@ -12,7 +12,7 @@ export interface SpriteData {
 export const SpriteDataSourceDef: SourceFileDefinition<SpriteData> = {
   location: [
     {
-      folder: 'dpe',
+      folder: 'src',
       fileName: 'include/sprite_data.h',
     },
   ],

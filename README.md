@@ -1,4 +1,4 @@
-# DPE Editor
+# RHH Pokeemerald Expansion Editor
 
 <p>
   GUI Editor for <a href="https://github.com/Skeli789/Complete-Fire-Red-Upgrade">Skeli789/Complete-Fire-Red-Upgrade</a> and <a href="https://github.com/Skeli789/Dynamic-Pokemon-Expansion">Skeli789/Dynamic-Pokemon-Expansion</a>.

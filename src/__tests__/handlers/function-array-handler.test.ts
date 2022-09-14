@@ -7,7 +7,7 @@ import { trimMultiline } from '../../common/test-utils';
 describe('FunctionArrayHandler', () => {
   const DEFAULT_CONFIG: FunctionArrayHandlerConfig = {
     definition: 'const struct AlternateDexEntries gAlternateDexEntries[]',
-    functionName: 'ALTERNATE_ENTRY',
+    functionConfig: 'ALTERNATE_ENTRY',
     terminator: '{SPECIES_TABLES_TERMIN, 0}',
   };
 

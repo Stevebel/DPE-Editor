@@ -1,8 +1,7 @@
 import { SourceFileDefinition } from '../file-handler.interface';
-import { ArrayHandler } from '../handlers/array-handler';
-import { ConstHandler } from '../handlers/const-handler';
-import { IntHandler } from '../handlers/number-handlers';
-import { getProp, StructHandler } from '../handlers/struct-handler';
+import { ConstHandler, DefaultConstHandler } from '../handlers/const-handler';
+import { FunctionArrayHandler } from '../handlers/function-array-handler';
+import { getProp } from '../handlers/struct-handler';
 
 export type PicTable = {
   pics: CompressedSpriteSheet[];
@@ -10,35 +9,31 @@ export type PicTable = {
 
 export type CompressedSpriteSheet = {
   species: string;
-  sprite: string;
-  size: number;
+  spriteConst: string;
 };
 
 function getPicTableSourceDef(
   fileName: string,
-  definition: string,
+  arrayName: string,
   prefix: string
 ): SourceFileDefinition<PicTable> {
   return {
     location: [
       {
-        folder: 'dpe',
+        folder: 'src',
         fileName,
       },
     ],
     schema: {
-      pics: new ArrayHandler<CompressedSpriteSheet>({
-        definition,
-        indexPrefix: 'SPECIES_',
-        indexProperty: 'species',
-        itemHandler: new StructHandler({
-          namedProps: false,
-          props: [
-            getProp('sprite', new ConstHandler({ prefix, suffix: 'Tiles' })),
-            getProp('size', IntHandler),
-            getProp('species', new ConstHandler({ prefix: 'SPECIES_' })),
+      pics: new FunctionArrayHandler<CompressedSpriteSheet>({
+        definition: `const struct CompressedSpriteSheet ${arrayName}[]`,
+        functionConfig: {
+          functionName: 'SPECIES_SPRITE',
+          parameterProps: [
+            getProp('species', DefaultConstHandler),
+            getProp('spriteConst', new ConstHandler({ prefix })),
           ],
-        }),
+        },
       }),
     },
   };
@@ -46,14 +41,28 @@ function getPicTableSourceDef(
 
 export const BackPicTableSourceDef: SourceFileDefinition<PicTable> =
   getPicTableSourceDef(
-    'src/Back_Pic_Table.c',
-    'const struct CompressedSpriteSheet gMonBackPicTable[NUM_SPECIES]',
-    'gBackShinySprite'
+    'src/data/pokemon_graphics/back_pic_table.h',
+    'gMonBackPicTable',
+    'gMonBackPic_'
+  );
+
+export const BackPicTableFemaleSourceDef: SourceFileDefinition<PicTable> =
+  getPicTableSourceDef(
+    'src/data/pokemon_graphics/back_pic_table.h',
+    'gMonBackPicTableFemale',
+    'gMonBackPicFemale_'
   );
 
 export const FrontPicTableSourceDef: SourceFileDefinition<PicTable> =
   getPicTableSourceDef(
-    'src/Front_Pic_Table.c',
-    'const struct CompressedSpriteSheet gMonFrontPicTable[NUM_SPECIES]',
-    'gFrontSprite'
+    'src/data/pokemon_graphics/front_pic_table.h',
+    'gMonFrontPicTable',
+    'gMonFrontPic_'
+  );
+
+export const FrontPicTableFemaleSourceDef: SourceFileDefinition<PicTable> =
+  getPicTableSourceDef(
+    'src/data/pokemon_graphics/front_pic_table.h',
+    'gMonFrontPicTableFemale',
+    'gMonFrontPicFemale_'
   );

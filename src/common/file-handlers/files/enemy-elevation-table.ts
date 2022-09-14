@@ -16,8 +16,8 @@ export const EnemyElevationTableSourceDef: SourceFileDefinition<EnemyElevationTa
   {
     location: [
       {
-        folder: 'dpe',
-        fileName: 'src/Enemy_Elevation_Table.c',
+        folder: 'src',
+        fileName: 'src/data/pokemon_graphics/enemy_mon_elevation.h',
       },
     ],
     schema: {

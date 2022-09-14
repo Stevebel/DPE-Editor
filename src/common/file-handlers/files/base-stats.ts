@@ -2,6 +2,7 @@ import { TypeLk } from '../../lookup-values';
 import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
 import { ConstHandler } from '../handlers/const-handler';
+import { FlagHandler } from '../handlers/flags-handler';
 import { GenderRatioHandler } from '../handlers/gender-ratio-handler';
 import { BooleanHandler, IntHandler } from '../handlers/number-handlers';
 import { getProp, StructHandler } from '../handlers/struct-handler';
@@ -24,19 +25,19 @@ export type BaseStat = {
   evYield_SpAttack?: number;
   evYield_SpDefense?: number;
   evYield_Speed?: number;
-  item1?: string;
-  item2?: string;
+  itemCommon?: string;
+  itemRare?: string;
   genderRatio?: number;
   eggCycles?: number;
   friendship?: number;
   growthRate?: string;
   eggGroup1?: string;
   eggGroup2?: string;
-  ability1?: string;
-  ability2?: string;
-  hiddenAbility?: string;
+  abilities?: string[];
   safariZoneFleeRate?: number;
   noFlip?: boolean;
+  bodyColor?: string;
+  flags?: string[];
 };
 
 export type BaseStats = {
@@ -46,7 +47,7 @@ export type BaseStats = {
 export const BaseStatsSourceDef: SourceFileDefinition<BaseStats> = {
   location: [
     {
-      folder: 'dpe',
+      folder: 'src',
       fileName: 'src/Base_Stats.c',
     },
   ],
@@ -73,19 +74,29 @@ export const BaseStatsSourceDef: SourceFileDefinition<BaseStats> = {
           getProp('evYield_SpAttack', IntHandler),
           getProp('evYield_SpDefense', IntHandler),
           getProp('evYield_Speed', IntHandler),
-          getProp('item1', new ConstHandler({ prefix: 'ITEM_' })),
-          getProp('item2', new ConstHandler({ prefix: 'ITEM_' })),
+          getProp('itemCommon', new ConstHandler({ prefix: 'ITEM_' })),
+          getProp('itemRare', new ConstHandler({ prefix: 'ITEM_' })),
           getProp('genderRatio', GenderRatioHandler),
           getProp('eggCycles', IntHandler),
           getProp('friendship', IntHandler),
           getProp('growthRate', new ConstHandler({ prefix: 'GROWTH_' })),
           getProp('eggGroup1', new ConstHandler({ prefix: 'EGG_GROUP_' })),
           getProp('eggGroup2', new ConstHandler({ prefix: 'EGG_GROUP_' })),
-          getProp('ability1', new ConstHandler({ prefix: 'ABILITY_' })),
-          getProp('ability2', new ConstHandler({ prefix: 'ABILITY_' })),
-          getProp('hiddenAbility', new ConstHandler({ prefix: 'ABILITY_' })),
+          getProp(
+            'abilities',
+            new ArrayHandler<string>({
+              itemHandler: new ConstHandler({ prefix: 'ABILITY_' }),
+            })
+          ),
           getProp('safariZoneFleeRate', IntHandler),
           getProp('noFlip', BooleanHandler),
+          getProp('bodyColor', new ConstHandler({ prefix: 'BODY_COLOR_' })),
+          getProp(
+            'flags',
+            new FlagHandler({
+              itemPrefix: 'FLAG_',
+            })
+          ),
         ],
       }),
     }),

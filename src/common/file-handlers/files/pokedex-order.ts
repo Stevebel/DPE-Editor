@@ -13,22 +13,20 @@ export type PokedexOrders = {
 function getPokedexOrder(type: string) {
   return new ArrayHandler<string>({
     definition: `const u16 gPokedexOrder_${type}[]`,
-    itemHandler: new ConstHandler({ prefix: 'SPECIES_' }),
+    itemHandler: new ConstHandler({ prefix: 'NATIONAL_DEX_' }),
   });
 }
 
 export const PokedexOrderSourceDef: SourceFileDefinition<PokedexOrders> = {
   location: [
     {
-      folder: 'dpe',
-      fileName: 'src/Pokedex_Orders.c',
+      folder: 'src',
+      fileName: 'src/data/pokemon/pokedex_orders.h',
     },
   ],
   schema: {
-    regional: getPokedexOrder('Regional'),
     alphabetical: getPokedexOrder('Alphabetical'),
     weight: getPokedexOrder('Weight'),
     height: getPokedexOrder('Height'),
-    type: getPokedexOrder('Type'),
   },
 };

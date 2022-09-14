@@ -24,9 +24,9 @@ import {
   PicTable,
 } from './file-handlers/files/pic-table';
 import { PokedexConsts } from './file-handlers/files/pokedex';
-import { PokedexDataString } from './file-handlers/files/pokedex-data-string';
-import { PokedexDataTable } from './file-handlers/files/pokedex-data-table';
+import { PokedexEntries } from './file-handlers/files/pokedex-entries';
 import { PokedexOrders } from './file-handlers/files/pokedex-order';
+import { PokedexText } from './file-handlers/files/pokedex-text';
 import { PokemonNameTable } from './file-handlers/files/pokemon-name-table';
 import { SpecialInserts } from './file-handlers/files/special-inserts';
 import { SpeciesData } from './file-handlers/files/species';
@@ -85,7 +85,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
   const { pokemon } = data;
 
   pokemon.sort((a, b) => a.nationalDexNumber - b.nationalDexNumber);
-  const pokedexDataTable: PokedexDataTable = {
+  const pokedexEntries: PokedexEntries = {
     pokedexEntries: pokemon.map(
       ({
         nationalDex,
@@ -105,19 +105,11 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
         height: Math.floor(height * 10),
         weight: Math.floor(weight * 10),
         description: pSpecies[0].dexEntryConst,
-        unusedDescription: 0x8444cb1,
         pokemonScale,
         pokemonOffset,
         trainerScale,
         trainerOffset,
       })
-    ),
-    alternateDexEntries: pokemon.flatMap((p) =>
-      p.species
-        .slice(1)
-        .map((s) => s.dexEntryConst)
-        .filter(isString)
-        .filter((s) => s !== p.species[0].dexEntryConst)
     ),
   };
 
@@ -158,7 +150,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
       ),
     ])
     .sort((a, b) => a.speciesNumber - b.speciesNumber);
-  const pokedexDataString: PokedexDataString = {
+  const pokedexText: PokedexText = {
     pokedexData: speciesWithEntries
       .map(({ dexEntry, dexEntryConst }) => {
         if (dexEntry && isString(dexEntryConst)) {
@@ -189,9 +181,7 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
       number: nationalDexNumber,
     })
   );
-  const dexEntryConsts = pokedexDataString.pokedexData.map(
-    (s) => s.dexEntryConst
-  );
+  const dexEntryConsts = pokedexText.pokedexData.map((s) => s.dexEntryConst);
 
   const pokedexConsts: PokedexConsts = {
     nationalDexConsts,
@@ -391,9 +381,9 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
   const habitats: HabitatTable = getHabitatTable(pokemonSpecies);
 
   return {
-    pokedexDataTable,
+    pokedexEntries,
     pokemonNameTable,
-    pokedexDataString,
+    pokedexText,
     species: {
       species: speciesData,
       lastEntry: speciesData[speciesData.length - 1].species,

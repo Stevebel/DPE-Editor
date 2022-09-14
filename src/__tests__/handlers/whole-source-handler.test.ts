@@ -42,12 +42,12 @@ describe('WholeSourceHandler', () => {
 
       const struct PokedexEntry gPokedexEntries[NATIONAL_DEX_COUNT] = {
         [NATIONAL_DEX_NONE] = {
-          .categoryName = {_U, _n, _k, _n, _o, _w, _n, _END, _SPACE, _SPACE, _SPACE, _SPACE},
+          .categoryName = _("Unknown"),
           .height = 1,
           .weight = 2,
         },
         [NATIONAL_DEX_BULBASAUR] = {
-          .categoryName = {_S, _e, _e, _d, _END, _SPACE, _SPACE, _SPACE, _SPACE, _SPACE, _SPACE, _SPACE},
+          .categoryName = _("Seed"),
           .height = 3,
           .weight = 4,
         },

@@ -19,7 +19,7 @@ export type EvolutionTable = {
 export const EvolutionTableSourceDef: SourceFileDefinition<EvolutionTable> = {
   location: [
     {
-      folder: 'dpe',
+      folder: 'src',
       fileName: 'src/Evolution Table.c',
     },
   ],
@@ -41,7 +41,6 @@ export const EvolutionTableSourceDef: SourceFileDefinition<EvolutionTable> = {
                 'targetSpecies',
                 new ConstHandler({ prefix: 'SPECIES_' })
               ),
-              getProp('extra', IntOrConstHandler),
             ],
           }),
         })

@@ -1,5 +1,6 @@
 import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
+import { FunctionHandler } from '../handlers/function-handler';
 import { IntHandler } from '../handlers/number-handlers';
 import { getProp, StructHandler } from '../handlers/struct-handler';
 
@@ -8,8 +9,12 @@ export type PicCoordsTable = {
 };
 export type PicCoords = {
   species: string;
-  size: number;
+  size: CoordsSize;
   y_offset: number;
+};
+export type CoordsSize = {
+  width: number;
+  height: number;
 };
 
 function getPicCoordsTableSourceDef(
@@ -19,7 +24,7 @@ function getPicCoordsTableSourceDef(
   return {
     location: [
       {
-        folder: 'dpe',
+        folder: 'src',
         fileName,
       },
     ],
@@ -29,7 +34,19 @@ function getPicCoordsTableSourceDef(
         indexPrefix: 'SPECIES_',
         indexProperty: 'species',
         itemHandler: new StructHandler({
-          props: [getProp('size', IntHandler), getProp('y_offset', IntHandler)],
+          props: [
+            getProp(
+              'size',
+              new FunctionHandler<CoordsSize>({
+                functionName: 'MON_COORDS_SIZE',
+                parameterProps: [
+                  getProp('width', IntHandler),
+                  getProp('height', IntHandler),
+                ],
+              })
+            ),
+            getProp('y_offset', IntHandler),
+          ],
         }),
       }),
     },
@@ -37,11 +54,11 @@ function getPicCoordsTableSourceDef(
 }
 
 export const BackPicCoordsTableSourceDef = getPicCoordsTableSourceDef(
-  'src/Back_Pic_Coords_Table.c',
-  'const struct MonCoords gMonBackPicCoords[NUM_SPECIES]'
+  'src/data/pokemon_graphics/back_pic_coordinates.h',
+  'const struct MonCoords gMonBackPicCoords[]'
 );
 
 export const FrontPicCoordsTableSourceDef = getPicCoordsTableSourceDef(
-  'src/Front_Pic_Coords_Table.c',
-  'const struct MonCoords gMonFrontPicCoords[NUM_SPECIES]'
+  'src/data/pokemon_graphics/front_pic_coordinates.h',
+  'const struct MonCoords gMonFrontPicCoords[]'
 );
