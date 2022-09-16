@@ -1,7 +1,6 @@
 import { Box, InputAdornment } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { HabitatLks } from '../../../../common/lookup-values';
-import { ObservableDropdownField } from '../../../common/forms/ObservableDropdownField';
 import { ObservableNumberField } from '../../../common/forms/ObservableNumberField';
 import { ObservableSwitch } from '../../../common/forms/ObservableSwitch';
 import { ObservableTextField } from '../../../common/forms/ObservableTextField';
@@ -60,12 +59,6 @@ export const PokedexTab = observer(() => {
             endAdornment: <InputAdornment position="end">kg</InputAdornment>,
           }}
         />
-        <ObservableDropdownField
-          label="Habitat"
-          store={species}
-          path={['habitat']}
-          options={habitats}
-        />
         <ObservableTextField
           className="full-line"
           label="Pokédex Entry"
@@ -73,7 +66,7 @@ export const PokedexTab = observer(() => {
           path={['dexEntry']}
           setter="setDexEntry"
           multiline
-          rows={3}
+          rows={4}
           InputProps={{
             className: 'dex-entry',
           }}

@@ -1,6 +1,8 @@
 import { SourceValueHandler } from '../file-handler.interface';
 
 const GENDERLESS = 'MON_GENDERLESS';
+const FEMALE = 'MON_FEMALE';
+const MALE = 'MON_MALE';
 
 const RATIO_RE = /PERCENT_FEMALE\(([\d.]+)\)/;
 
@@ -8,11 +10,26 @@ const RATIO_RE = /PERCENT_FEMALE\(([\d.]+)\)/;
 export const GenderRatioHandler: SourceValueHandler<number> = {
   parse: (raw) => {
     let value: number;
-    if (raw.trim() === GENDERLESS) {
+    const trimmed = raw.trim();
+    if (trimmed === GENDERLESS) {
       return {
         start: 0,
         end: raw.length,
         value: -1,
+      };
+    }
+    if (trimmed === FEMALE) {
+      return {
+        start: 0,
+        end: raw.length,
+        value: 100,
+      };
+    }
+    if (trimmed === MALE) {
+      return {
+        start: 0,
+        end: raw.length,
+        value: 0,
       };
     }
     const match = RATIO_RE.exec(raw);
@@ -33,6 +50,12 @@ export const GenderRatioHandler: SourceValueHandler<number> = {
   format: (value) => {
     if (value === -1) {
       return GENDERLESS;
+    }
+    if (value === 100) {
+      return FEMALE;
+    }
+    if (value === 0) {
+      return MALE;
     }
     return `PERCENT_FEMALE(${value.toLocaleString('en-US', {
       maximumFractionDigits: 1,

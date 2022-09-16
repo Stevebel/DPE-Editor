@@ -17,6 +17,7 @@ export type LevelUpLearnset = {
 export type LevelUpMove = {
   level: number;
   move: string;
+  id?: string;
 };
 
 export const LevelUpLearnsetsSourceDef: SourceFileDefinition<LevelUpLearnsets> =

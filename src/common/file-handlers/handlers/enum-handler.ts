@@ -30,7 +30,10 @@ export class EnumHandler implements SourceValueHandler<string[]> {
     if (!match) {
       throw new Error(`Could not parse ${raw} as an enum`);
     }
-    const re = new RegExp(`\\s*${this.config.itemPrefix || ''}(\\w+)\\s*,?`);
+    const re = new RegExp(
+      `\\s*${this.config.itemPrefix || ''}(\\w+)\\s*,?`,
+      'g'
+    );
     const rawEnums = match[1];
     const enums = [];
     let m: RegExpExecArray | null;

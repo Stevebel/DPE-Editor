@@ -28,7 +28,9 @@ export class FunctionArrayHandler<T = string>
           this.config.definition ? `${this.config.definition} = ` : ''
         ) +
         /\{\s*([\s\S]+?)/.source +
-        (this.config.terminator ? regExpEscape(this.config.terminator) : '')
+        (this.config.terminator
+          ? `${regExpEscape(this.config.terminator)}\\s*,?`
+          : '')
       }\\s*\\}`
     );
 
@@ -36,10 +38,10 @@ export class FunctionArrayHandler<T = string>
       typeof this.config.functionConfig === 'string'
         ? this.config.functionConfig
         : this.config.functionConfig.functionName;
-    this.lineRe = new RegExp(
-      `${functionName + /\(\s*(\w+)\s*\)/.source}\\s*,?`,
-      'g'
-    );
+    this.lineRe =
+      this.config.functionConfig === 'string'
+        ? new RegExp(`${functionName + /\(\s*(\w+)\s*\)/.source}\\s*,?`, 'g')
+        : new RegExp(`(${functionName + /\(.+?\)/.source})\\s*,?`, 'g');
     if (typeof this.config.functionConfig !== 'string') {
       this.functionHandler = new FunctionHandler(this.config.functionConfig);
     }
@@ -48,20 +50,18 @@ export class FunctionArrayHandler<T = string>
   parse(source: string): ParseData<T[]> {
     const match = this.definitionRe.exec(source);
     if (!match) {
-      throw new Error(
-        `Could not find definition for ${this.config.definition}`
-      );
+      throw new Error(`Could not find definition for ${this.definitionRe}`);
     }
 
     const data: T[] = [];
     const rawFunctions = match[1];
     let lineMatch: RegExpExecArray | null;
-    while ((lineMatch = this.lineRe.exec(rawFunctions))) {
+    while ((lineMatch = this.lineRe.exec(rawFunctions)) !== null) {
       if (typeof this.config.functionConfig === 'string') {
         const param = lineMatch[1];
         data.push(param as any);
       } else {
-        data.push(this.functionHandler!.parse(lineMatch[0]).value);
+        data.push(this.functionHandler!.parse(lineMatch[1]).value);
       }
     }
 

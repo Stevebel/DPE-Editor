@@ -1,11 +1,6 @@
 /* eslint-disable no-case-declarations */
 import { z } from 'zod';
-import {
-  EvoByOtherSpecies,
-  EvoByType,
-  getMethodGroup,
-  HabitatLk,
-} from './lookup-values';
+import { EvoByOtherSpecies, EvoByType, getMethodGroup } from './lookup-values';
 import {
   AllPokemonData,
   IPokemonData,
@@ -17,49 +12,53 @@ export function formatSourceData(
   sourceData: PokemonSourceData
 ): AllPokemonData {
   const {
-    pokedexEntries,
-    pokemonNameTable,
-    pokedexText,
-    species,
-    pokedexConsts,
-    pokedexOrders,
-    speciesToPokedex,
-    frontPicCoords,
-    backPicCoords,
-    frontPicTable,
-    backPicTable,
-    iconTable,
-    iconPaletteTable,
-
-    baseStats: allBaseStats,
-    evolutionTable,
-    learnsets: allLearnsets,
-    eggMoves: allEggMoves,
-
     cryTable,
-    footprintTable,
-    itemAnimationTable,
-
     enemyElevationTable,
-    specialInserts,
-    habitatTable,
+    evolutionTable,
+    footprintTable,
+    frontPicAnims,
+    graphicsData,
+    graphics,
+    iconTable,
+    levelUpLearnsets,
+    levelUpLearnsetPointers,
+    paletteTable,
+    shinyPaletteTable,
+    backPicCoords,
+    frontPicCoords,
+    backPicTable,
+    frontPicTable,
+    pokedexEntries,
+    pokedexOrders,
+    pokedexText,
+    pokedexConsts,
+    pokemonAnimation,
+    pokemonNameTable,
+    pokemonConsts,
+    species,
+    teachableLearnsets,
+    teachableLearnsetPointers,
+    baseStats: allBaseStats,
+    eggMoves: allEggMoves,
   } = sourceData;
 
-  const pokedexToSpecies: { [key: string]: string[] } = {};
   species.species.forEach((s, i) => {
     s.index = i;
   });
   species.additionalSpecies.forEach((s, i) => {
     s.index = i + species.species.length;
   });
-  speciesToPokedex.mappings.push({
-    nationalDex: 'NONE',
-    species: 'NONE',
-  });
-  speciesToPokedex.mappings.forEach(({ species: s, nationalDex }) => {
-    pokedexToSpecies[nationalDex] = pokedexToSpecies[nationalDex] || [];
-    pokedexToSpecies[nationalDex].push(s);
-  });
+
+  const pokedexToSpecies: { [key: string]: string[] } = {};
+  pokemonConsts.speciesToNationalPokedexNum.forEach(
+    ({ speciesConst: s, nationalDexConst: nationalDex }) => {
+      pokedexToSpecies[nationalDex] = pokedexToSpecies[nationalDex] || [];
+      pokedexToSpecies[nationalDex].push(s);
+    }
+  );
+  pokedexToSpecies.NONE = ['NONE'];
+  // console.log(pokemonConsts.speciesToNationalPokedexNum);
+
   const pokemon: IPokemonData[] = pokedexEntries.pokedexEntries.map(
     ({
       nationalDex,
@@ -72,14 +71,15 @@ export function formatSourceData(
       trainerScale,
       trainerOffset,
     }) => {
-      const nationDexConst = pokedexConsts.nationalDexConsts.find(
-        (c) => c.nationalDex === nationalDex
-      );
-      if (!nationDexConst) {
+      const nationalDexNumber =
+        pokedexConsts.nationalDexConsts.indexOf(nationalDex);
+      if (nationalDexNumber < 0) {
         throw new Error(`No national dex const for ${nationalDex}`);
       }
-      const nationalDexNumber = nationDexConst.number;
       let regionalDexNumber: number | undefined;
+      if (!pokedexToSpecies[nationalDex]) {
+        throw new Error(`No species found for ${nationalDex}`);
+      }
       const pokemonSpecies: IPokemonSpeciesData[] = pokedexToSpecies[
         nationalDex
       ].map((speciesName) => {
@@ -98,7 +98,7 @@ export function formatSourceData(
         )?.dexEntry;
 
         if (regionalDexNumber === undefined) {
-          const idx = pokedexOrders.regional.indexOf(speciesName);
+          const idx = pokedexConsts.regionalDexConsts.indexOf(speciesName);
           if (idx > -1) {
             regionalDexNumber = idx + 1;
           }
@@ -106,14 +106,14 @@ export function formatSourceData(
 
         const frontSprite = frontPicTable.pics.find(
           (pic) => pic.species === speciesName
-        )?.sprite;
+        )?.spriteConst;
         const backShinySprite = backPicTable.pics.find(
           (pic) => pic.species === speciesName
-        )?.sprite;
+        )?.spriteConst;
         const iconSprite = iconTable.icons.find(
           (icon) => icon.species === speciesName
         )?.icon;
-        const iconPalette = iconPaletteTable.iconPalettes.find(
+        const iconPalette = iconTable.palettes.find(
           (palette) => palette.species === speciesName
         )?.palette;
 
@@ -127,9 +127,20 @@ export function formatSourceData(
           enemyElevationTable.elevations.find((e) => e.species === speciesName)
             ?.elevation || 0;
 
-        const baseStats = allBaseStats.baseStats.find(
+        const baseStatsRaw = allBaseStats.baseStats.find(
           (b) => b.species === speciesName
         );
+        if (!baseStatsRaw) {
+          throw new Error(`No base stats for ${speciesName}`);
+        }
+        const baseStats = {
+          ...baseStatsRaw,
+          ability1: (baseStatsRaw.abilities || [])[0],
+          ability2: (baseStatsRaw.abilities || [])[1],
+          hiddenAbility: (baseStatsRaw.abilities || [])[2],
+          item1: baseStatsRaw.itemCommon,
+          item2: baseStatsRaw.itemRare,
+        };
         const evolutions = evolutionTable.evolutions
           .find((e) => e.species === speciesName)
           ?.evolutions.map((evo) => {
@@ -154,31 +165,26 @@ export function formatSourceData(
             }
           });
 
-        const learnsetConst = allLearnsets.learnsetConsts.find(
+        const levelUpLearnsetConst = levelUpLearnsetPointers.pointers.find(
           (l) => l.species === speciesName
-        )?.learnset;
-        const learnset = allLearnsets.learnsets.find(
-          (l) => l.learnset === learnsetConst
+        )?.learnsetConst;
+        const levelUpLearnset = levelUpLearnsets.learnsets.find(
+          (l) => l.learnsetConst === levelUpLearnsetConst
         )?.levelUpMoves;
+        const teachableLearnsetConst = teachableLearnsetPointers.pointers.find(
+          (l) => l.species === speciesName
+        )?.learnsetConst;
+        const teachableLearnset = teachableLearnsets.learnsets.find(
+          (l) => l.learnsetConst === teachableLearnsetConst
+        )?.moves;
+
         const eggMoves = allEggMoves.eggMoves.find(
           (e) => e.species === speciesName
         )?.moves;
 
-        const cryData = cryTable.cryTable.find(
-          (c) => c.species === speciesName
-        );
         const footprint = footprintTable.footprints.find(
           (f) => f.species === speciesName
         )?.footprint;
-        const itemAnimation = itemAnimationTable.itemAnimations.find(
-          (i) => i.species === speciesName
-        );
-        const rawHabitat = habitatTable.pages.find(
-          (pg) => pg.species.indexOf(speciesName) >= 0
-        )?.name;
-        const habitat = rawHabitat
-          ? (rawHabitat.substring(0, rawHabitat.indexOf('Page')) as HabitatLk)
-          : undefined;
 
         return {
           species: speciesName,
@@ -201,16 +207,15 @@ export function formatSourceData(
 
           baseStats,
           evolutions,
-          learnsetConst,
-          learnset,
+          learnsetConst: levelUpLearnsetConst,
+          learnset: levelUpLearnset,
+          teachableMovesConst: teachableLearnsetConst,
+          teachableMoves: teachableLearnset,
           eggMoves,
 
-          cryData,
           footprint,
-          itemAnimation,
 
           isAdditional,
-          habitat,
           regionalDexNumber,
         };
       });
@@ -245,6 +250,5 @@ export function formatSourceData(
   return {
     pokemon,
     species: species.species,
-    lastNationalDex: specialInserts.finalDexEntry,
   };
 }

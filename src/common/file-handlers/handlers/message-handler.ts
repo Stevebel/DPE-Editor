@@ -9,7 +9,7 @@ import { SourceValueHandler } from '../file-handler.interface';
  * "Test message\nShowing off multi-line messages"
  */
 const WHOLE_MSG_RE = /_\(\s*(".*?")+\s*\)/gs;
-const MSG_LINE_RE = /\s*"(.*)"\s*/g;
+const MSG_LINE_RE = /\s*"(.*?)(\\n)?"\s*/g;
 
 export function messageHandler(
   fixedLength?: number

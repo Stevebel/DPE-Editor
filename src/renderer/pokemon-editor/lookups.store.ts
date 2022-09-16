@@ -20,8 +20,9 @@ export class LookupStore {
   }
 
   populateMoves(data: LookupData) {
-    const { attackNames } = data.attackNameTable;
+    const { longAttackNames: attackNames } = data.attackNameTable;
     const battleMoves = data.battleMoves.moves;
+    console.log('Attack names', data.attackNameTable);
 
     this.moves = attackNames.map((attackName, i) => {
       const move = battleMoves[i];

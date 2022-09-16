@@ -105,6 +105,8 @@ const EvoByLevel = z.object({
     'LEVEL_DARK_TYPE_MON_IN_PARTY',
     'LEVEL_NATURE_AMPED',
     'LEVEL_NATURE_LOW_KEY',
+    'CRITICAL_HITS',
+    'SCRIPT_TRIGGER_DMG',
   ]),
   targetSpecies: zConst,
   param: z.number().positive().lte(100),
@@ -153,7 +155,14 @@ const EvoMega = z.object({
 });
 
 const EvoNoParams = z.object({
-  method: z.enum(['TRADE', 'FRIENDSHIP', 'FRIENDSHIP_DAY', 'FRIENDSHIP_NIGHT']),
+  method: z.enum([
+    'TRADE',
+    'FRIENDSHIP',
+    'FRIENDSHIP_DAY',
+    'FRIENDSHIP_NIGHT',
+    'DARK_SCROLL',
+    'WATER_SCROLL',
+  ]),
   targetSpecies: zConst,
   param: z.literal(0),
 });

@@ -17,7 +17,7 @@ export const EggMovesSourceDef: SourceFileDefinition<EggMovesStructure> = {
   location: [
     {
       folder: 'src',
-      fileName: 'src/Egg_Moves.c',
+      fileName: 'src/data/pokemon/egg_moves.h',
     },
   ],
   schema: {

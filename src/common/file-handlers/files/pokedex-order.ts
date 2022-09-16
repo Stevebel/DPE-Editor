@@ -3,11 +3,9 @@ import { ArrayHandler } from '../handlers/array-handler';
 import { ConstHandler } from '../handlers/const-handler';
 
 export type PokedexOrders = {
-  regional: string[];
   alphabetical: string[];
   weight: string[];
   height: string[];
-  type: string[];
 };
 
 function getPokedexOrder(type: string) {

@@ -37,13 +37,12 @@ export const PokemonConstsSourceDef: SourceFileDefinition<PokemonConsts> = {
   ],
   schema: {
     speciesToHoennPokedexNum: new FunctionArrayHandler({
-      definition:
-        'static const u16 sSpeciesToHoennPokedexNum[NUM_SPECIES - 1] =',
+      definition: 'static const u16 sSpeciesToHoennPokedexNum[NUM_SPECIES - 1]',
       functionConfig: 'SPECIES_TO_HOENN',
     }),
     speciesToNationalPokedexNum: new FunctionArrayHandler<NationalDexMapping>({
       definition:
-        'static const u16 sSpeciesToNationalPokedexNum[NUM_SPECIES - 1] =',
+        'static const u16 sSpeciesToNationalPokedexNum[NUM_SPECIES - 1]',
       functionConfig: {
         functionName: 'SPECIES_TO_NATIONAL',
         parameterProps: [
@@ -53,18 +52,17 @@ export const PokemonConstsSourceDef: SourceFileDefinition<PokemonConsts> = {
       },
     }),
     hoennToNationalOrder: new FunctionArrayHandler({
-      definition:
-        'static const u16 sHoennToNationalOrder[HOENN_DEX_COUNT - 1] =',
+      definition: 'static const u16 sHoennToNationalOrder[HOENN_DEX_COUNT - 1]',
       functionConfig: 'HOENN_TO_NATIONAL',
     }),
     frontAnimIds: new ArrayHandler<AnimId>({
-      definition: 'const u8 sMonFrontAnimIdsTable[NUM_SPECIES - 1] =',
+      definition: 'const u8 sMonFrontAnimIdsTable[NUM_SPECIES - 1]',
       indexProperty: 'speciesConst',
       indexSuffix: ' - 1',
       propHandler: getProp('anim', new ConstHandler({ prefix: 'ANIM_' })),
     }),
     animationDelays: new ArrayHandler<SpeciesNumber>({
-      definition: 'static const u8 sMonAnimationDelayTable[NUM_SPECIES - 1] =',
+      definition: 'static const u8 sMonAnimationDelayTable[NUM_SPECIES - 1]',
       indexProperty: 'speciesConst',
       indexSuffix: ' - 1',
       propHandler: getProp('num', IntHandler),

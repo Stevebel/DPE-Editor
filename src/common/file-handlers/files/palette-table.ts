@@ -10,11 +10,13 @@ export type CompressedSpritePalette = {
 
 export type PaletteTable = {
   palettes: CompressedSpritePalette[];
+  femalePalettes: CompressedSpritePalette[];
 };
 
 function getPaletteTableSourceDef(
   fileName: string,
   definition: string,
+  femaleDefinition: string,
   functionName: string,
   prefix: string
 ): SourceFileDefinition<PaletteTable> {
@@ -36,6 +38,16 @@ function getPaletteTableSourceDef(
           ],
         },
       }),
+      femalePalettes: new FunctionArrayHandler<CompressedSpritePalette>({
+        definition: `const struct CompressedSpritePalette ${femaleDefinition}[]`,
+        functionConfig: {
+          functionName,
+          parameterProps: [
+            getProp('species', DefaultConstHandler),
+            getProp('sprite', new ConstHandler({ prefix })),
+          ],
+        },
+      }),
     },
   };
 }
@@ -43,12 +55,6 @@ function getPaletteTableSourceDef(
 export const PaletteTableSourceDef = getPaletteTableSourceDef(
   'src/data/pokemon_graphics/palette_table.h',
   'gMonPaletteTable',
-  'SPECIES_PAL',
-  'gMonPalette_'
-);
-
-export const PaletteTableFemaleSourceDef = getPaletteTableSourceDef(
-  'src/data/pokemon_graphics/palette_table.h',
   'gMonPaletteTableFemale',
   'SPECIES_PAL',
   'gMonPalette_'
@@ -57,12 +63,6 @@ export const PaletteTableFemaleSourceDef = getPaletteTableSourceDef(
 export const ShinyPaletteTableSourceDef = getPaletteTableSourceDef(
   'src/data/pokemon_graphics/shiny_palette_table.h',
   'gMonShinyPaletteTable',
-  'SPECIES_SHINY_PAL',
-  'gMonShinyPalette_'
-);
-
-export const ShinyPaletteTableFemaleSourceDef = getPaletteTableSourceDef(
-  'src/data/pokemon_graphics/shiny_palette_table.h',
   'gMonShinyPaletteTableFemale',
   'SPECIES_SHINY_PAL',
   'gMonShinyPalette_'

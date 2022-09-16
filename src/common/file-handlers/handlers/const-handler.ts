@@ -23,7 +23,7 @@ export class ConstHandler<T extends string = string>
     this.suffix = suffix || '';
     this.re = new RegExp(
       `${regExpEscape(this.prefix)}${
-        this.prefix ? '(\\w+)' : CONST_RE.source
+        this.prefix ? '([\\w/]+)' : CONST_RE.source
       }${regExpEscape(this.suffix)}`
     );
   }

@@ -70,8 +70,7 @@ export const FrontPicAnimsSourceDef: SourceFileDefinition<FrontPicAnims> = {
       ),
     }),
     animTable: new FunctionArrayHandler<AnimationMapping>({
-      definition:
-        'static const union AnimCmd *const *const gMonFrontAnimsPtrTable[]',
+      definition: 'const union AnimCmd *const *const gMonFrontAnimsPtrTable[]',
       functionConfig: {
         functionName: 'ANIM_CMD',
         parameterProps: [

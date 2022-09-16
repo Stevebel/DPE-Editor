@@ -68,14 +68,14 @@ async function loadFiles() {
       handlers[name as keyof SourceDefStruct] = getHandler(def as any) as any;
     });
 
-    const promises = Object.entries(handlers).map(async ([name, handler]) => [
-      name,
-      await handler.load(),
-    ]);
+    const rawData: PokemonSourceData = {} as any;
+    // Loop through all the handlers and load the data
 
-    const rawData: PokemonSourceData = Object.fromEntries(
-      await Promise.all(promises)
-    );
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [name, handler] of Object.entries(handlers)) {
+      // eslint-disable-next-line no-await-in-loop
+      rawData[name as keyof PokemonSourceData] = (await handler.load()) as any;
+    }
 
     pokemonData = formatSourceData(rawData);
     let channel: IPCChannel = 'pokemon-source-data';

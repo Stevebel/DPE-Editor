@@ -38,4 +38,10 @@ describe('MessageHandler', () => {
     const result = handler.format(MULTILINE_OUTPUT);
     expect(trimMultiline(result)).toBe(trimMultiline(MULTILINE_INPUT));
   });
+
+  it('should parse a multiline message', () => {
+    const handler = messageHandler();
+    const result = handler.parse(MULTILINE_INPUT);
+    expect(trimMultiline(result.value)).toBe(trimMultiline(MULTILINE_OUTPUT));
+  });
 });

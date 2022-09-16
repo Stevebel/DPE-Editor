@@ -1,6 +1,6 @@
 import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
-import { ConstHandler } from '../handlers/const-handler';
+import { ConstHandler, DefaultConstHandler } from '../handlers/const-handler';
 import { FlagHandler as FlagsHandler } from '../handlers/flags-handler';
 import { IntHandler } from '../handlers/number-handlers';
 import { getProp, StructHandler } from '../handlers/struct-handler';
@@ -35,7 +35,7 @@ export const BattleMovesSourceDef: SourceFileDefinition<BattleMoves> = {
   ],
   schema: {
     moves: new ArrayHandler<BattleMove>({
-      definition: 'const struct BattleMove gBattleMoves[]',
+      definition: 'const struct BattleMove gBattleMoves[MOVES_COUNT_Z]',
       indexPrefix: 'MOVE_',
       indexProperty: 'move',
       itemHandler: new StructHandler({
@@ -50,6 +50,7 @@ export const BattleMovesSourceDef: SourceFileDefinition<BattleMoves> = {
           getProp('priority', IntHandler),
           getProp('flags', new FlagsHandler({ itemPrefix: 'FLAG_' })),
           getProp('split', new ConstHandler({ prefix: 'SPLIT_' })),
+          getProp('argument', DefaultConstHandler),
           getProp('zMovePower', IntHandler),
           getProp('zMoveEffect', new ConstHandler({ prefix: 'Z_EFFECT_' })),
         ],

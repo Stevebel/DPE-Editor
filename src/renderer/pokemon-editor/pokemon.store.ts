@@ -4,11 +4,9 @@ import { makeAutoObservable } from 'mobx';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { ZodError } from 'zod';
-import { ToneData } from '../../common/file-handlers/files/cry-table';
 import { Evolution } from '../../common/file-handlers/files/evolution-table';
-import { LevelUpMove } from '../../common/file-handlers/files/learnsets';
+import { LevelUpMove } from '../../common/file-handlers/files/level-up-learnsets';
 import { AppIPC } from '../../common/ipc.interface';
-import { HabitatLk } from '../../common/lookup-values';
 import {
   BaseStatData,
   IPokemonData,
@@ -54,7 +52,7 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   dexEntry = '';
 
-  dexEntryConst: string | number = -1;
+  dexEntryConst = '';
 
   frontSprite = '';
 
@@ -65,12 +63,18 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   iconPalette = 0;
 
   frontCoords = {
-    size: 0,
+    size: {
+      width: 64,
+      height: 64,
+    },
     y_offset: 0,
   };
 
   backCoords = {
-    size: 0,
+    size: {
+      width: 64,
+      height: 64,
+    },
     y_offset: 0,
   };
 
@@ -86,21 +90,9 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   eggMoves: string[] = [];
 
-  cryData = {} as Omit<ToneData, 'species' | 'type'>;
-
-  footprint = 0;
-
-  itemAnimation = {
-    anim1: 22,
-    anim2: 27,
-    anim3: 48,
-    anim4: 22,
-    anim5: 41,
-  };
+  footprint = '';
 
   isAdditional = false;
-
-  habitat?: HabitatLk = 'Grassland';
 
   regionalDexNumber = 0;
 

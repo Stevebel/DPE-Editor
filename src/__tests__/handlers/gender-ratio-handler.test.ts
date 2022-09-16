@@ -21,6 +21,26 @@ describe('GenderRatioHandler', () => {
     expect(formatted).toBe('MON_GENDERLESS');
   });
 
+  it('should parse female', () => {
+    const result = GenderRatioHandler.parse('MON_FEMALE');
+    expect(result.value).toBe(100);
+  });
+
+  it('should format female', () => {
+    const formatted = GenderRatioHandler.format(100);
+    expect(formatted).toBe('MON_FEMALE');
+  });
+
+  it('should parse male', () => {
+    const result = GenderRatioHandler.parse('MON_MALE');
+    expect(result.value).toBe(0);
+  });
+
+  it('should format male', () => {
+    const formatted = GenderRatioHandler.format(0);
+    expect(formatted).toBe('MON_MALE');
+  });
+
   it('should throw an error if no ratio found', () => {
     expect(() => GenderRatioHandler.parse('FAKE')).toThrow();
   });

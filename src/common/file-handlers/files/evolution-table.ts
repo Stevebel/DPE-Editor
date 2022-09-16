@@ -20,7 +20,7 @@ export const EvolutionTableSourceDef: SourceFileDefinition<EvolutionTable> = {
   location: [
     {
       folder: 'src',
-      fileName: 'src/Evolution Table.c',
+      fileName: 'src/data/pokemon/evolution.h',
     },
   ],
   schema: {

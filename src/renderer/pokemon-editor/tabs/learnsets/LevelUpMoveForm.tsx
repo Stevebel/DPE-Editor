@@ -23,7 +23,7 @@ export function LevelUpMoveForm(props: LevelUpFormProps) {
         <Box
           className="common-form"
           sx={{
-            maxWidth: 700,
+            maxWidth: 800,
             '&:hover': {
               cursor: 'pointer',
               backgroundColor: 'rgba(0, 0, 0, 0.05)',

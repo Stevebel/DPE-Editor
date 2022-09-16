@@ -33,7 +33,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
         'file',
         new ConstHandler({
           prefix: 'INCBIN_U32("graphics/pokemon/',
-          suffix: '.4bpp.lz");',
+          suffix: '.4bpp.lz")',
         })
       ),
     }),
@@ -45,7 +45,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
         'file',
         new ConstHandler({
           prefix: 'INCBIN_U32("graphics/pokemon/',
-          suffix: '.4bpp.lz");',
+          suffix: '.4bpp.lz")',
         })
       ),
     }),
@@ -57,7 +57,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
         'file',
         new ConstHandler({
           prefix: 'INCBIN_U32("graphics/pokemon/',
-          suffix: '.gbapal.lz");',
+          suffix: '.gbapal.lz")',
         })
       ),
     }),
@@ -69,7 +69,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
         'file',
         new ConstHandler({
           prefix: 'INCBIN_U32("graphics/pokemon/',
-          suffix: '.gbapal.lz");',
+          suffix: '.gbapal.lz")',
         })
       ),
     }),
@@ -81,7 +81,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
         'file',
         new ConstHandler({
           prefix: 'INCBIN_U8("graphics/pokemon/',
-          suffix: '.4bpp");',
+          suffix: '.4bpp")',
         })
       ),
     }),
@@ -93,7 +93,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
         'file',
         new ConstHandler({
           prefix: 'INCBIN_U8("graphics/pokemon/',
-          suffix: '.1bpp");',
+          suffix: '.1bpp")',
         })
       ),
     }),

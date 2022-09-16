@@ -48,7 +48,7 @@ export const BaseStatsSourceDef: SourceFileDefinition<BaseStats> = {
   location: [
     {
       folder: 'src',
-      fileName: 'src/Base_Stats.c',
+      fileName: 'src/data/pokemon/base_stats.h',
     },
   ],
   schema: {
