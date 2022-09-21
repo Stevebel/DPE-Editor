@@ -3,16 +3,13 @@ import { ArrayHandler } from '../handlers/array-handler';
 import { ConstHandler } from '../handlers/const-handler';
 import { IntHandler } from '../handlers/number-handlers';
 import { getProp } from '../handlers/struct-handler';
+import { SpeciesMapping } from './pic-table';
 
 export type IconTable = {
-  icons: IconMapping[];
-  iconsFemale: IconMapping[];
+  icons: SpeciesMapping[];
+  iconsFemale: SpeciesMapping[];
   palettes: IconPalette[];
-};
-
-export type IconMapping = {
-  species: string;
-  icon: string;
+  palettesFemale: IconPalette[];
 };
 
 export type IconPalette = {
@@ -28,20 +25,26 @@ export const IconTableSourceDef: SourceFileDefinition<IconTable> = {
     },
   ],
   schema: {
-    icons: new ArrayHandler<IconMapping>({
+    icons: new ArrayHandler<SpeciesMapping>({
       definition: 'const u8 *const gMonIconTable[]',
       indexProperty: 'species',
       indexPrefix: 'SPECIES_',
-      propHandler: getProp('icon', new ConstHandler({ prefix: 'gMonIcon_' })),
+      propHandler: getProp('name', new ConstHandler({ prefix: 'gMonIcon_' })),
     }),
-    iconsFemale: new ArrayHandler<IconMapping>({
+    iconsFemale: new ArrayHandler<SpeciesMapping>({
       definition: 'const u8 *const gMonIconTableFemale[]',
       indexProperty: 'species',
       indexPrefix: 'SPECIES_',
-      propHandler: getProp('icon', new ConstHandler({ prefix: 'gMonIcon_' })),
+      propHandler: getProp('name', new ConstHandler({ prefix: 'gMonIcon_' })),
     }),
     palettes: new ArrayHandler<IconPalette>({
       definition: 'const u8 gMonIconPaletteIndices[]',
+      indexProperty: 'species',
+      indexPrefix: 'SPECIES_',
+      propHandler: getProp('palette', IntHandler),
+    }),
+    palettesFemale: new ArrayHandler<IconPalette>({
+      definition: 'const u8 gMonIconPaletteIndicesFemale[]',
       indexProperty: 'species',
       indexPrefix: 'SPECIES_',
       propHandler: getProp('palette', IntHandler),

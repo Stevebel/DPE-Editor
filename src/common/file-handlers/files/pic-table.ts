@@ -4,13 +4,13 @@ import { FunctionArrayHandler } from '../handlers/function-array-handler';
 import { getProp } from '../handlers/struct-handler';
 
 export type PicTable = {
-  pics: CompressedSpriteSheet[];
-  femalePics: CompressedSpriteSheet[];
+  pics: SpeciesMapping[];
+  femalePics: SpeciesMapping[];
 };
 
-export type CompressedSpriteSheet = {
+export type SpeciesMapping = {
   species: string;
-  spriteConst: string;
+  name: string;
 };
 
 function getPicTableSourceDef(
@@ -27,23 +27,23 @@ function getPicTableSourceDef(
       },
     ],
     schema: {
-      pics: new FunctionArrayHandler<CompressedSpriteSheet>({
+      pics: new FunctionArrayHandler<SpeciesMapping>({
         definition: `const struct CompressedSpriteSheet ${arrayName}[]`,
         functionConfig: {
           functionName: 'SPECIES_SPRITE',
           parameterProps: [
             getProp('species', DefaultConstHandler),
-            getProp('spriteConst', new ConstHandler({ prefix })),
+            getProp('name', new ConstHandler({ prefix })),
           ],
         },
       }),
-      femalePics: new FunctionArrayHandler<CompressedSpriteSheet>({
+      femalePics: new FunctionArrayHandler<SpeciesMapping>({
         definition: `const struct CompressedSpriteSheet ${femaleArrayName}[]`,
         functionConfig: {
           functionName: 'SPECIES_SPRITE',
           parameterProps: [
             getProp('species', DefaultConstHandler),
-            getProp('spriteConst', new ConstHandler({ prefix })),
+            getProp('name', new ConstHandler({ prefix })),
           ],
         },
       }),

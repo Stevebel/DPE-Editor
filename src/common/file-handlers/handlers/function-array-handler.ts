@@ -39,7 +39,7 @@ export class FunctionArrayHandler<T = string>
         ? this.config.functionConfig
         : this.config.functionConfig.functionName;
     this.lineRe =
-      this.config.functionConfig === 'string'
+      typeof this.config.functionConfig === 'string'
         ? new RegExp(`${functionName + /\(\s*(\w+)\s*\)/.source}\\s*,?`, 'g')
         : new RegExp(`(${functionName + /\(.+?\)/.source})\\s*,?`, 'g');
     if (typeof this.config.functionConfig !== 'string') {

@@ -1,8 +1,8 @@
 import { ParseData, SourceValueHandler } from '../file-handler.interface';
 import { DefineCountHandlerConfig, DEFINE_BASE_RE } from './defines-handler';
 
-const DEFINE_COUNT_ADD_ONE_END_RE = /\s+\(?(\w+)\s*\+\s*1\)?\s*/g;
-const DEFINE_COUNT_END_RE = /\s+\(?(\w+)\s*\)?\s*/g;
+const DEFINE_COUNT_ADD_ONE_END_RE = /\s+\(?(\w+)\s*\+\s*1\)?/g;
+const DEFINE_COUNT_END_RE = /\s+(\w+)/g;
 
 export default class DefineCountHandler implements SourceValueHandler<string> {
   private re: RegExp;

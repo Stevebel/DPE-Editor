@@ -58,12 +58,14 @@ export const PokemonConstsSourceDef: SourceFileDefinition<PokemonConsts> = {
     frontAnimIds: new ArrayHandler<AnimId>({
       definition: 'const u8 sMonFrontAnimIdsTable[NUM_SPECIES - 1]',
       indexProperty: 'speciesConst',
+      indexPrefix: 'SPECIES_',
       indexSuffix: ' - 1',
       propHandler: getProp('anim', new ConstHandler({ prefix: 'ANIM_' })),
     }),
     animationDelays: new ArrayHandler<SpeciesNumber>({
       definition: 'static const u8 sMonAnimationDelayTable[NUM_SPECIES - 1]',
       indexProperty: 'speciesConst',
+      indexPrefix: 'SPECIES_',
       indexSuffix: ' - 1',
       propHandler: getProp('num', IntHandler),
     }),

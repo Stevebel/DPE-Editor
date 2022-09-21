@@ -1,5 +1,7 @@
 /* eslint-disable no-case-declarations */
 import { z } from 'zod';
+import { GraphicsEntry } from './file-handlers/files/graphics-data';
+import { SpeciesMapping } from './file-handlers/files/pic-table';
 import { EvoByOtherSpecies, EvoByType, getMethodGroup } from './lookup-values';
 import {
   AllPokemonData,
@@ -7,6 +9,22 @@ import {
   IPokemonSpeciesData,
 } from './pokemon-data.interface';
 import { PokemonSourceData } from './pokemon-source-data.interface';
+
+function getGraphicFile(
+  species: string,
+  table: SpeciesMapping[],
+  entries: GraphicsEntry[]
+) {
+  const name = table.find((pic) => pic.species === species)?.name;
+  const file = entries.find((pic) => pic.name === name)?.file;
+  if (name && file) {
+    return {
+      name,
+      file,
+    };
+  }
+  return undefined;
+}
 
 export function formatSourceData(
   sourceData: PokemonSourceData
@@ -57,8 +75,6 @@ export function formatSourceData(
     }
   );
   pokedexToSpecies.NONE = ['NONE'];
-  // console.log(pokemonConsts.speciesToNationalPokedexNum);
-
   const pokemon: IPokemonData[] = pokedexEntries.pokedexEntries.map(
     ({
       nationalDex,
@@ -76,7 +92,6 @@ export function formatSourceData(
       if (nationalDexNumber < 0) {
         throw new Error(`No national dex const for ${nationalDex}`);
       }
-      let regionalDexNumber: number | undefined;
       if (!pokedexToSpecies[nationalDex]) {
         throw new Error(`No species found for ${nationalDex}`);
       }
@@ -97,24 +112,73 @@ export function formatSourceData(
           (c) => c.dexEntryConst === description
         )?.dexEntry;
 
-        if (regionalDexNumber === undefined) {
-          const idx = pokedexConsts.regionalDexConsts.indexOf(speciesName);
-          if (idx > -1) {
-            regionalDexNumber = idx + 1;
-          }
+        let regionalDexNumber: number | undefined;
+        const idx = pokedexConsts.regionalDexConsts.indexOf(speciesName) + 1;
+        if (idx > 0) {
+          regionalDexNumber = idx + 1;
         }
 
-        const frontSprite = frontPicTable.pics.find(
-          (pic) => pic.species === speciesName
-        )?.spriteConst;
-        const backShinySprite = backPicTable.pics.find(
-          (pic) => pic.species === speciesName
-        )?.spriteConst;
-        const iconSprite = iconTable.icons.find(
-          (icon) => icon.species === speciesName
-        )?.icon;
+        const frontSprite = getGraphicFile(
+          speciesName,
+          frontPicTable.pics,
+          graphicsData.frontPics
+        );
+        const backSprite = getGraphicFile(
+          speciesName,
+          backPicTable.pics,
+          graphicsData.backPics
+        );
+        const palette = getGraphicFile(
+          speciesName,
+          paletteTable.palettes,
+          graphicsData.palettes
+        );
+        const shinyPalette = getGraphicFile(
+          speciesName,
+          shinyPaletteTable.palettes,
+          graphicsData.palettes
+        );
+        const iconSprite = getGraphicFile(
+          speciesName,
+          iconTable.icons,
+          graphicsData.icons
+        );
+        const footprint = getGraphicFile(
+          speciesName,
+          footprintTable.footprints,
+          graphicsData.footprints
+        );
         const iconPalette = iconTable.palettes.find(
-          (palette) => palette.species === speciesName
+          (p) => p.species === speciesName
+        )?.palette;
+
+        const femaleFrontSprite = getGraphicFile(
+          speciesName,
+          frontPicTable.femalePics,
+          graphicsData.frontPics
+        );
+        const femaleBackSprite = getGraphicFile(
+          speciesName,
+          backPicTable.femalePics,
+          graphicsData.backPics
+        );
+        const femalePalette = getGraphicFile(
+          speciesName,
+          paletteTable.femalePalettes,
+          graphicsData.palettes
+        );
+        const femaleShinyPalette = getGraphicFile(
+          speciesName,
+          shinyPaletteTable.femalePalettes,
+          graphicsData.palettes
+        );
+        const femaleIconSprite = getGraphicFile(
+          speciesName,
+          iconTable.iconsFemale,
+          graphicsData.icons
+        );
+        const femaleIconPalette = iconTable.palettesFemale.find(
+          (p) => p.species === speciesName
         )?.palette;
 
         const frontCoords = frontPicCoords.picCoords.find(
@@ -182,48 +246,69 @@ export function formatSourceData(
           (e) => e.species === speciesName
         )?.moves;
 
-        const footprint = footprintTable.footprints.find(
-          (f) => f.species === speciesName
-        )?.footprint;
+        const frontAnimId = pokemonConsts.frontAnimIds.find(
+          (a) => a.speciesConst === speciesName
+        )?.anim;
 
-        return {
+        const backAnimId = pokemonAnimation.backAnims.find(
+          (a) => a.species === speciesName
+        )?.anim;
+
+        const animationDelay = pokemonConsts.animationDelays.find(
+          (a) => a.speciesConst === speciesName
+        )?.num;
+
+        const out: IPokemonSpeciesData = {
           species: speciesName,
           speciesNumber: sp.number,
-
           name: pokemonName.name,
           nameConst: pokemonName.nameConst,
-
+          prettyConst: description || levelUpLearnsetConst || '',
           dexEntry,
           dexEntryConst: description,
-
-          frontSprite,
-          backShinySprite,
-          iconSprite,
-          iconPalette,
-
+          graphics: {
+            frontSprite,
+            backSprite,
+            palette,
+            shinyPalette,
+            iconSprite,
+            iconPalette,
+          },
+          femaleGraphics:
+            femaleFrontSprite || femalePalette
+              ? {
+                  frontSprite: femaleFrontSprite,
+                  backSprite: femaleBackSprite,
+                  palette: femalePalette,
+                  shinyPalette: femaleShinyPalette,
+                  iconSprite: femaleIconSprite,
+                  iconPalette: femaleIconPalette,
+                }
+              : undefined,
           frontCoords,
           backCoords,
           enemyElevation,
-
+          frontAnimId,
+          backAnimId,
+          animationDelay,
           baseStats,
           evolutions,
-          learnsetConst: levelUpLearnsetConst,
           learnset: levelUpLearnset,
-          teachableMovesConst: teachableLearnsetConst,
+          learnsetConst: levelUpLearnsetConst,
           teachableMoves: teachableLearnset,
+          teachableMovesConst: teachableLearnsetConst,
           eggMoves,
-
           footprint,
-
           isAdditional,
           regionalDexNumber,
         };
+        return out;
       });
 
       return {
         nationalDex,
         nationalDexNumber,
-        regionalDexNumber,
+        regionalDexNumber: pokemonSpecies[0].regionalDexNumber,
 
         categoryName,
         height: height / 10,

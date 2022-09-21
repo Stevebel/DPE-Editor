@@ -119,6 +119,7 @@ const EvoByItem = z.object({
     'ITEM_HOLD_DAY',
     'ITEM_HOLD_NIGHT',
     'ITEM_HOLD',
+    'ITEM_MALE',
   ]),
   targetSpecies: zConst,
   param: zConst,

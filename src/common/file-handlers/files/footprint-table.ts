@@ -2,14 +2,10 @@ import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
 import { ConstHandler } from '../handlers/const-handler';
 import { getProp } from '../handlers/struct-handler';
-
-export type Footprint = {
-  species: string;
-  footprint: string;
-};
+import { SpeciesMapping } from './pic-table';
 
 export type FootprintTable = {
-  footprints: Footprint[];
+  footprints: SpeciesMapping[];
 };
 
 export const FootprintTableSourceDef: SourceFileDefinition<FootprintTable> = {
@@ -20,12 +16,12 @@ export const FootprintTableSourceDef: SourceFileDefinition<FootprintTable> = {
     },
   ],
   schema: {
-    footprints: new ArrayHandler<Footprint>({
+    footprints: new ArrayHandler<SpeciesMapping>({
       definition: 'const u8 *const gMonFootprintTable[]',
       indexProperty: 'species',
       indexPrefix: 'SPECIES_',
       propHandler: getProp(
-        'footprint',
+        'name',
         new ConstHandler({ prefix: 'gMonFootprint_' })
       ),
     }),

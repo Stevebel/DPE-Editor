@@ -2,15 +2,11 @@ import { SourceFileDefinition } from '../file-handler.interface';
 import { ConstHandler, DefaultConstHandler } from '../handlers/const-handler';
 import { FunctionArrayHandler } from '../handlers/function-array-handler';
 import { getProp } from '../handlers/struct-handler';
-
-export type CompressedSpritePalette = {
-  species: string;
-  sprite: string;
-};
+import { SpeciesMapping } from './pic-table';
 
 export type PaletteTable = {
-  palettes: CompressedSpritePalette[];
-  femalePalettes: CompressedSpritePalette[];
+  palettes: SpeciesMapping[];
+  femalePalettes: SpeciesMapping[];
 };
 
 function getPaletteTableSourceDef(
@@ -28,23 +24,23 @@ function getPaletteTableSourceDef(
       },
     ],
     schema: {
-      palettes: new FunctionArrayHandler<CompressedSpritePalette>({
+      palettes: new FunctionArrayHandler<SpeciesMapping>({
         definition: `const struct CompressedSpritePalette ${definition}[]`,
         functionConfig: {
           functionName,
           parameterProps: [
             getProp('species', DefaultConstHandler),
-            getProp('sprite', new ConstHandler({ prefix })),
+            getProp('name', new ConstHandler({ prefix })),
           ],
         },
       }),
-      femalePalettes: new FunctionArrayHandler<CompressedSpritePalette>({
+      femalePalettes: new FunctionArrayHandler<SpeciesMapping>({
         definition: `const struct CompressedSpritePalette ${femaleDefinition}[]`,
         functionConfig: {
           functionName,
           parameterProps: [
             getProp('species', DefaultConstHandler),
-            getProp('sprite', new ConstHandler({ prefix })),
+            getProp('name', new ConstHandler({ prefix })),
           ],
         },
       }),

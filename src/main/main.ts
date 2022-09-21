@@ -5,7 +5,7 @@ import { app, BrowserWindow, dialog, ipcMain, protocol, shell } from 'electron';
 import log from 'electron-log';
 import ElectronStore from 'electron-store';
 import { autoUpdater } from 'electron-updater';
-import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import path from 'path';
@@ -78,6 +78,7 @@ async function loadFiles() {
     }
 
     pokemonData = formatSourceData(rawData);
+    pokemonData.source = rawData;
     let channel: IPCChannel = 'pokemon-source-data';
     mainWindow.webContents.send(channel, pokemonData);
 
@@ -365,16 +366,17 @@ async function saveFiles(data: AllPokemonData) {
         const configPath = path.join(folderPath, 'config.ini');
         // Create folder if it doesn't exist
         if (!existsSync(folderPath)) {
-          mkdirSync(folderPath);
-          // Copy sprites.png and icons.png from 'guice' folder
-          copyFileSync(
-            path.join(store.get('assetsFolder'), 'guice', 'sprites.png'),
-            path.join(folderPath, 'sprites.png')
-          );
-          copyFileSync(
-            path.join(store.get('assetsFolder'), 'guice', 'icons.png'),
-            path.join(folderPath, 'icons.png')
-          );
+          // mkdirSync(folderPath);
+          // // Copy sprites.png and icons.png from 'guice' folder
+          // copyFileSync(
+          //   path.join(store.get('assetsFolder'), 'guice', 'sprites.png'),
+          //   path.join(folderPath, 'sprites.png')
+          // );
+          // copyFileSync(
+          //   path.join(store.get('assetsFolder'), 'guice', 'icons.png'),
+          //   path.join(folderPath, 'icons.png')
+          // );
+          return;
         }
         // Create config.ini if it doesn't exist
         const configContent =

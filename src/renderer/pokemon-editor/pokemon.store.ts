@@ -31,14 +31,31 @@ function formatSpeciesConst(species: string): string {
   return clean;
 }
 
-function formatSpriteConst(species: string, speciesNumber: number) {
-  return `${speciesNumber.toString().padStart(3, '0')}${snakeCaseToCamelCase(
-    species
-  )}`;
+function formatSpriteConst(species: string) {
+  return `${snakeCaseToCamelCase(species)}`;
 }
 
 function formatLearnsetConst(species: string) {
-  return `${snakeCaseToCamelCase(species)}LevelUpLearnset`;
+  return `${snakeCaseToCamelCase(species)}`;
+}
+
+function getEmptyGraphicEntry() {
+  return {
+    name: '',
+    file: '',
+  };
+}
+
+function getEmptyGraphics() {
+  return {
+    frontSprite: getEmptyGraphicEntry(),
+    backSprite: getEmptyGraphicEntry(),
+    palette: getEmptyGraphicEntry(),
+    shinyPalette: getEmptyGraphicEntry(),
+    iconSprite: getEmptyGraphicEntry(),
+    footprint: getEmptyGraphicEntry(),
+    iconPalette: 0,
+  };
 }
 
 export class PokemonSpeciesData implements IPokemonSpeciesData {
@@ -48,19 +65,15 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   nameConst = '';
 
+  prettyConst = '';
+
   speciesNumber = -1;
 
   dexEntry = '';
 
   dexEntryConst = '';
 
-  frontSprite = '';
-
-  backShinySprite = '';
-
-  iconSprite = '';
-
-  iconPalette = 0;
+  graphics = getEmptyGraphics();
 
   frontCoords = {
     size: {
@@ -78,6 +91,12 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
     y_offset: 0,
   };
 
+  frontAnimId = '';
+
+  backAnimId = '';
+
+  animationDelay = 0;
+
   enemyElevation = 0;
 
   baseStats = {} as BaseStatData;
@@ -89,8 +108,6 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   learnsetConst = '';
 
   eggMoves: string[] = [];
-
-  footprint = '';
 
   isAdditional = false;
 
@@ -124,11 +141,8 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
       if (this.species !== formatSpeciesConst(this.name)) {
         this.manualSpecies = true;
       }
-      const expectedSpriteConst = formatSpriteConst(
-        this.species,
-        this.speciesNumber
-      );
-      this.spriteConst = this.frontSprite || expectedSpriteConst;
+      const expectedSpriteConst = formatSpriteConst(this.species);
+      this.spriteConst = this.graphics.frontSprite?.name || expectedSpriteConst;
       this.manualSpriteConst = this.spriteConst !== expectedSpriteConst;
 
       if (
@@ -169,13 +183,13 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
       this.pokemon.updatePath(this.species, ['nationalDex']);
     }
     if (this.dexEntry) {
-      this.dexEntryConst = this.species;
+      this.dexEntryConst = this.prettyConst;
     }
     if (!this.manualLearnsetConst) {
       this.learnsetConst = formatLearnsetConst(this.species);
     }
     if (!this.manualSpriteConst) {
-      this.setSpriteConst(formatSpriteConst(this.species, this.speciesNumber));
+      this.setSpriteConst(formatSpriteConst(this.species));
     } else {
       this.performErrorCheck();
     }
@@ -184,15 +198,15 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   setDexEntry(dexEntry: string) {
     console.log('Dex entry:', dexEntry);
     this.dexEntry = dexEntry;
-    this.dexEntryConst = this.species;
+    this.dexEntryConst = this.prettyConst;
     this.performErrorCheck();
   }
 
   setSpriteConst(spriteConst: string) {
     this.spriteConst = spriteConst;
-    this.frontSprite = spriteConst;
-    this.backShinySprite = spriteConst;
-    this.iconSprite = spriteConst;
+    // this.frontSprite = spriteConst;
+    // this.backSprite = spriteConst;
+    // this.iconSprite = spriteConst;
     this.performErrorCheck();
   }
 
@@ -405,7 +419,7 @@ export class PokemonStore {
         ...this.selectedSpecies,
         species: `${this.selectedSpecies?.species || ''}_NEW`,
         speciesNumber: this.nextSpeciesNumber,
-        frontSprite: undefined,
+        graphics: getEmptyGraphics(),
       });
       newSpecies.manualSpecies = true;
       pokemon.species = [...pokemon.species, newSpecies];

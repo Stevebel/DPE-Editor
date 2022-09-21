@@ -57,20 +57,36 @@ export const LevelUpMoveSchema = z.object({
   move: zConst,
 });
 
+export const GraphicFileSchema = z.object({
+  name: zConst,
+  file: z.string(),
+});
+
+export const GraphicsFilesSchema = z.object({
+  frontSprite: GraphicFileSchema.optional(),
+  backSprite: GraphicFileSchema.optional(),
+  palette: GraphicFileSchema.optional(),
+  shinyPalette: GraphicFileSchema.optional(),
+  iconSprite: GraphicFileSchema.optional(),
+  iconPalette: z.number().nonnegative().lte(9).optional(),
+});
+
 export const PokemonSpeciesDataSchema = z.object({
   species: zConst,
   speciesNumber: z.number().nonnegative(),
   name: z.string().max(10),
   nameConst: zConst,
+  prettyConst: zConst,
   dexEntry: z.string().max(170).optional(),
   dexEntryConst: zConst,
-  frontSprite: z.string().optional(),
-  backShinySprite: z.string().optional(),
-  iconSprite: z.string().optional(),
-  iconPalette: z.number().nonnegative().lte(9).optional(),
+  graphics: GraphicsFilesSchema,
+  femaleGraphics: GraphicsFilesSchema.optional(),
   frontCoords: PicCoordsSchema.omit({ species: true }).optional(),
   backCoords: PicCoordsSchema.omit({ species: true }).optional(),
   enemyElevation: z.number().nonnegative(),
+  frontAnimId: zConst.optional(),
+  backAnimId: zConst.optional(),
+  animationDelay: zUByte.optional(),
   baseStats: BaseStatSchema.partial().optional(),
   evolutions: z.array(EvolutionSchema).optional(),
   learnset: z.array(LevelUpMoveSchema).optional(),
@@ -78,7 +94,7 @@ export const PokemonSpeciesDataSchema = z.object({
   teachableMoves: z.array(zConst).optional(),
   teachableMovesConst: zConst.optional(),
   eggMoves: z.array(zConst).optional(),
-  footprint: zConst.optional(),
+  footprint: GraphicFileSchema.optional(),
   isAdditional: z.boolean(),
   regionalDexNumber: zDexNumber.optional(),
 });

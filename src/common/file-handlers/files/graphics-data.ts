@@ -13,7 +13,7 @@ export type GraphicsData = {
 };
 
 export type GraphicsEntry = {
-  species: string;
+  name: string;
   file: string;
 };
 
@@ -28,7 +28,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
     frontPics: new ConstDefinitionHandler({
       definitionPrefix: 'const u32 gMonFrontPic_',
       definitionSuffix: '[]',
-      indexProperty: 'species',
+      indexProperty: 'name',
       propHandler: getProp(
         'file',
         new ConstHandler({
@@ -40,7 +40,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
     backPics: new ConstDefinitionHandler({
       definitionPrefix: 'const u32 gMonBackPic_',
       definitionSuffix: '[]',
-      indexProperty: 'species',
+      indexProperty: 'name',
       propHandler: getProp(
         'file',
         new ConstHandler({
@@ -52,7 +52,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
     palettes: new ConstDefinitionHandler({
       definitionPrefix: 'const u32 gMonPalette_',
       definitionSuffix: '[]',
-      indexProperty: 'species',
+      indexProperty: 'name',
       propHandler: getProp(
         'file',
         new ConstHandler({
@@ -64,7 +64,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
     shinyPalettes: new ConstDefinitionHandler({
       definitionPrefix: 'const u32 gMonShinyPalette_',
       definitionSuffix: '[]',
-      indexProperty: 'species',
+      indexProperty: 'name',
       propHandler: getProp(
         'file',
         new ConstHandler({
@@ -76,7 +76,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
     icons: new ConstDefinitionHandler({
       definitionPrefix: 'const u8 gMonIcon_',
       definitionSuffix: '[]',
-      indexProperty: 'species',
+      indexProperty: 'name',
       propHandler: getProp(
         'file',
         new ConstHandler({
@@ -88,7 +88,7 @@ export const GraphicsDataSourceDef: SourceFileDefinition<GraphicsData> = {
     footprints: new ConstDefinitionHandler({
       definitionPrefix: 'const u8 gMonFootprint_',
       definitionSuffix: '[]',
-      indexProperty: 'species',
+      indexProperty: 'name',
       propHandler: getProp(
         'file',
         new ConstHandler({

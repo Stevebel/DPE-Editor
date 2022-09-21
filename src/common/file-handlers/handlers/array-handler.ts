@@ -15,6 +15,7 @@ export type ArrayHandlerConfig<T> = {
   indexSuffix?: string;
   itemHandler?: SourceValueHandler<T>;
   propHandler?: StructProp<T>;
+  formatInline?: boolean;
 };
 
 export class ArrayHandler<T> implements SourceValueHandler<T[]> {
@@ -118,21 +119,27 @@ export class ArrayHandler<T> implements SourceValueHandler<T[]> {
         'Must provide at least one of itemHandler or propHandler'
       );
     }
-    return `${
-      this.config.definition ? `${this.config.definition} = ` : ''
-    }{\n${value
+    return `${this.config.definition ? `${this.config.definition} = ` : ''}{${
+      this.config.formatInline ? '' : '\n'
+    }${value
       .map((v) => {
-        let out = '\t';
+        let out = this.config.formatInline ? '' : '\t';
         if (this.config.indexProperty) {
           out += `[${this.config.indexPrefix}${v[this.config.indexProperty]}${
             this.config.indexSuffix || ''
           }] = `;
         }
-        out += `${itemHandler.format(v).replace(/\n/g, '\n\t')},\n`;
+        out += `${itemHandler.format(v).replace(/\n/g, '\n\t')},${
+          this.config.formatInline ? '' : '\n'
+        }`;
         return out;
       })
       .join('')}${
-      this.config.terminator ? `\t${this.config.terminator}\n` : ''
+      this.config.terminator
+        ? `${this.config.formatInline ? '' : '\t'}${this.config.terminator}${
+            this.config.formatInline ? '' : '\n'
+          }`
+        : ''
     }}`;
   }
 }

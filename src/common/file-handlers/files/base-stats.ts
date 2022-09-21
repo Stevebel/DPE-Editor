@@ -86,6 +86,7 @@ export const BaseStatsSourceDef: SourceFileDefinition<BaseStats> = {
             'abilities',
             new ArrayHandler<string>({
               itemHandler: new ConstHandler({ prefix: 'ABILITY_' }),
+              formatInline: true,
             })
           ),
           getProp('safariZoneFleeRate', IntHandler),

@@ -24,13 +24,13 @@ export const TeachableLearnsetsSourceDef: SourceFileDefinition<TeachableLearnset
     schema: {
       learnsets: new ConstDefinitionHandler<TeachableLearnset>({
         indexProperty: 'learnsetConst',
-        definitionPrefix: 'static const struct LevelUpMove s',
-        definitionSuffix: 'LevelUpLearnset[]',
+        definitionPrefix: 'static const u16 s',
+        definitionSuffix: 'TeachableLearnset[]',
         propHandler: getProp(
           'moves',
           new ArrayHandler<string>({
             itemHandler: new ConstHandler({ prefix: 'MOVE_' }),
-            terminator: 'MOVE_UNAVAILABLE',
+            terminator: 'MOVE_UNAVAILABLE,',
           })
         ),
       }),
