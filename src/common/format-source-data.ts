@@ -136,7 +136,7 @@ export function formatSourceData(
         const shinyPalette = getGraphicFile(
           speciesName,
           shinyPaletteTable.palettes,
-          graphicsData.palettes
+          graphicsData.shinyPalettes
         );
         const iconSprite = getGraphicFile(
           speciesName,
@@ -170,7 +170,7 @@ export function formatSourceData(
         const femaleShinyPalette = getGraphicFile(
           speciesName,
           shinyPaletteTable.femalePalettes,
-          graphicsData.palettes
+          graphicsData.shinyPalettes
         );
         const femaleIconSprite = getGraphicFile(
           speciesName,
@@ -254,8 +254,17 @@ export function formatSourceData(
           (a) => a.species === speciesName
         )?.anim;
 
+        const prettyConst = description || levelUpLearnsetConst || '';
+        const animConst = frontPicAnims.animTable.find(
+          (a) => a.species === speciesName
+        )?.animCollectionConst;
+        const frontAnimFrames = animConst
+          ? frontPicAnims.anims.find((a) => a.animConst === `${animConst}_1`)
+              ?.animFrames
+          : undefined;
+
         const animationDelay = pokemonConsts.animationDelays.find(
-          (a) => a.speciesConst === speciesName
+          (a) => a.speciesConst === nationalDex
         )?.num;
 
         const out: IPokemonSpeciesData = {
@@ -263,7 +272,7 @@ export function formatSourceData(
           speciesNumber: sp.number,
           name: pokemonName.name,
           nameConst: pokemonName.nameConst,
-          prettyConst: description || levelUpLearnsetConst || '',
+          prettyConst,
           dexEntry,
           dexEntryConst: description,
           graphics: {
@@ -290,6 +299,8 @@ export function formatSourceData(
           enemyElevation,
           frontAnimId,
           backAnimId,
+          animConst,
+          frontAnimFrames,
           animationDelay,
           baseStats,
           evolutions,

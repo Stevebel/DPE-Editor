@@ -1,4 +1,5 @@
 export interface SourceFileDefinition<T> {
+  debug?: boolean;
   location: SourceLocation[];
   schema: {
     [K in keyof T]?: SourceValueHandler<T[K]>;

@@ -61,9 +61,9 @@ export const BaseStatsSourceDef: SourceFileDefinition<BaseStats> = {
           getProp('baseHP', IntHandler),
           getProp('baseAttack', IntHandler),
           getProp('baseDefense', IntHandler),
+          getProp('baseSpeed', IntHandler),
           getProp('baseSpAttack', IntHandler),
           getProp('baseSpDefense', IntHandler),
-          getProp('baseSpeed', IntHandler),
           getProp('type1', new ConstHandler({ prefix: 'TYPE_' })),
           getProp('type2', new ConstHandler({ prefix: 'TYPE_' })),
           getProp('catchRate', IntHandler),
@@ -71,9 +71,9 @@ export const BaseStatsSourceDef: SourceFileDefinition<BaseStats> = {
           getProp('evYield_HP', IntHandler),
           getProp('evYield_Attack', IntHandler),
           getProp('evYield_Defense', IntHandler),
+          getProp('evYield_Speed', IntHandler),
           getProp('evYield_SpAttack', IntHandler),
           getProp('evYield_SpDefense', IntHandler),
-          getProp('evYield_Speed', IntHandler),
           getProp('itemCommon', new ConstHandler({ prefix: 'ITEM_' })),
           getProp('itemRare', new ConstHandler({ prefix: 'ITEM_' })),
           getProp('genderRatio', GenderRatioHandler),
@@ -90,8 +90,8 @@ export const BaseStatsSourceDef: SourceFileDefinition<BaseStats> = {
             })
           ),
           getProp('safariZoneFleeRate', IntHandler),
-          getProp('noFlip', BooleanHandler),
           getProp('bodyColor', new ConstHandler({ prefix: 'BODY_COLOR_' })),
+          getProp('noFlip', BooleanHandler),
           getProp(
             'flags',
             new FlagHandler({

@@ -54,18 +54,22 @@ export class CommentSeparatedSectionHandler<T>
     const rawData = raw.substring(dataStart, dataEnd);
     const parsed = this.config.handler.parse(rawData);
     return {
-      start: start != null ? start : parsed.start,
+      start: start != null ? start : dataStart + parsed.start,
       end: end != null ? end : dataStart + parsed.end,
       value: parsed.value,
     };
   }
 
   format(data: T): string {
+    const formatted = this.config.handler.format(data);
     if (this.config.outputComment) {
-      return `\n${this.startComment || ''}\n${this.config.handler.format(
-        data
-      )}\n${this.endComment || ''}`;
+      if (formatted.length === 0) {
+        return this.startComment || this.endComment || '';
+      }
+      return `\n${this.startComment || ''}\n${formatted}\n${
+        this.endComment || ''
+      }`;
     }
-    return this.config.handler.format(data);
+    return formatted;
   }
 }

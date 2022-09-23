@@ -54,7 +54,7 @@ export const FrontPicAnimsSourceDef: SourceFileDefinition<FrontPicAnims> = {
               getProp('duration', IntHandler),
             ],
           },
-          terminator: 'ANIMCMD_END',
+          terminator: 'ANIMCMD_END,',
         })
       ),
     }),

@@ -42,6 +42,7 @@ export const EvolutionTableSourceDef: SourceFileDefinition<EvolutionTable> = {
                 new ConstHandler({ prefix: 'SPECIES_' })
               ),
             ],
+            inline: true,
           }),
           formatInline: true,
         })

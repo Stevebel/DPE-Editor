@@ -78,4 +78,15 @@ describe('CommentSeparatedSectionHandler', () => {
     const data = handler.format(END_COMMENT_SAMPLE_DATA);
     expect(data.trim()).toEqual(END_COMMENT_FORMATTED);
   });
+
+  it('should parse a comment started setion with no content', () => {
+    const handler = new CommentSeparatedSectionHandler({
+      handler: START_COMMENT_CONFIG.handler,
+      startComment: 'Extra species',
+    });
+    const data = handler.parse('// Extra species\n\n');
+    expect(data.value).toEqual([]);
+    expect(data.start).toEqual('// Extra species'.length);
+    expect(data.end).toEqual('// Extra species'.length);
+  });
 });

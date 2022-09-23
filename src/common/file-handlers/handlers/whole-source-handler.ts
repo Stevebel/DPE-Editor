@@ -12,7 +12,10 @@ export default class WholeSourceHandler<T> implements SourceValueHandler<T> {
 
   source?: string;
 
-  constructor(private schema: SourceFileDefinition<T>['schema']) {}
+  constructor(
+    private schema: SourceFileDefinition<T>['schema'],
+    private debug = false
+  ) {}
 
   parse(raw: string) {
     this.source = raw;
@@ -60,8 +63,16 @@ export default class WholeSourceHandler<T> implements SourceValueHandler<T> {
     parseInfo
       .sort((a, b) => a[1].start - b[1].start)
       .forEach(([key, data]) => {
-        out += source.substring(lastSourceIndex, data.start);
-        out += this.schema[key]?.format(value[key]);
+        const inBetween = source.substring(lastSourceIndex, data.start);
+        if (this.debug) {
+          console.log('In-between', inBetween.slice(0, 300));
+        }
+        out += inBetween;
+        const formatted = this.schema[key]?.format(value[key]);
+        out += formatted;
+        if (this.debug) {
+          console.log('Formatting', key, formatted?.slice(0, 300));
+        }
         lastSourceIndex = data.end;
       });
     if (lastSourceIndex < source.length) {

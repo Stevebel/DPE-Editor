@@ -33,32 +33,66 @@ export const SaveButton = observer(() => {
 
   const save = () => {
     // Fix species number
-    // let speciesNumber = 415;
+    // let speciesNumber = 0;
+    // let nationalNumber = 0;
     // const regionalMons = pokemonStore.pokemon.filter(
     //   (mon) => mon.regionalDexNumber
     // );
     // sortBy(regionalMons, 'regionalDexNumber');
 
-    // regionalMons.forEach((mon) =>
+    // regionalMons.forEach((mon) => {
+    //   mon.nationalDexNumber = nationalNumber;
     //   mon.species.forEach((species) => {
     //     species.speciesNumber = speciesNumber;
     //     species.manualLearnsetConst = false;
     //     species.manualSpriteConst = false;
     //     species.setSpeciesConst(species.species);
     //     speciesNumber += 1;
-    //   })
-    // );
+    //   });
+    //   nationalNumber += 1;
+    // });
 
     // const nonregionalMons = pokemonStore.pokemon.filter(
     //   (mon) => !mon.regionalDexNumber
     // );
 
-    // nonregionalMons.forEach((mon) =>
+    // nonregionalMons.forEach((mon) => {
+    //   mon.nationalDexNumber = nationalNumber;
     //   mon.species.forEach((species) => {
+    //     species.speciesNumber = speciesNumber;
+    //     speciesNumber += 1;
     //     species.manualSpriteConst = true;
-    //     species.setSpriteConst('000None');
-    //   })
-    // );
+    //     species.graphics = {
+    //       frontSprite: {
+    //         name: 'CircledQuestionMark',
+    //         file: 'question_mark/circled/anim_front',
+    //       },
+    //       backSprite: {
+    //         name: 'CircledQuestionMark',
+    //         file: 'question_mark/circled/back',
+    //       },
+    //       palette: {
+    //         name: 'CircledQuestionMark',
+    //         file: 'question_mark/circled/normal',
+    //       },
+    //       shinyPalette: {
+    //         name: 'CircledQuestionMark',
+    //         file: 'question_mark/circled/shiny',
+    //       },
+    //       iconSprite: {
+    //         name: 'CircledQuestionMark',
+    //         file: 'question_mark/icon',
+    //       },
+    //       iconPalette: 0,
+    //     };
+    //     species.femaleGraphics = undefined;
+    //     species.footprint = {
+    //       name: 'QuestionMark',
+    //       file: 'question_mark/footprint',
+    //     };
+    //   });
+    //   nationalNumber += 1;
+    // });
 
     const pokemon: IPokemonData[] = pokemonStore.pokemon.map((p) => ({
       ...p,

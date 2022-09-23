@@ -116,14 +116,6 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
       return a.speciesNumber - b.speciesNumber;
     });
 
-  // Add EGG species if missing
-  // if (!pokemonSpecies.some((s) => s.species === 'EGG')) {
-  //   pokemonSpecies.push({
-  //     species: 'EGG',
-  //     speciesNumber: pokemonSpecies.length,
-  //   });
-  // }
-
   const speciesData: SpeciesData[] = pokemonSpecies
     .filter(({ isAdditional }) => !isAdditional)
     .map(({ species, speciesNumber }) => ({
@@ -221,6 +213,13 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
     ),
     (p) => p.name
   );
+  // Add Egg Data
+  frontPics.push({ name: 'Egg', file: 'egg/anim_front' });
+  backPics.push({ name: 'Egg', file: 'egg/anim_front' });
+  palettes.push({ name: 'Egg', file: 'egg/normal' });
+  shinyPalettes.push({ name: 'Egg', file: 'egg/normal' });
+  iconSprites.push({ name: 'Egg', file: 'egg/icon' });
+
   const graphicsData: GraphicsData = {
     frontPics,
     backPics,
@@ -309,38 +308,38 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
       )
       .filter(notUndefined),
   };
-  const anims: AnimationDef[] = pokemonSpecies
-    .map((p) =>
-      p.prettyConst
-        ? {
-            // TODO: Use actual animation data
-            animConst: `${p.prettyConst}_1`,
-            animFrames: [
-              {
-                frame: 0,
-                duration: 1,
-              },
-            ],
-          }
-        : undefined
-    )
-    .filter(notUndefined);
-  const animCollections: AnimationCollectionDef[] = pokemonSpecies
-    .map((p) =>
-      p.prettyConst
-        ? {
-            animCollectionConst: p.prettyConst,
-            anims: [`${p.prettyConst}_1`],
-          }
-        : undefined
-    )
-    .filter(notUndefined);
+  const anims: AnimationDef[] = uniqBy(
+    pokemonSpecies
+      .map((p) =>
+        p.frontAnimFrames && p.animConst
+          ? {
+              animConst: `${p.animConst}_1`,
+              animFrames: p.frontAnimFrames,
+            }
+          : undefined
+      )
+      .filter(notUndefined),
+    (a) => a.animConst
+  );
+  const animCollections: AnimationCollectionDef[] = uniqBy(
+    pokemonSpecies
+      .map((p) =>
+        p.frontAnimFrames && p.animConst
+          ? {
+              animCollectionConst: p.animConst,
+              anims: ['GeneralFrame0', `${p.animConst}_1`],
+            }
+          : undefined
+      )
+      .filter(notUndefined),
+    (a) => a.animCollectionConst
+  );
   const animTable: AnimationMapping[] = pokemonSpecies
     .map((p) =>
-      p.prettyConst
+      p.frontAnimFrames && p.animConst
         ? {
             species: p.species,
-            animCollectionConst: p.prettyConst,
+            animCollectionConst: p.animConst,
           }
         : undefined
     )
@@ -537,6 +536,52 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
       .filter(notUndefined),
   };
   const pokedexOrders: PokedexOrders = getPokedexOrders(data);
+  // Add Egg Data
+  speciesData.push({
+    species: 'EGG',
+    number: speciesData.length,
+  });
+  frontPicTable.pics.push({ species: 'EGG', name: 'Egg' });
+  backPicTable.pics.push({ species: 'EGG', name: 'Egg' });
+  paletteTable.palettes.push({ species: 'EGG', name: 'Egg' });
+  shinyPaletteTable.palettes.push({ species: 'EGG', name: 'Egg' });
+  footprintTable.footprints.push({ species: 'EGG', name: 'Bulbasaur' });
+  iconTable.icons.push({ species: 'EGG', name: 'Egg' });
+  iconTable.palettes.push({ species: 'EGG', palette: 1 });
+  const eggCoords = {
+    species: 'EGG',
+    y_offset: 20,
+    size: { width: 24, height: 24 },
+  };
+  backPicCoords.picCoords.push(eggCoords);
+  frontPicCoords.picCoords.push(eggCoords);
+  frontPicAnims.anims.push({
+    animConst: 'EGG_1',
+    animFrames: [
+      { frame: 0, duration: 6 },
+      { frame: 1, duration: 6 },
+      { frame: 2, duration: 6 },
+      { frame: 3, duration: 6 },
+    ],
+  });
+  frontPicAnims.animCollections.push({
+    animCollectionConst: 'EGG',
+    anims: ['GeneralFrame0', 'EGG_1'],
+  });
+  frontPicAnims.animTable.push({
+    species: 'EGG',
+    animCollectionConst: 'EGG',
+  });
+
+  // Remove None
+  pokemonConsts.speciesToNationalPokedexNum =
+    pokemonConsts.speciesToNationalPokedexNum.filter(
+      (p) => p.speciesConst !== 'NONE'
+    );
+  pokemonConsts.speciesToHoennPokedexNum =
+    pokemonConsts.speciesToHoennPokedexNum.filter((p) => p !== 'NONE');
+  pokemonConsts.hoennToNationalOrder =
+    pokemonConsts.hoennToNationalOrder.filter((p) => p !== 'NONE');
 
   return {
     pokedexEntries,

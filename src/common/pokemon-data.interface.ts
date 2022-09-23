@@ -71,6 +71,11 @@ export const GraphicsFilesSchema = z.object({
   iconPalette: z.number().nonnegative().lte(9).optional(),
 });
 
+export const AnimFrameSchema = z.object({
+  frame: z.number().nonnegative(),
+  duration: z.number().nonnegative(),
+});
+
 export const PokemonSpeciesDataSchema = z.object({
   species: zConst,
   speciesNumber: z.number().nonnegative(),
@@ -86,6 +91,8 @@ export const PokemonSpeciesDataSchema = z.object({
   enemyElevation: z.number().nonnegative(),
   frontAnimId: zConst.optional(),
   backAnimId: zConst.optional(),
+  animConst: zConst.optional(),
+  frontAnimFrames: z.array(AnimFrameSchema).optional(),
   animationDelay: zUByte.optional(),
   baseStats: BaseStatSchema.partial().optional(),
   evolutions: z.array(EvolutionSchema).optional(),

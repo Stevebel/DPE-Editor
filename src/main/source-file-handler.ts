@@ -19,7 +19,7 @@ export class SourceFileHandler<T> {
     private srcFolder: string
   ) {
     this.handlers = definition.location.map(
-      () => new WholeSourceHandler(definition.schema)
+      () => new WholeSourceHandler(definition.schema, definition.debug)
     );
   }
 

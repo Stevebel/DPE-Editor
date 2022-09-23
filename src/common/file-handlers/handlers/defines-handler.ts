@@ -54,6 +54,12 @@ export class DefinesHandler<T> implements SourceValueHandler<T[]> {
       start = Math.min(start, match.index);
       end = Math.max(end, match.index + match[0].length);
     }
+    if (start === 9999999) {
+      start = 0;
+    }
+    if (end === -1) {
+      end = 0;
+    }
 
     return {
       start,

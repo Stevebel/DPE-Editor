@@ -8,6 +8,7 @@ import {
 export type StructHandlerConfig<T> = {
   namedProps?: boolean;
   props: StructProp<T>[];
+  inline?: boolean;
 };
 
 export type StructProp<T> = {
@@ -96,15 +97,15 @@ export class StructHandler<T> implements SourceValueHandler<T> {
       .map((p) => {
         const formattedProp = p.format(data);
         if (formattedProp.length > 0) {
-          return `\t${
+          return `${this.config.inline ? '' : '\t'}${
             this.config.namedProps !== false ? `.${p.key} = ` : ''
-          }${formattedProp},\n`;
+          }${formattedProp},${this.config.inline ? '' : '\n'}`;
         }
         return '';
       })
       .join('');
     if (props.length > 0) {
-      return `{\n${props}}`;
+      return `{${this.config.inline ? '' : '\n'}${props}}`;
     }
     return `{0}`;
   }

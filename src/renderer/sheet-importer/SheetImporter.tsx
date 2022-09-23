@@ -79,7 +79,6 @@ export const SheetImporter = observer(() => {
           ...baseMonBaseStats,
           ...newMon.species[0].baseStats,
         };
-        species.habitat = newMon.species[0].habitat || species.habitat;
         baseMon.species[0] = new PokemonSpeciesData(baseMon, species);
       }
     });

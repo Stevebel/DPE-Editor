@@ -82,6 +82,6 @@ export class ConstDefinitionHandler<T> implements SourceValueHandler<T[]> {
         const raw = handler!.format(item);
         return `${this.config.definitionPrefix}${index}${this.config.definitionSuffix} = ${raw};`;
       })
-      .join('\n\n');
+      .join('\n');
   }
 }

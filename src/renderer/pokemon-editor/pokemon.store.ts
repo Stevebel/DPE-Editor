@@ -5,6 +5,7 @@ import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { ZodError } from 'zod';
 import { Evolution } from '../../common/file-handlers/files/evolution-table';
+import { AnimFrame } from '../../common/file-handlers/files/front-pic-anims';
 import { LevelUpMove } from '../../common/file-handlers/files/level-up-learnsets';
 import { AppIPC } from '../../common/ipc.interface';
 import {
@@ -53,7 +54,6 @@ function getEmptyGraphics() {
     palette: getEmptyGraphicEntry(),
     shinyPalette: getEmptyGraphicEntry(),
     iconSprite: getEmptyGraphicEntry(),
-    footprint: getEmptyGraphicEntry(),
     iconPalette: 0,
   };
 }
@@ -75,6 +75,10 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   graphics = getEmptyGraphics();
 
+  femaleGraphics: IPokemonSpeciesData['femaleGraphics'] | undefined;
+
+  footprint = getEmptyGraphicEntry();
+
   frontCoords = {
     size: {
       width: 64,
@@ -94,6 +98,8 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   frontAnimId = '';
 
   backAnimId = '';
+
+  frontAnimFrames: AnimFrame[] = [];
 
   animationDelay = 0;
 
@@ -146,8 +152,8 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
       this.manualSpriteConst = this.spriteConst !== expectedSpriteConst;
 
       if (
-        this.learnsetConst !== formatLearnsetConst(this.species) &&
-        this.pokemon?.regionalDexNumber === undefined
+        this.learnsetConst &&
+        this.learnsetConst !== formatLearnsetConst(this.species)
       ) {
         this.manualLearnsetConst = true;
       }
