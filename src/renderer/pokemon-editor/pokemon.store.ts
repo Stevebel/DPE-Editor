@@ -65,7 +65,7 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   nameConst = '';
 
-  prettyConst = '';
+  cryConst = '';
 
   speciesNumber = -1;
 
@@ -130,6 +130,10 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
 
   manualLearnsetConst = false;
 
+  hasFemaleGraphics = false;
+
+  hasFrontAnim = false;
+
   pokemon: PokemonData;
 
   errors: ZodError<typeof PokemonSpeciesDataSchema> | null = null;
@@ -149,8 +153,10 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
       }
       const expectedSpriteConst = formatSpriteConst(this.species);
       this.spriteConst = this.graphics.frontSprite?.name || expectedSpriteConst;
-      this.manualSpriteConst = this.spriteConst !== expectedSpriteConst;
-
+      this.manualSpriteConst =
+        this.regionalDexNumber == null ||
+        this.species === 'NONE' ||
+        this.spriteConst !== expectedSpriteConst;
       if (
         this.learnsetConst &&
         this.learnsetConst !== formatLearnsetConst(this.species)
@@ -188,8 +194,8 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
     if (this.pokemon.species[0]?.speciesNumber === this.speciesNumber) {
       this.pokemon.updatePath(this.species, ['nationalDex']);
     }
-    if (this.dexEntry) {
-      this.dexEntryConst = this.prettyConst;
+    if (this.dexEntry && !this.dexEntryConst) {
+      this.dexEntryConst = this.learnsetConst;
     }
     if (!this.manualLearnsetConst) {
       this.learnsetConst = formatLearnsetConst(this.species);
@@ -204,16 +210,76 @@ export class PokemonSpeciesData implements IPokemonSpeciesData {
   setDexEntry(dexEntry: string) {
     console.log('Dex entry:', dexEntry);
     this.dexEntry = dexEntry;
-    this.dexEntryConst = this.prettyConst;
+    if (!this.dexEntryConst) {
+      this.dexEntryConst = this.cryConst;
+    }
     this.performErrorCheck();
   }
 
   setSpriteConst(spriteConst: string) {
     this.spriteConst = spriteConst;
-    // this.frontSprite = spriteConst;
-    // this.backSprite = spriteConst;
-    // this.iconSprite = spriteConst;
+    if (!this.manualSpriteConst) {
+      this.setGraphics(spriteConst);
+    }
     this.performErrorCheck();
+  }
+
+  setGraphics(spriteConst: string) {
+    if (this.species === 'NONE') {
+      console.log('NONE', this);
+    }
+    this.graphics = {
+      frontSprite: {
+        name: spriteConst,
+        file: `${spriteConst.toLowerCase()}/${
+          this.hasFrontAnim ? 'front_anim' : 'front'
+        }`,
+      },
+      backSprite: {
+        name: spriteConst,
+        file: `${spriteConst.toLowerCase()}/back`,
+      },
+      palette: {
+        name: spriteConst,
+        file: `${spriteConst.toLowerCase()}/normal`,
+      },
+      shinyPalette: {
+        name: spriteConst,
+        file: `${spriteConst.toLowerCase()}/shiny`,
+      },
+      iconSprite: {
+        name: spriteConst,
+        file: `${spriteConst.toLowerCase()}/icon`,
+      },
+      iconPalette: this.graphics.iconPalette,
+    };
+    if (this.hasFemaleGraphics) {
+      this.femaleGraphics = {
+        frontSprite: {
+          name: spriteConst,
+          file: `${spriteConst.toLowerCase()}/${
+            this.hasFrontAnim ? 'front_animf' : 'frontf'
+          }`,
+        },
+        backSprite: {
+          name: spriteConst,
+          file: `${spriteConst.toLowerCase()}/backf`,
+        },
+        palette: {
+          name: spriteConst,
+          file: `${spriteConst.toLowerCase()}/normalf`,
+        },
+        shinyPalette: {
+          name: spriteConst,
+          file: `${spriteConst.toLowerCase()}/shinyf`,
+        },
+        iconSprite: {
+          name: spriteConst,
+          file: `${spriteConst.toLowerCase()}/icon`,
+        },
+        iconPalette: this.graphics.iconPalette,
+      };
+    }
   }
 
   updatePath<Path extends NestedPath<this>>(newValue: any, path: Path) {

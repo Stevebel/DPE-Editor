@@ -45,7 +45,7 @@ export const GraphicsTab = observer(() => {
           <ObservableNumberField
             label="Icon Palette"
             store={species}
-            path={['iconPalette']}
+            path={['graphics', 'iconPalette']}
           />
         </Box>
 

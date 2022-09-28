@@ -61,6 +61,7 @@ export const SheetImporter = observer(() => {
           );
         } else {
           baseMon = pokemonStore.addPokemon(baseMon);
+          baseMon.species[0].manualSpriteConst = false;
           baseMon.species[0].setSpeciesConst(newMon.nationalDex);
         }
       }

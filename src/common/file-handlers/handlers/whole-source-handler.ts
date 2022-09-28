@@ -63,6 +63,11 @@ export default class WholeSourceHandler<T> implements SourceValueHandler<T> {
     parseInfo
       .sort((a, b) => a[1].start - b[1].start)
       .forEach(([key, data]) => {
+        if (this.debug) {
+          console.log(
+            `Adding ${key as string} from ${data.start} to ${data.end}`
+          );
+        }
         const inBetween = source.substring(lastSourceIndex, data.start);
         if (this.debug) {
           console.log('In-between', inBetween.slice(0, 300));

@@ -516,8 +516,14 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
   };
 
   const cryTable: CryTable = {
-    cries: pokemonSpecies.map((p) => p.prettyConst).filter(notUndefined),
-    criesReverse: pokemonSpecies.map((p) => p.prettyConst).filter(notUndefined),
+    cries: pokemonSpecies
+      .filter((p) => p.species !== 'NONE')
+      .map((p) => p.cryConst)
+      .filter(notUndefined),
+    criesReverse: pokemonSpecies
+      .filter((p) => p.species !== 'NONE')
+      .map((p) => p.cryConst)
+      .filter(notUndefined),
   };
 
   const footprintTable: FootprintTable = {
@@ -537,9 +543,9 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
   };
   const pokedexOrders: PokedexOrders = getPokedexOrders(data);
   // Add Egg Data
-  speciesData.push({
+  additionalSpecies.push({
     species: 'EGG',
-    number: speciesData.length,
+    number: additionalSpecies.length + 1,
   });
   frontPicTable.pics.push({ species: 'EGG', name: 'Egg' });
   backPicTable.pics.push({ species: 'EGG', name: 'Egg' });
@@ -589,7 +595,8 @@ export function convertToSource(data: AllPokemonData): PokemonSourceData {
     pokedexText,
     species: {
       species: speciesData,
-      lastEntry: speciesData[speciesData.length - 1].species,
+      lastCustomEntry: speciesData[speciesData.length - 1].species,
+      lastEntry: additionalSpecies[additionalSpecies.length - 1].species,
       additionalSpecies,
     },
     pokedexConsts,

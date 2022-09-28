@@ -6,6 +6,7 @@ import { DefinesHandler } from '../handlers/defines-handler';
 export interface SpeciesStructure {
   species: SpeciesData[];
   lastEntry: string;
+  lastCustomEntry: string;
   additionalSpecies: SpeciesData[];
 }
 export interface SpeciesData {
@@ -30,8 +31,13 @@ export const SpeciesSourceDef: SourceFileDefinition<SpeciesStructure> = {
         numberProperty: 'number',
       }),
     }),
-    lastEntry: new DefineCountHandler({
+    lastCustomEntry: new DefineCountHandler({
       constName: 'LAST_CUSTOM_SPECIES',
+      countPrefix: 'SPECIES_',
+      addOne: false,
+    }),
+    lastEntry: new DefineCountHandler({
+      constName: 'NUM_SPECIES',
       countPrefix: 'SPECIES_',
       addOne: false,
     }),

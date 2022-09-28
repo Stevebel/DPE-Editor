@@ -14,7 +14,6 @@ import { Box } from '@mui/system';
 import { cloneDeep, omit } from 'lodash';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
-import { convertToSource } from '../../../common/convert-to-source';
 import { IPokemonData } from '../../../common/pokemon-data.interface';
 import { usePokemonStoreContext } from '../pokemon.store';
 
@@ -47,11 +46,13 @@ export const SaveButton = observer(() => {
     //     species.manualLearnsetConst = false;
     //     species.manualSpriteConst = false;
     //     species.setSpeciesConst(species.species);
+    //     species.isAdditional = false;
     //     speciesNumber += 1;
     //   });
     //   nationalNumber += 1;
     // });
 
+    // speciesNumber = 1;
     // const nonregionalMons = pokemonStore.pokemon.filter(
     //   (mon) => !mon.regionalDexNumber
     // );
@@ -61,35 +62,37 @@ export const SaveButton = observer(() => {
     //   mon.species.forEach((species) => {
     //     species.speciesNumber = speciesNumber;
     //     speciesNumber += 1;
-    //     species.manualSpriteConst = true;
-    //     species.graphics = {
-    //       frontSprite: {
-    //         name: 'CircledQuestionMark',
-    //         file: 'question_mark/circled/anim_front',
-    //       },
-    //       backSprite: {
-    //         name: 'CircledQuestionMark',
-    //         file: 'question_mark/circled/back',
-    //       },
-    //       palette: {
-    //         name: 'CircledQuestionMark',
-    //         file: 'question_mark/circled/normal',
-    //       },
-    //       shinyPalette: {
-    //         name: 'CircledQuestionMark',
-    //         file: 'question_mark/circled/shiny',
-    //       },
-    //       iconSprite: {
-    //         name: 'CircledQuestionMark',
-    //         file: 'question_mark/icon',
-    //       },
-    //       iconPalette: 0,
-    //     };
-    //     species.femaleGraphics = undefined;
-    //     species.footprint = {
-    //       name: 'QuestionMark',
-    //       file: 'question_mark/footprint',
-    //     };
+    //     species.isAdditional = true;
+    //     // Remove graphics
+    //     // species.manualSpriteConst = true;
+    //     // species.graphics = {
+    //     //   frontSprite: {
+    //     //     name: 'CircledQuestionMark',
+    //     //     file: 'question_mark/circled/anim_front',
+    //     //   },
+    //     //   backSprite: {
+    //     //     name: 'CircledQuestionMark',
+    //     //     file: 'question_mark/circled/back',
+    //     //   },
+    //     //   palette: {
+    //     //     name: 'CircledQuestionMark',
+    //     //     file: 'question_mark/circled/normal',
+    //     //   },
+    //     //   shinyPalette: {
+    //     //     name: 'CircledQuestionMark',
+    //     //     file: 'question_mark/circled/shiny',
+    //     //   },
+    //     //   iconSprite: {
+    //     //     name: 'CircledQuestionMark',
+    //     //     file: 'question_mark/icon',
+    //     //   },
+    //     //   iconPalette: 0,
+    //     // };
+    //     // species.femaleGraphics = undefined;
+    //     // species.footprint = {
+    //     //   name: 'QuestionMark',
+    //     //   file: 'question_mark/footprint',
+    //     // };
     //   });
     //   nationalNumber += 1;
     // });
@@ -98,12 +101,13 @@ export const SaveButton = observer(() => {
       ...p,
       species: p.species.map((s) => cloneDeep(omit(s, 'pokemon'))),
     }));
+    console.log(pokemon.find((p) => p.nationalDex === 'NONE'));
 
     const data = {
       pokemon,
       lastNationalDex: pokemon.length - 1,
     };
-    convertToSource(data);
+    // convertToSource(data);
     window.electron.ipcRenderer.send('pokemon-source-data', data);
     close();
   };

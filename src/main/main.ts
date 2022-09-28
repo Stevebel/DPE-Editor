@@ -5,7 +5,7 @@ import { app, BrowserWindow, dialog, ipcMain, protocol, shell } from 'electron';
 import log from 'electron-log';
 import ElectronStore from 'electron-store';
 import { autoUpdater } from 'electron-updater';
-import { existsSync, writeFileSync } from 'fs';
+import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import path from 'path';
@@ -23,7 +23,7 @@ import {
   LookupHandlers,
   LOOKUP_DEFS,
 } from '../common/lookup-values';
-import { AllPokemonData } from '../common/pokemon-data.interface';
+import { AllPokemonData, ImportedRow } from '../common/pokemon-data.interface';
 import {
   PokemonSourceData,
   PokemonSourceHandlers,
@@ -133,6 +133,11 @@ type MoveSetEntry = {
     level: number;
   }[];
 };
+type TeachableEntry = {
+  name: string;
+  moves: string[];
+};
+
 async function loadSheet() {
   function parseGender(gender: string) {
     if (!gender) {
@@ -193,6 +198,7 @@ async function loadSheet() {
 
     const gartidexSheet = doc.sheetsByTitle.Gartidex;
     const moveSetSheet = doc.sheetsByTitle.Movesets;
+    const teachablesSheet = doc.sheetsByTitle.Teachables;
     const dataSheet = doc.sheetsByTitle.Data;
 
     await gartidexSheet.loadHeaderRow(2);
@@ -282,19 +288,48 @@ async function loadSheet() {
       }
     });
 
+    await teachablesSheet.loadHeaderRow(3);
+    const teachablesRows = await teachablesSheet.getRows();
+    const teachableMoves = teachablesSheet.headerValues.slice(3);
+    const teachableData: TeachableEntry[] = [];
+    teachablesRows.forEach((row) => {
+      const name = row.Name?.trim();
+      if (name) {
+        const teachableEntry: TeachableEntry = {
+          name,
+          moves: [],
+        };
+        teachableMoves.forEach((move) => {
+          if (
+            row[move]?.toLowerCase() === 'x' ||
+            row[move]?.toLowerCase() === 'a'
+          ) {
+            const moveConst = moveMap.get(move);
+            if (moveConst) {
+              teachableEntry.moves.push(moveConst);
+            }
+          }
+        });
+        teachableData.push(teachableEntry);
+      }
+    });
+
     const data = gartidexData
       .map((mon) => {
         const moveset = moveSetData.find((m) => m.name === mon.name);
+        const teachables = teachableData.find((t) => t.name === mon.name);
         if (!moveset) {
-          return null;
+          return undefined;
         }
         const nationalDexConst = mon.name
           .toUpperCase()
           .replace(/[^A-Z0-9]/g, '_');
-        return {
+        const prettyConst = mon.name.replace(/[^A-Za-z0-9]/g, '');
+        const out: ImportedRow = {
           basedOn: moveset.basedOn,
           nationalDex: nationalDexConst,
           regionalDexNumber: mon.dexNum,
+          nationalDexNumber: mon.dexNum,
           height: mon.height,
           weight: mon.weight,
           categoryName: mon.category,
@@ -302,11 +337,12 @@ async function loadSheet() {
             {
               name: mon.name,
               nameConst: nationalDexConst,
-              dexEntryConst: nationalDexConst,
-              learnsetConst: nationalDexConst,
-              species: mon.name,
+              dexEntryConst: prettyConst,
+              learnsetConst: prettyConst,
+              teachableMovesConst: prettyConst,
+              species: nationalDexConst,
+              regionalDexNumber: mon.dexNum,
               dexEntry: wrapToWidth(mon.dexEntry, 224) || 'TODO',
-              habitat: formatHabitat(mon.habitat),
               baseStats: {
                 baseHP: moveset.hp,
                 baseAttack: moveset.attack,
@@ -330,7 +366,15 @@ async function loadSheet() {
                 hiddenAbility: moveset.abilities.hidden,
               },
               learnset: moveset.moves,
+              teachableMoves: teachables?.moves || [],
               enemyElevation: 0,
+              animConst: mon.name,
+              frontAnimFrames: [
+                {
+                  frame: 0,
+                  duration: 1,
+                },
+              ],
               isAdditional: false,
             },
           ],
@@ -339,6 +383,7 @@ async function loadSheet() {
           trainerScale: 1,
           trainerOffset: 0,
         };
+        return out;
       })
       .filter(notUndefined);
 
@@ -366,23 +411,22 @@ async function saveFiles(data: AllPokemonData) {
         const configPath = path.join(folderPath, 'config.ini');
         // Create folder if it doesn't exist
         if (!existsSync(folderPath)) {
-          // mkdirSync(folderPath);
-          // // Copy sprites.png and icons.png from 'guice' folder
-          // copyFileSync(
-          //   path.join(store.get('assetsFolder'), 'guice', 'sprites.png'),
-          //   path.join(folderPath, 'sprites.png')
-          // );
-          // copyFileSync(
-          //   path.join(store.get('assetsFolder'), 'guice', 'icons.png'),
-          //   path.join(folderPath, 'icons.png')
-          // );
-          return;
+          mkdirSync(folderPath);
+          // Copy sprites.png and icons.png from 'guice' folder
+          copyFileSync(
+            path.join(store.get('assetsFolder'), 'guice', 'sprites.png'),
+            path.join(folderPath, 'sprites.png')
+          );
+          copyFileSync(
+            path.join(store.get('assetsFolder'), 'guice', 'icons.png'),
+            path.join(folderPath, 'icons.png')
+          );
         }
         // Create config.ini if it doesn't exist
         const configContent =
           '[Import]\n' +
           `species=${species.speciesNumber}\n` +
-          `icon_palette=${species.iconPalette}`;
+          `icon_palette=${species.graphics.iconPalette}`;
 
         writeFileSync(configPath, configContent, { encoding: 'utf8' });
       })

@@ -254,7 +254,10 @@ export function formatSourceData(
           (a) => a.species === speciesName
         )?.anim;
 
-        const prettyConst = description || levelUpLearnsetConst || '';
+        const cryConst =
+          sp.index && cryTable.cries.length > sp.index
+            ? cryTable.cries[sp.index - 1]
+            : 'Bulbasaur';
         const animConst = frontPicAnims.animTable.find(
           (a) => a.species === speciesName
         )?.animCollectionConst;
@@ -272,7 +275,7 @@ export function formatSourceData(
           speciesNumber: sp.number,
           name: pokemonName.name,
           nameConst: pokemonName.nameConst,
-          prettyConst,
+          cryConst,
           dexEntry,
           dexEntryConst: description,
           graphics: {

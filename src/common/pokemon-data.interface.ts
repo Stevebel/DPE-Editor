@@ -81,7 +81,7 @@ export const PokemonSpeciesDataSchema = z.object({
   speciesNumber: z.number().nonnegative(),
   name: z.string().max(10),
   nameConst: zConst,
-  prettyConst: zConst,
+  cryConst: zConst,
   dexEntry: z.string().max(170).optional(),
   dexEntryConst: zConst,
   graphics: GraphicsFilesSchema,
@@ -136,4 +136,8 @@ export type AllPokemonData = {
 
 export type ImportedRow = {
   basedOn: string;
-} & IPokemonData;
+} & PartialPokemonData;
+
+export interface PartialPokemonData extends Omit<IPokemonData, 'species'> {
+  species: Array<Partial<IPokemonSpeciesData>>;
+}
