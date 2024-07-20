@@ -15,6 +15,7 @@ export class LookupStore {
     makeAutoObservable(this);
 
     ipc.on('lookup-values', (data) => {
+      console.log('Lookup values', data);
       this.populateMoves(data);
     });
   }

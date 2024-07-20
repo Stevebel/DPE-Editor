@@ -37,5 +37,6 @@
     "workbench.colorCustomizations": {
         "titleBar.activeBackground": "#70470a",
         "activityBar.background": "#563d25"
-    }
+    },
+    "typescript.tsdk": "node_modules/typescript/lib"
 }

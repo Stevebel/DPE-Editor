@@ -12,7 +12,7 @@ export const BattlePreview = observer(() => {
   if (species) {
     useEffect(() => {
       function getSprite() {
-        return `asset://${species!.nameConst.toLowerCase()}/sprites.png`;
+        return `asset://${species?.graphicsFolder}/sprites.png`;
       }
 
       function getCroppedSpriteCanvas(

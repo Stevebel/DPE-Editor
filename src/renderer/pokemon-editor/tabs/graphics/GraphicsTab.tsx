@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { ObservableNumberField } from '../../../common/forms/ObservableNumberField';
-import { ObservableSwitch } from '../../../common/forms/ObservableSwitch';
 import { ObservableTextField } from '../../../common/forms/ObservableTextField';
 import { usePokemonStoreContext } from '../../pokemon.store';
 import { BattlePreview } from './BattlePreview';
@@ -15,17 +14,11 @@ export const GraphicsTab = observer(() => {
     return (
       <Box id="graphics">
         <Box id="graphics-form" className="common-form">
-          <ObservableSwitch
-            label="Override Constant"
-            store={species}
-            path={['manualSpriteConst']}
-          />
           <ObservableTextField
-            label="Sprite Constant"
+            label="Graphics Folder"
             store={species}
-            path={['spriteConst']}
-            setter="setSpriteConst"
-            disabled={!species.manualSpriteConst}
+            path={['graphicsFolder']}
+            disabled
           />
           <ObservableNumberField
             label="Front Y-Offset"
@@ -41,11 +34,6 @@ export const GraphicsTab = observer(() => {
             label="Back Y-Offset"
             store={species}
             path={['backCoords', 'y_offset']}
-          />
-          <ObservableNumberField
-            label="Icon Palette"
-            store={species}
-            path={['graphics', 'iconPalette']}
           />
         </Box>
 

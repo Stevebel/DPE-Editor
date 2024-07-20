@@ -11,10 +11,14 @@ import {
   Snackbar,
 } from '@mui/material';
 import { Box } from '@mui/system';
-import { cloneDeep, omit } from 'lodash';
+import { cloneDeep, flatMap, omit } from 'lodash';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useState } from 'react';
-import { IPokemonData } from '../../../common/pokemon-data.interface';
+import {
+  AllPokemonData,
+  ILearnset,
+  IPokemonData,
+} from '../../../common/pokemon-data.interface';
 import { usePokemonStoreContext } from '../pokemon.store';
 
 export const SaveButton = observer(() => {
@@ -31,81 +35,19 @@ export const SaveButton = observer(() => {
   };
 
   const save = () => {
-    // Fix species number
-    // let speciesNumber = 0;
-    // let nationalNumber = 0;
-    // const regionalMons = pokemonStore.pokemon.filter(
-    //   (mon) => mon.regionalDexNumber
-    // );
-    // sortBy(regionalMons, 'regionalDexNumber');
-
-    // regionalMons.forEach((mon) => {
-    //   mon.nationalDexNumber = nationalNumber;
-    //   mon.species.forEach((species) => {
-    //     species.speciesNumber = speciesNumber;
-    //     species.manualLearnsetConst = false;
-    //     species.manualSpriteConst = false;
-    //     species.setSpeciesConst(species.species);
-    //     species.isAdditional = false;
-    //     speciesNumber += 1;
-    //   });
-    //   nationalNumber += 1;
-    // });
-
-    // speciesNumber = 1;
-    // const nonregionalMons = pokemonStore.pokemon.filter(
-    //   (mon) => !mon.regionalDexNumber
-    // );
-
-    // nonregionalMons.forEach((mon) => {
-    //   mon.nationalDexNumber = nationalNumber;
-    //   mon.species.forEach((species) => {
-    //     species.speciesNumber = speciesNumber;
-    //     speciesNumber += 1;
-    //     species.isAdditional = true;
-    //     // Remove graphics
-    //     // species.manualSpriteConst = true;
-    //     // species.graphics = {
-    //     //   frontSprite: {
-    //     //     name: 'CircledQuestionMark',
-    //     //     file: 'question_mark/circled/anim_front',
-    //     //   },
-    //     //   backSprite: {
-    //     //     name: 'CircledQuestionMark',
-    //     //     file: 'question_mark/circled/back',
-    //     //   },
-    //     //   palette: {
-    //     //     name: 'CircledQuestionMark',
-    //     //     file: 'question_mark/circled/normal',
-    //     //   },
-    //     //   shinyPalette: {
-    //     //     name: 'CircledQuestionMark',
-    //     //     file: 'question_mark/circled/shiny',
-    //     //   },
-    //     //   iconSprite: {
-    //     //     name: 'CircledQuestionMark',
-    //     //     file: 'question_mark/icon',
-    //     //   },
-    //     //   iconPalette: 0,
-    //     // };
-    //     // species.femaleGraphics = undefined;
-    //     // species.footprint = {
-    //     //   name: 'QuestionMark',
-    //     //   file: 'question_mark/footprint',
-    //     // };
-    //   });
-    //   nationalNumber += 1;
-    // });
-
     const pokemon: IPokemonData[] = pokemonStore.pokemon.map((p) => ({
       ...p,
-      species: p.species.map((s) => cloneDeep(omit(s, 'pokemon'))),
+      dexEntry: cloneDeep(p.dexEntry),
+      species: p.species.map((s) => cloneDeep(omit(s, 'pokemon', 'learnset'))),
     }));
-    console.log(pokemon.find((p) => p.nationalDex === 'NONE'));
 
-    const data = {
+    const learnset: ILearnset[] = flatMap(pokemonStore.pokemon, (p) =>
+      flatMap(p.species, (s) => cloneDeep(s.learnset))
+    );
+
+    const data: AllPokemonData = {
       pokemon,
-      lastNationalDex: pokemon.length - 1,
+      learnset,
     };
     // convertToSource(data);
     window.electron.ipcRenderer.send('pokemon-source-data', data);

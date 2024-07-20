@@ -193,7 +193,7 @@
     "ts-jest": "^27.1.2",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.4.0",
-    "typescript": "^4.5.4",
+    "typescript": "^5.5.2",
     "url-loader": "^4.1.1",
     "webpack": "^5.65.0",
     "webpack-bundle-analyzer": "^4.5.0",
@@ -215,6 +215,7 @@
     "electron-updater": "^4.6.4",
     "google-spreadsheet": "^3.3.0",
     "history": "^5.2.0",
+    "json-stringify-pretty-compact": "^3.0.0",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "mobx": "^6.3.13",
@@ -224,7 +225,7 @@
     "react-router-dom": "^6.2.1",
     "regenerator-runtime": "^0.13.9",
     "uuid": "^8.3.2",
-    "zod": "^3.17.3"
+    "zod": "^3.22.4"
   },
   "devEngines": {
     "node": ">=16.x",

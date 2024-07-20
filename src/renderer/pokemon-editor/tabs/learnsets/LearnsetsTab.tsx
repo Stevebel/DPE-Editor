@@ -11,7 +11,7 @@ export const LearnsetsTab = observer(() => {
   const species = pokemonStore.selectedSpecies;
 
   if (species) {
-    const levelUpMoves = species.learnset;
+    const levelUpMoves = species.learnset?.levelUp || [];
     const emptyLevelUpMove = { level: 0, move: 'NONE' };
 
     if (levelUpMoves.length === 0) {

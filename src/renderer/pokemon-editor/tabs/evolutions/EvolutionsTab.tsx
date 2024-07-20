@@ -17,7 +17,7 @@ export const EvolutionsTab = observer(() => {
       method: 'LEVEL',
       targetSpecies: 'NONE',
       param: 1,
-      extra: 0,
+      minLevel: 0,
     };
 
     const evoIndex = (e: React.MouseEvent<HTMLButtonElement>) => {

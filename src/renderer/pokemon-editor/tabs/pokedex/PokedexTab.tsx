@@ -62,8 +62,8 @@ export const PokedexTab = observer(() => {
         <ObservableTextField
           className="full-line"
           label="Pokédex Entry"
-          store={species}
-          path={['dexEntry']}
+          store={pokemon}
+          path={['dexEntryString']}
           setter="setDexEntry"
           multiline
           rows={4}

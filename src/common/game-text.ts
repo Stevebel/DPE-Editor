@@ -189,11 +189,18 @@ export function wrapToWidth(text: string, width: number) {
     return null;
   }
 
-  const words = text
+  const cleanText = text
     .replaceAll('’', "'")
     .replaceAll('“', '"')
-    .replaceAll('”', '"')
-    .split(/\s+/);
+    .replaceAll('”', '"');
+
+  // Test if the text fits in the width
+  const textLines = cleanText.split('\n').map((line) => line.trim());
+  if (textLines.every((line) => getTextWidth(line) <= width)) {
+    return textLines.join('\n');
+  }
+
+  const words = cleanText.split(/\s+/);
   let lines: LineInfo[] = [];
   let line: LineInfo | null = null;
 

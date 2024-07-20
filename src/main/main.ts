@@ -8,32 +8,33 @@ import { autoUpdater } from 'electron-updater';
 import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'fs';
 import { readFile } from 'fs/promises';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+// import stringify from 'json-stringify-pretty-compact';
 import path from 'path';
 import 'regenerator-runtime/runtime';
 import { AppConfig } from '../common/config.interface';
-import { convertToSource } from '../common/convert-to-source';
 import { SourceFileDefinition } from '../common/file-handlers/file-handler.interface';
-import { formatSourceData } from '../common/format-source-data';
 import { wrapToWidth } from '../common/game-text';
 import { IPCChannel } from '../common/ipc.interface';
 import {
-  HabitatLks,
+  LOOKUP_DEFS,
   LookupData,
   LookupDefStruct,
   LookupHandlers,
-  LOOKUP_DEFS,
 } from '../common/lookup-values';
-import { AllPokemonData, ImportedRow } from '../common/pokemon-data.interface';
 import {
-  PokemonSourceData,
-  PokemonSourceHandlers,
-  SourceDefStruct,
-  SOURCE_DEFS,
-} from '../common/pokemon-source-data.interface';
+  AllPokemonData,
+  ILearnset,
+  ImportedRow,
+  IPokemonData,
+  PokemonDataSchema,
+  PokemonLearnsetSchema,
+} from '../common/pokemon-data.interface';
 import { notUndefined } from '../common/ts-utils';
 import MenuBuilder from './menu';
 import { SourceFileHandler } from './source-file-handler';
 import { resolveHtmlPath } from './util';
+
+const stringify = require('json-stringify-pretty-compact');
 
 /**
  * This module executes inside of electron's main process. You can start
@@ -58,27 +59,38 @@ function getHandler<T>(def: SourceFileDefinition<T>): SourceFileHandler<T> {
   return new SourceFileHandler(def, store.get('srcFolder'));
 }
 
-const handlers: PokemonSourceHandlers = {} as any;
 const lookupHandlers: LookupHandlers = {} as any;
 let pokemonData: AllPokemonData | null = null;
 
 async function loadFiles() {
   if (store.get('srcFolder') && mainWindow) {
-    Object.entries(SOURCE_DEFS).forEach(([name, def]) => {
-      handlers[name as keyof SourceDefStruct] = getHandler(def as any) as any;
-    });
+    const srcFolder = store.get('srcFolder');
 
-    const rawData: PokemonSourceData = {} as any;
-    // Loop through all the handlers and load the data
+    const pokemonJsonPath = path.join(
+      srcFolder,
+      'src',
+      'data',
+      'pokemon',
+      'pokemon.json'
+    );
+    const rawPokemonJson = await readFile(pokemonJsonPath, 'utf8');
+    const pokemonJson: { pokemon: IPokemonData[] } = JSON.parse(rawPokemonJson);
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const [name, handler] of Object.entries(handlers)) {
-      // eslint-disable-next-line no-await-in-loop
-      rawData[name as keyof PokemonSourceData] = (await handler.load()) as any;
-    }
+    const learnsetJsonPath = path.join(
+      srcFolder,
+      'src',
+      'data',
+      'pokemon',
+      'learnsets.json'
+    );
+    const rawLearnsetJson = await readFile(learnsetJsonPath, 'utf8');
+    const learnsetJson: { learnsets: ILearnset[] } =
+      JSON.parse(rawLearnsetJson);
 
-    pokemonData = formatSourceData(rawData);
-    pokemonData.source = rawData;
+    pokemonData = {
+      pokemon: pokemonJson.pokemon,
+      learnset: learnsetJson.learnsets,
+    };
     let channel: IPCChannel = 'pokemon-source-data';
     mainWindow.webContents.send(channel, pokemonData);
 
@@ -168,14 +180,10 @@ async function loadSheet() {
     return parseInt(catchRateOnly, 10);
   }
   function parseAbility(ability: string) {
-    return ability?.toUpperCase().replace(/[^A-Z0-9]/g, '') || 'NONE';
+    return ability?.toUpperCase().replace(/[^A-Z0-9]/g, '_') || 'NONE';
   }
   function parseEggGroup(eggGroup: string) {
     return eggGroup?.toUpperCase().replace(/[^A-Z0-9]/g, '_') || 'UNDISCOVERED';
-  }
-  function formatHabitat(habitat: string) {
-    const habitatLk = HabitatLks.find((h) => h.name === habitat);
-    return habitatLk ? habitatLk.habitat : 'Urban';
   }
 
   const keyFileLocation = store.get('googleKeyLocation');
@@ -196,13 +204,19 @@ async function loadSheet() {
 
     await doc.loadInfo();
 
-    const gartidexSheet = doc.sheetsByTitle.Gartidex;
+    const gartidexSheet = doc.sheetsByTitle.Garticdex;
     const moveSetSheet = doc.sheetsByTitle.Movesets;
     const teachablesSheet = doc.sheetsByTitle.Teachables;
     const dataSheet = doc.sheetsByTitle.Data;
 
     await gartidexSheet.loadHeaderRow(2);
-    const gartidexRows = await gartidexSheet.getRows();
+    let gartidexRows = await gartidexSheet.getRows();
+    const megaIndex = gartidexRows.findIndex((row) =>
+      row.Name.startsWith('Mega ')
+    );
+    if (megaIndex > 0) {
+      gartidexRows = gartidexRows.slice(0, megaIndex);
+    }
     const gartidexData = gartidexRows.map((row) => {
       return {
         name: row.Name.trim(),
@@ -217,7 +231,7 @@ async function loadSheet() {
         eggGroup1: parseEggGroup(row['Egg Group 1']),
         eggGroup2: parseEggGroup(row['Egg Group 2']),
         gender: parseGender(row['Gender\nM/F']),
-        dexEntry: row['Dex Entry'],
+        dexEntry: row['Dex Entry'] || row['Old Dex Entry'] || '',
         catchRate: parseCatchRate(row['Catch Rate']),
         basedOn: row['Based On'],
       };
@@ -234,85 +248,88 @@ async function loadSheet() {
       moveMap.set(moveName, move);
     }
 
-    await moveSetSheet.loadHeaderRow(2);
-    const moveSetRows = await moveSetSheet.getRows();
-    let currentMon: any = {};
     const moveSetData: MoveSetEntry[] = [];
-    moveSetRows.forEach((row) => {
-      const name = row.Name?.trim();
-      if (name) {
-        currentMon = {
-          name,
-          hp: parseInt(row.HP, 10),
-          attack: parseInt(row.ATK, 10),
-          defense: parseInt(row.DEF, 10),
-          specialAttack: parseInt(row['S.\nATK'], 10),
-          specialDefense: parseInt(row['S.\nDEF'], 10),
-          speed: parseInt(row.SPD, 10),
-          basedOn: row.Pokemon,
-          evs: {},
-          abilities: {},
-          moves: [],
-        };
-        moveSetData.push(currentMon);
-      }
-      if (row.Stats === 'EV Yield') {
-        currentMon.evs = {
-          hp: parseInt(row.HP, 10) || 0,
-          attack: parseInt(row.ATK, 10) || 0,
-          defense: parseInt(row.DEF, 10) || 0,
-          specialAttack: parseInt(row['S.\nATK'], 10) || 0,
-          specialDefense: parseInt(row['S.\nDEF'], 10) || 0,
-          speed: parseInt(row.SPD, 10) || 0,
-        };
-      }
-      const abilityType = row['Ability Type']?.trim();
-      if (abilityType === 'Ability 1') {
-        currentMon.abilities.ability1 = parseAbility(row.Ability);
-      } else if (abilityType === 'Ability 2') {
-        currentMon.abilities.ability2 = parseAbility(row.Ability);
-      } else if (abilityType === 'Hidden Ability') {
-        currentMon.abilities.hidden = parseAbility(row.Ability);
-      }
-      const learnLevel = row['Learn Level'];
-      const replacement = row['Learnset Replacement'];
-      if (learnLevel && replacement !== '[REMOVE]') {
-        const moveName =
-          replacement && replacement !== ''
-            ? replacement
-            : row['Base Mon Moveset'];
-        currentMon.moves.push({
-          move: moveMap.get(moveName) || 'NONE',
-          level: learnLevel.startsWith('Evo') ? 0 : parseInt(learnLevel, 10),
-        });
-      }
-    });
-
-    await teachablesSheet.loadHeaderRow(3);
-    const teachablesRows = await teachablesSheet.getRows();
-    const teachableMoves = teachablesSheet.headerValues.slice(3);
     const teachableData: TeachableEntry[] = [];
-    teachablesRows.forEach((row) => {
-      const name = row.Name?.trim();
-      if (name) {
-        const teachableEntry: TeachableEntry = {
-          name,
-          moves: [],
-        };
-        teachableMoves.forEach((move) => {
-          if (
-            row[move]?.toLowerCase() === 'x' ||
-            row[move]?.toLowerCase() === 'a'
-          ) {
-            const moveConst = moveMap.get(move);
-            if (moveConst) {
-              teachableEntry.moves.push(moveConst);
-            }
-          }
-        });
-        teachableData.push(teachableEntry);
-      }
-    });
+
+    // await moveSetSheet.loadHeaderRow(2);
+    // const moveSetRows = await moveSetSheet.getRows();
+    // let currentMon: any = {};
+    // const moveSetData: MoveSetEntry[] = [];
+    // moveSetRows.forEach((row) => {
+    //   const name = row.Name?.trim();
+    //   if (name) {
+    //     currentMon = {
+    //       name,
+    //       hp: parseInt(row.HP, 10),
+    //       attack: parseInt(row.ATK, 10),
+    //       defense: parseInt(row.DEF, 10),
+    //       specialAttack: parseInt(row['S.\nATK'], 10),
+    //       specialDefense: parseInt(row['S.\nDEF'], 10),
+    //       speed: parseInt(row.SPD, 10),
+    //       basedOn: row.Pokemon,
+    //       evs: {},
+    //       abilities: {},
+    //       moves: [],
+    //     };
+    //     moveSetData.push(currentMon);
+    //   }
+    //   if (row.Stats === 'EV Yield') {
+    //     currentMon.evs = {
+    //       hp: parseInt(row.HP, 10) || 0,
+    //       attack: parseInt(row.ATK, 10) || 0,
+    //       defense: parseInt(row.DEF, 10) || 0,
+    //       specialAttack: parseInt(row['S.\nATK'], 10) || 0,
+    //       specialDefense: parseInt(row['S.\nDEF'], 10) || 0,
+    //       speed: parseInt(row.SPD, 10) || 0,
+    //     };
+    //   }
+    //   const abilityType = row['Ability Slots']?.trim();
+    //   if (abilityType === 'Ability 1') {
+    //     currentMon.abilities.ability1 = parseAbility(row.Ability);
+    //   } else if (abilityType === 'Ability 2') {
+    //     currentMon.abilities.ability2 = parseAbility(row.Ability);
+    //   } else if (abilityType === 'Hidden Ability') {
+    //     currentMon.abilities.hidden = parseAbility(row.Ability);
+    //   }
+    //   const learnLevel = row['Learn Level'];
+    //   const replacement = row['Learnset Replacement'];
+    //   if (learnLevel && replacement !== '[REMOVE]') {
+    //     const moveName =
+    //       replacement && replacement !== ''
+    //         ? replacement
+    //         : row['Base Mon Moveset'];
+    //     currentMon.moves.push({
+    //       move: moveMap.get(moveName) || 'NONE',
+    //       level: learnLevel.startsWith('Evo') ? 0 : parseInt(learnLevel, 10),
+    //     });
+    //   }
+    // });
+
+    // await teachablesSheet.loadHeaderRow(3);
+    // const teachablesRows = await teachablesSheet.getRows();
+    // const teachableMoves = teachablesSheet.headerValues.slice(3);
+    // const teachableData: TeachableEntry[] = [];
+    // teachablesRows.forEach((row) => {
+    //   const name = row.Name?.trim();
+    //   if (name) {
+    //     const teachableEntry: TeachableEntry = {
+    //       name,
+    //       moves: [],
+    //     };
+    //     teachableMoves.forEach((move) => {
+    //       if (
+    //         row[move]?.toLowerCase() === 'x' ||
+    //         row[move]?.toLowerCase() === 'a'
+    //       ) {
+    //         const moveConst = moveMap.get(move);
+    //         if (moveConst) {
+    //           teachableEntry.moves.push(moveConst);
+    //         }
+    //       }
+    //     });
+    //     teachableData.push(teachableEntry);
+    //   }
+    // });
 
     const data = gartidexData
       .map((mon) => {
@@ -324,64 +341,55 @@ async function loadSheet() {
         const nationalDexConst = mon.name
           .toUpperCase()
           .replace(/[^A-Z0-9]/g, '_');
-        const prettyConst = mon.name.replace(/[^A-Za-z0-9]/g, '');
         const out: ImportedRow = {
+          name: mon.name,
           basedOn: moveset.basedOn,
-          nationalDex: nationalDexConst,
           regionalDexNumber: mon.dexNum,
           nationalDexNumber: mon.dexNum,
           height: mon.height,
           weight: mon.weight,
           categoryName: mon.category,
+          learnset: {
+            levelUp: moveset.moves,
+            teachable: teachables?.moves || [],
+          },
           species: [
             {
               name: mon.name,
-              nameConst: nationalDexConst,
-              dexEntryConst: prettyConst,
-              learnsetConst: prettyConst,
-              teachableMovesConst: prettyConst,
               species: nationalDexConst,
-              regionalDexNumber: mon.dexNum,
-              dexEntry: wrapToWidth(mon.dexEntry, 224) || 'TODO',
-              baseStats: {
-                baseHP: moveset.hp,
-                baseAttack: moveset.attack,
-                baseDefense: moveset.defense,
-                baseSpAttack: moveset.specialAttack,
-                baseSpDefense: moveset.specialDefense,
-                baseSpeed: moveset.speed,
-                type1: mon.type1?.toUpperCase(),
-                type2: mon.type2?.toUpperCase() || mon.type1?.toUpperCase(),
-                catchRate: mon.catchRate,
-                evYield_HP: moveset.evs.hp,
-                evYield_Attack: moveset.evs.attack,
-                evYield_Defense: moveset.evs.defense,
-                evYield_SpAttack: moveset.evs.specialAttack,
-                evYield_SpDefense: moveset.evs.specialDefense,
-                evYield_Speed: moveset.evs.speed,
-                eggGroup1: mon.eggGroup1,
-                eggGroup2: mon.eggGroup2,
-                ability1: moveset.abilities.ability1,
-                ability2: moveset.abilities.ability2,
-                hiddenAbility: moveset.abilities.hidden,
-              },
-              learnset: moveset.moves,
-              teachableMoves: teachables?.moves || [],
-              enemyElevation: 0,
-              animConst: mon.name,
-              frontAnimFrames: [
-                {
-                  frame: 0,
-                  duration: 1,
-                },
+              baseHP: moveset.hp,
+              baseAttack: moveset.attack,
+              baseDefense: moveset.defense,
+              baseSpAttack: moveset.specialAttack,
+              baseSpDefense: moveset.specialDefense,
+              baseSpeed: moveset.speed,
+              types: [
+                mon.type1?.toUpperCase(),
+                mon.type2?.toUpperCase() || mon.type1?.toUpperCase(),
               ],
-              isAdditional: false,
+              catchRate: mon.catchRate,
+              evYield_HP: moveset.evs.hp,
+              evYield_Attack: moveset.evs.attack,
+              evYield_Defense: moveset.evs.defense,
+              evYield_SpAttack: moveset.evs.specialAttack,
+              evYield_SpDefense: moveset.evs.specialDefense,
+              evYield_Speed: moveset.evs.speed,
+              eggGroups: [mon.eggGroup1, mon.eggGroup2],
+              abilities: [
+                moveset.abilities.ability1 || 'NONE',
+                moveset.abilities.ability2 || 'NONE',
+                moveset.abilities.hidden || 'NONE',
+              ],
+              enemyElevation: 0,
+              exclude: false,
             },
           ],
           pokemonScale: 1,
           pokemonOffset: 0,
           trainerScale: 1,
           trainerOffset: 0,
+          dexEntry: wrapToWidth(mon.dexEntry, 235)?.split('\n') || ['TODO'],
+          exclude: false,
         };
         return out;
       })
@@ -393,10 +401,33 @@ async function loadSheet() {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function saveFiles(data: AllPokemonData) {
-  const sourceData = convertToSource(data);
+  const srcFolder = store.get('srcFolder');
 
-  const promises = Object.entries(handlers).map(async ([name, handler]) => {
-    return handler.save(sourceData[name as keyof PokemonSourceData] as any);
+  const pokemon = data.pokemon.map((p) => PokemonDataSchema.parse(p));
+  const learnsets = data.learnset.map((l) => PokemonLearnsetSchema.parse(l));
+
+  const pokemonJsonPath = path.join(
+    srcFolder,
+    'src',
+    'data',
+    'pokemon',
+    'pokemon.json'
+  );
+
+  writeFileSync(pokemonJsonPath, stringify({ pokemon }), {
+    encoding: 'utf8',
+  });
+
+  const learnsetJsonPath = path.join(
+    srcFolder,
+    'src',
+    'data',
+    'pokemon',
+    'learnsets.json'
+  );
+
+  writeFileSync(learnsetJsonPath, stringify({ learnsets }), {
+    encoding: 'utf8',
   });
 
   // Save config.ini in sprite folders
@@ -406,9 +437,9 @@ async function saveFiles(data: AllPokemonData) {
       p.species.forEach((species) => {
         const folderPath = path.join(
           store.get('assetsFolder'),
-          species.nameConst.toLowerCase()
+          species.graphicsFolder
         );
-        const configPath = path.join(folderPath, 'config.ini');
+        // const configPath = path.join(folderPath, 'config.ini');
         // Create folder if it doesn't exist
         if (!existsSync(folderPath)) {
           mkdirSync(folderPath);
@@ -422,17 +453,10 @@ async function saveFiles(data: AllPokemonData) {
             path.join(folderPath, 'icons.png')
           );
         }
-        // Create config.ini if it doesn't exist
-        const configContent =
-          '[Import]\n' +
-          `species=${species.speciesNumber}\n` +
-          `icon_palette=${species.graphics.iconPalette}`;
-
-        writeFileSync(configPath, configContent, { encoding: 'utf8' });
+        // Delete config.ini
+        // unlinkSync(configPath);
       })
     );
-
-  await Promise.all(promises);
 }
 
 ipcMain.on('load-files', async () => {

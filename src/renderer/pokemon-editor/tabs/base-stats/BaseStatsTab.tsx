@@ -1,10 +1,10 @@
 import { Box } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import { TypeLks } from '../../../../common/lookup-values';
+import { SelectOption } from '../../../common/Typeahead';
 import { ObservableDropdownField } from '../../../common/forms/ObservableDropdownField';
 import { ObservableNumberField } from '../../../common/forms/ObservableNumberField';
 import { ObservableTextField } from '../../../common/forms/ObservableTextField';
-import { SelectOption } from '../../../common/Typeahead';
 import { usePokemonStoreContext } from '../../pokemon.store';
 
 export const BaseStatsTab = observer(() => {
@@ -23,46 +23,46 @@ export const BaseStatsTab = observer(() => {
           <ObservableNumberField
             label="Base HP"
             store={species}
-            path={['baseStats', 'baseHP']}
+            path={['baseHP']}
           />
           <ObservableNumberField
             label="Base Attack"
             store={species}
-            path={['baseStats', 'baseAttack']}
+            path={['baseAttack']}
           />
           <ObservableNumberField
             label="Base Defense"
             store={species}
-            path={['baseStats', 'baseDefense']}
+            path={['baseDefense']}
           />
           <ObservableNumberField
             label="Base Sp. Attack"
             store={species}
-            path={['baseStats', 'baseSpAttack']}
+            path={['baseSpAttack']}
           />
           <ObservableNumberField
             label="Base Sp. Defense"
             store={species}
-            path={['baseStats', 'baseSpDefense']}
+            path={['baseSpDefense']}
           />
           <ObservableNumberField
             label="Base Speed"
             store={species}
-            path={['baseStats', 'baseSpeed']}
+            path={['baseSpeed']}
           />
         </Box>
         <Box className="type common-form">
           <ObservableDropdownField
             label="Type 1"
             store={species}
-            path={['baseStats', 'type1']}
+            path={['types', '0']}
             options={typeOptions}
           />
 
           <ObservableDropdownField
             label="Type 2"
             store={species}
-            path={['baseStats', 'type2']}
+            path={['types', '1']}
             options={typeOptions}
           />
         </Box>
@@ -71,86 +71,86 @@ export const BaseStatsTab = observer(() => {
           <ObservableNumberField
             label="Exp Yield"
             store={species}
-            path={['baseStats', 'expYield']}
+            path={['expYield']}
           />
 
           <ObservableNumberField
             label="EV Yield - HP"
             store={species}
-            path={['baseStats', 'evYield_HP']}
+            path={['evYield_HP']}
           />
 
           <ObservableNumberField
             label="EV Yield - Attack"
             store={species}
-            path={['baseStats', 'evYield_Attack']}
+            path={['evYield_Attack']}
           />
 
           <ObservableNumberField
             label="EV Yield - Defense"
             store={species}
-            path={['baseStats', 'evYield_Defense']}
+            path={['evYield_Defense']}
           />
 
           <ObservableNumberField
             label="EV Yield - Sp. Attack"
             store={species}
-            path={['baseStats', 'evYield_SpAttack']}
+            path={['evYield_SpAttack']}
           />
 
           <ObservableNumberField
             label="EV Yield - Sp. Defense"
             store={species}
-            path={['baseStats', 'evYield_SpDefense']}
+            path={['evYield_SpDefense']}
           />
 
           <ObservableNumberField
             label="EV Yield - Speed"
             store={species}
-            path={['baseStats', 'evYield_Speed']}
+            path={['evYield_Speed']}
           />
         </Box>
         <Box className="dropdowns common-form">
           <ObservableTextField
             label="Item 1"
             store={species}
-            path={['baseStats', 'item1']}
+            path={['itemCommon']}
           />
 
           <ObservableTextField
             label="Item 2"
             store={species}
-            path={['baseStats', 'item2']}
+            path={['itemRare']}
           />
 
           <ObservableTextField
             label="Egg Group 1"
             store={species}
-            path={['baseStats', 'eggGroup1']}
+            path={['eggGroups', '0']}
           />
 
           <ObservableTextField
             label="Egg Group 2"
             store={species}
-            path={['baseStats', 'eggGroup2']}
+            path={['eggGroups', '1']}
           />
 
           <ObservableTextField
             label="Ability 1"
             store={species}
-            path={['baseStats', 'ability1']}
+            path={['abilities', '0']}
           />
 
           <ObservableTextField
             label="Ability 2"
             store={species}
-            path={['baseStats', 'ability2']}
+            path={['abilities', '1']}
           />
 
           <ObservableTextField
             label="Hidden Ability"
             store={species}
-            path={['baseStats', 'hiddenAbility']}
+            path={['abilities', '2']}
           />
         </Box>
 
@@ -158,37 +158,31 @@ export const BaseStatsTab = observer(() => {
           <ObservableNumberField
             label="Female Percent"
             store={species}
-            path={['baseStats', 'genderRatio']}
+            path={['genderRatio']}
           />
 
           <ObservableNumberField
             label="Egg Cycles"
             store={species}
-            path={['baseStats', 'eggCycles']}
+            path={['eggCycles']}
           />
 
           <ObservableNumberField
             label="Friendship"
             store={species}
-            path={['baseStats', 'friendship']}
+            path={['friendship']}
           />
 
           <ObservableTextField
             label="Growth Rate"
             store={species}
-            path={['baseStats', 'growthRate']}
+            path={['growthRate']}
           />
 
           <ObservableNumberField
             label="Catch Rate"
             store={species}
-            path={['baseStats', 'catchRate']}
-          />
-
-          <ObservableNumberField
-            label="Safari Zone Flee Rate"
-            store={species}
-            path={['baseStats', 'safariZoneFleeRate']}
+            path={['catchRate']}
           />
         </Box>
       </Box>

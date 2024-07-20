@@ -33,12 +33,12 @@ export function LevelUpMoveForm(props: LevelUpFormProps) {
           <ObservableNumberField
             label="Level"
             store={species}
-            path={['learnset', index, 'level']}
+            path={['learnset', 'levelUp', index, 'level']}
           />
           <MoveDropdown
             label="Move"
             store={species}
-            path={['learnset', index, 'move']}
+            path={['learnset', 'levelUp', index, 'move']}
           />
           <Box
             sx={{

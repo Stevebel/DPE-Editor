@@ -126,7 +126,7 @@ const EvoByItem = z.object({
 });
 
 export const EvoByType = z.object({
-  method: z.enum(['MOVE_TYPE']),
+  method: z.enum(['MOVE_TYPE', 'TYPE_IN_PARTY']),
   targetSpecies: zConst,
   param: zConst,
 });
@@ -165,7 +165,7 @@ const EvoNoParams = z.object({
     'WATER_SCROLL',
   ]),
   targetSpecies: zConst,
-  param: z.literal(0),
+  param: z.literal(0).optional(),
 });
 
 export const EvoMethodGroups = {
@@ -180,9 +180,9 @@ export const EvoMethodGroups = {
 };
 
 const evoTypes = [
+  EvoNoParams,
   EvoByLevel,
   EvoByItem,
-  EvoNoParams,
   EvoByType,
   EvoByMap,
   EvoByMove,
@@ -191,8 +191,8 @@ const evoTypes = [
 ] as const;
 export const EvolutionSchema = z.union(evoTypes).and(
   z.object({
-    id: z.string().optional(),
     targetSpecies: zConst,
+    minLevel: z.number().positive().lte(100).optional(),
   })
 );
 

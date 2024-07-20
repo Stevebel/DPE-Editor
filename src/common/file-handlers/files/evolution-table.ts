@@ -3,9 +3,9 @@ import { EvolutionSchema } from '../../lookup-values';
 import { SourceFileDefinition } from '../file-handler.interface';
 import { ArrayHandler } from '../handlers/array-handler';
 import { ConstHandler, IntOrConstHandler } from '../handlers/const-handler';
-import { getProp, StructHandler } from '../handlers/struct-handler';
+import { StructHandler, getProp } from '../handlers/struct-handler';
 
-export type Evolution = z.infer<typeof EvolutionSchema>;
+export type Evolution = z.infer<typeof EvolutionSchema> & { id?: string };
 
 export type Evolutions = {
   species: string;

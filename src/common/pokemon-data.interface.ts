@@ -1,53 +1,18 @@
 import { z } from 'zod';
-import { SpeciesData } from './file-handlers/files/species';
+import { Evolution } from './file-handlers/files/evolution-table';
+import { LevelUpMove } from './file-handlers/files/level-up-learnsets';
 import { EvolutionSchema, habitatConsts, typeConsts } from './lookup-values';
-import { PokemonSourceData } from './pokemon-source-data.interface';
 import { zConst, zDexNumber, zLevel, zUByte } from './zod-common';
 
 export const zType = z.enum(typeConsts);
 export const zHabitat = z.enum(habitatConsts);
-export const zEVYield = z.number().nonnegative().lte(3);
-
-export const BaseStatSchema = z.object({
-  species: zConst,
-  baseHP: zUByte,
-  baseAttack: zUByte,
-  baseDefense: zUByte,
-  baseSpAttack: zUByte,
-  baseSpDefense: zUByte,
-  baseSpeed: zUByte,
-
-  type1: zType,
-  type2: zType,
-  catchRate: zUByte,
-  expYield: z.number().nonnegative(),
-  evYield_HP: zEVYield,
-  evYield_Attack: zEVYield,
-  evYield_Defense: zEVYield,
-  evYield_SpAttack: zEVYield,
-  evYield_SpDefense: zEVYield,
-  evYield_Speed: zEVYield,
-  item1: zConst.optional(),
-  item2: zConst.optional(),
-  genderRatio: z.number().gte(-1).lte(100),
-  eggCycles: zUByte,
-  friendship: zUByte,
-  growthRate: zConst,
-  eggGroup1: zConst,
-  eggGroup2: zConst,
-  ability1: zConst,
-  ability2: zConst,
-  hiddenAbility: zConst,
-  safariZoneFleeRate: zUByte,
-  noFlip: z.boolean(),
-});
+export const zEVYield = z.number().nonnegative().lte(3).optional();
 
 export const SizeCoordsSchema = z.object({
   width: zUByte,
   height: zUByte,
 });
 export const PicCoordsSchema = z.object({
-  species: zConst,
   size: SizeCoordsSchema,
   y_offset: zUByte,
 });
@@ -78,40 +43,51 @@ export const AnimFrameSchema = z.object({
 
 export const PokemonSpeciesDataSchema = z.object({
   species: zConst,
-  speciesNumber: z.number().nonnegative(),
-  name: z.string().max(10),
-  nameConst: zConst,
-  cryConst: zConst,
-  dexEntry: z.string().max(170).optional(),
-  dexEntryConst: zConst,
-  graphics: GraphicsFilesSchema,
-  femaleGraphics: GraphicsFilesSchema.optional(),
-  frontCoords: PicCoordsSchema.omit({ species: true }).optional(),
-  backCoords: PicCoordsSchema.omit({ species: true }).optional(),
+  name: z.string().max(12),
+  frontCoords: PicCoordsSchema.optional(),
+  backCoords: PicCoordsSchema.optional(),
   enemyElevation: z.number().nonnegative(),
   frontAnimId: zConst.optional(),
   backAnimId: zConst.optional(),
-  animConst: zConst.optional(),
-  frontAnimFrames: z.array(AnimFrameSchema).optional(),
-  animationDelay: zUByte.optional(),
-  baseStats: BaseStatSchema.partial().optional(),
   evolutions: z.array(EvolutionSchema).optional(),
-  learnset: z.array(LevelUpMoveSchema).optional(),
-  learnsetConst: zConst.optional(),
-  teachableMoves: z.array(zConst).optional(),
-  teachableMovesConst: zConst.optional(),
-  eggMoves: z.array(zConst).optional(),
-  footprint: GraphicFileSchema.optional(),
-  isAdditional: z.boolean(),
-  regionalDexNumber: zDexNumber.optional(),
+  baseHP: zUByte,
+  baseAttack: zUByte,
+  baseDefense: zUByte,
+  baseSpAttack: zUByte,
+  baseSpDefense: zUByte,
+  baseSpeed: zUByte,
+  types: z.array(zType).length(2),
+  catchRate: zUByte,
+  expYield: z.number().nonnegative(),
+  evYield_HP: zEVYield,
+  evYield_Attack: zEVYield,
+  evYield_Defense: zEVYield,
+  evYield_SpAttack: zEVYield,
+  evYield_SpDefense: zEVYield,
+  evYield_Speed: zEVYield,
+  itemCommon: zConst.optional(),
+  itemRare: zConst.optional(),
+  genderRatio: z.number().gte(-1).lte(100),
+  eggCycles: zUByte,
+  friendship: zUByte,
+  growthRate: zConst,
+  eggGroups: z.array(zConst).length(2),
+  abilities: z.array(zConst.or(z.null())).length(3),
+  bodyColor: zConst,
+  noFlip: z.boolean(),
+  graphicsFolder: zConst,
+  hasFemaleGraphics: z.boolean().optional(),
+  hasFrontAnim: z.boolean().optional(),
+  animationDelay: zUByte.optional(),
+  exclude: z.boolean(),
 });
 
 export const PokemonDataSchema = z.object({
-  nationalDex: zConst,
+  name: z.string().max(12),
   regionalDexNumber: zDexNumber.optional(),
   nationalDexNumber: zDexNumber,
 
-  categoryName: z.string().max(12),
+  categoryName: z.string().max(14),
   height: z.number().nonnegative().lte(100.0),
   weight: z.number().nonnegative().lte(999.9),
   pokemonScale: z.number().nonnegative(),
@@ -120,22 +96,48 @@ export const PokemonDataSchema = z.object({
   trainerOffset: z.number().nonnegative(),
 
   species: z.array(PokemonSpeciesDataSchema),
+
+  dexEntry: z.array(z.string()).max(4),
+  exclude: z.boolean(),
 });
 
-export type BaseStatData = z.infer<typeof BaseStatSchema>;
-export type IPokemonSpeciesData = z.infer<typeof PokemonSpeciesDataSchema>;
+export const PokemonLearnsetSchema = z.object({
+  species: zConst,
+  levelUp: z.array(LevelUpMoveSchema).optional(),
+  teachable: z.array(zConst).optional(),
+  egg: z.array(zConst).optional(),
+  exclude: z.boolean(),
+});
+
+export type IPokemonSpeciesData = Omit<
+  z.infer<typeof PokemonSpeciesDataSchema>,
+  'evolutions'
+> & {
+  evolutions: Evolution[];
+};
 export type Evo = z.infer<typeof EvolutionSchema>;
-export type IPokemonData = z.infer<typeof PokemonDataSchema>;
+export type IPokemonData = Omit<
+  z.infer<typeof PokemonDataSchema>,
+  'species'
+> & {
+  species: Array<IPokemonSpeciesData>;
+};
+export type ILearnset = Omit<
+  z.infer<typeof PokemonLearnsetSchema>,
+  'levelUp'
+> & {
+  levelUp: LevelUpMove[];
+};
+export type PokemonType = z.infer<typeof zType>;
 
 export type AllPokemonData = {
   pokemon: IPokemonData[];
-  species?: SpeciesData[];
-
-  source?: PokemonSourceData;
+  learnset: ILearnset[];
 };
 
 export type ImportedRow = {
   basedOn: string;
+  learnset: Partial<ILearnset>;
 } & PartialPokemonData;
 
 export interface PartialPokemonData extends Omit<IPokemonData, 'species'> {

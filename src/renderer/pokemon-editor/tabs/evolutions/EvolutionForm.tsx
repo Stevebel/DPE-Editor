@@ -5,14 +5,14 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 import {
   EvolutionMethods,
-  getMethodGroup,
   TypeLks,
+  getMethodGroup,
 } from '../../../../common/lookup-values';
+import { SelectOption } from '../../../common/Typeahead';
 import { MoveDropdown } from '../../../common/forms/MoveDropdown';
 import { ObservableDropdownField } from '../../../common/forms/ObservableDropdownField';
 import { ObservableNumberField } from '../../../common/forms/ObservableNumberField';
 import { ObservableTextField } from '../../../common/forms/ObservableTextField';
-import { SelectOption } from '../../../common/Typeahead';
 import { usePokemonStoreContext } from '../../pokemon.store';
 
 export interface EvolutionFormProps {
@@ -31,8 +31,8 @@ export const EvolutionForm = observer((props: EvolutionFormProps) => {
     value: method,
   }));
   const speciesOptions: SelectOption[] = pokemonStore.allSpecies.map((s) => ({
-    label: s.nameConst,
-    value: s.nameConst,
+    label: s.name,
+    value: s.species,
   }));
   const typeOptions: SelectOption[] = TypeLks.map((type) => ({
     label: type.name,
@@ -88,7 +88,7 @@ export const EvolutionForm = observer((props: EvolutionFormProps) => {
               <ObservableNumberField
                 label="Level"
                 store={species}
-                path={['evolutions', index, 'extra']}
+                path={['evolutions', index, 'minLevel']}
               />
             </>
           )}
@@ -121,40 +121,12 @@ export const EvolutionForm = observer((props: EvolutionFormProps) => {
               options={speciesOptions}
             />
           )}
-          {getSelectedMethodGroup() === 'levelAndTime' && (
-            <>
-              <ObservableNumberField
-                label="Level"
-                store={species}
-                path={['evolutions', index, 'param']}
-              />
-              <ObservableNumberField
-                label="Time"
-                store={species}
-                path={['evolutions', index, 'extra']}
-              />
-            </>
-          )}
           {getSelectedMethodGroup() === 'flag' && (
             <ObservableTextField
               label="Flag"
               store={species}
               path={['evolutions', index, 'param']}
             />
-          )}
-          {getSelectedMethodGroup() === 'mega' && (
-            <>
-              <ObservableTextField
-                label="Mega Stone"
-                store={species}
-                path={['evolutions', index, 'param']}
-              />
-              <ObservableTextField
-                label="Mega Variant"
-                store={species}
-                path={['evolutions', index, 'extra']}
-              />
-            </>
           )}
 
           <Box

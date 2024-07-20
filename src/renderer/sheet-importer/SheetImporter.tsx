@@ -40,7 +40,7 @@ export const SheetImporter = observer(() => {
     selected.forEach((newMon) => {
       // Check if the mon already exists in the store
       let baseMon = pokemonStore.pokemon.find(
-        (mon) => mon.nationalDex === newMon.nationalDex
+        (mon) => mon.name === newMon.name
       );
       if (!baseMon) {
         // Otherwise, use "based on" mon
@@ -61,24 +61,26 @@ export const SheetImporter = observer(() => {
           );
         } else {
           baseMon = pokemonStore.addPokemon(baseMon);
-          baseMon.species[0].manualSpriteConst = false;
-          baseMon.species[0].setSpeciesConst(newMon.nationalDex);
+          baseMon.species[0].setPokemonName(newMon.name);
         }
       }
       // Merge new mon into base mon
       if (baseMon) {
+        baseMon.name = newMon.name;
         baseMon.regionalDexNumber = newMon.regionalDexNumber;
+        baseMon.nationalDexNumber = newMon.nationalDexNumber;
         baseMon.categoryName = newMon.categoryName;
         baseMon.height = newMon.height;
         baseMon.weight = newMon.weight;
-        const baseMonBaseStats = baseMon.species[0].baseStats;
+        baseMon.setDexEntry(newMon.dexEntry.join('\n'));
+        baseMon.pokemonOffset ||= newMon.pokemonOffset;
+        baseMon.pokemonScale ||= newMon.pokemonScale;
+        baseMon.trainerOffset ||= newMon.trainerOffset;
+        baseMon.trainerScale ||= newMon.trainerScale;
+        baseMon.exclude = false;
         const species = {
           ...baseMon.species[0],
           ...newMon.species[0],
-        };
-        species.baseStats = {
-          ...baseMonBaseStats,
-          ...newMon.species[0].baseStats,
         };
         baseMon.species[0] = new PokemonSpeciesData(baseMon, species);
       }
@@ -91,7 +93,7 @@ export const SheetImporter = observer(() => {
       label: '#',
     },
     {
-      id: 'nationalDex',
+      id: 'name',
       label: 'Name',
     },
     {
@@ -116,7 +118,7 @@ export const SheetImporter = observer(() => {
       <EnhancedTable
         title="Imported Garticmon"
         rows={data}
-        keyProp="nationalDex"
+        keyProp="name"
         headers={headers}
         onSelect={(newSelected) => onSelect(newSelected)}
       />

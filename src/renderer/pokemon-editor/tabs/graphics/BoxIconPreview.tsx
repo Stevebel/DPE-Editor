@@ -6,7 +6,7 @@ export const BoxIconPreview = observer(() => {
   const species = pokemonStore.selectedSpecies;
 
   function getSprite() {
-    return `asset://${species!.nameConst.toLowerCase()}/icons.png`;
+    return `asset://${species?.graphicsFolder}/icons.png`;
   }
 
   if (species) {
