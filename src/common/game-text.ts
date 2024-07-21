@@ -189,10 +189,7 @@ export function wrapToWidth(text: string, width: number) {
     return null;
   }
 
-  const cleanText = text
-    .replaceAll('’', "'")
-    .replaceAll('“', '"')
-    .replaceAll('”', '"');
+  const cleanText = normalizeText(text)
 
   // Test if the text fits in the width
   const textLines = cleanText.split('\n').map((line) => line.trim());
@@ -257,3 +254,15 @@ export function wrapToWidth(text: string, width: number) {
 
   return lines.map((l) => l.text).join('\n');
 }
+export function normalizeText(text: string) {
+  return text
+    .replaceAll('’', "'")
+    .replaceAll('“', "'")
+    .replaceAll('”', "'")
+    .replaceAll('"', "'")
+    .replaceAll('—', '-')
+    .replaceAll('–', '-')
+    .replaceAll('...', '…')
+
+}
+

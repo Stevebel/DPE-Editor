@@ -42,8 +42,14 @@ export const SaveButton = observer(() => {
     }));
 
     const learnset: ILearnset[] = flatMap(pokemonStore.pokemon, (p) =>
-      flatMap(p.species, (s) => cloneDeep(s.learnset))
-    );
+      flatMap(p.species, (s) => {
+        const learnset = cloneDeep(s.learnset);
+        if (learnset) {
+          learnset.species = s.species;
+        }
+        return learnset;
+    })
+    ).filter(l => l.species);
 
     const data: AllPokemonData = {
       pokemon,

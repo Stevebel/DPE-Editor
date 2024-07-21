@@ -41,6 +41,14 @@ export const AnimFrameSchema = z.object({
   duration: z.number().nonnegative(),
 });
 
+export const PokemonLearnsetSchema = z.object({
+  species: zConst,
+  levelUp: z.array(LevelUpMoveSchema).optional(),
+  teachable: z.array(zConst).optional(),
+  egg: z.array(zConst).optional(),
+  exclude: z.boolean().optional(),
+});
+
 export const PokemonSpeciesDataSchema = z.object({
   species: zConst,
   name: z.string().max(12),
@@ -80,6 +88,7 @@ export const PokemonSpeciesDataSchema = z.object({
   hasFrontAnim: z.boolean().optional(),
   animationDelay: zUByte.optional(),
   exclude: z.boolean(),
+  learnset: PokemonLearnsetSchema.optional(),
 });
 
 export const PokemonDataSchema = z.object({
@@ -98,14 +107,6 @@ export const PokemonDataSchema = z.object({
   species: z.array(PokemonSpeciesDataSchema),
 
   dexEntry: z.array(z.string()).max(4),
-  exclude: z.boolean(),
-});
-
-export const PokemonLearnsetSchema = z.object({
-  species: zConst,
-  levelUp: z.array(LevelUpMoveSchema).optional(),
-  teachable: z.array(zConst).optional(),
-  egg: z.array(zConst).optional(),
   exclude: z.boolean(),
 });
 
@@ -137,7 +138,6 @@ export type AllPokemonData = {
 
 export type ImportedRow = {
   basedOn: string;
-  learnset: Partial<ILearnset>;
 } & PartialPokemonData;
 
 export interface PartialPokemonData extends Omit<IPokemonData, 'species'> {

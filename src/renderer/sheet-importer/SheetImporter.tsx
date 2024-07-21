@@ -1,7 +1,7 @@
 import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import React, { useEffect } from 'react';
-import { ImportedRow } from '../../common/pokemon-data.interface';
+import { ImportedRow, IPokemonSpeciesData } from '../../common/pokemon-data.interface';
 import EnhancedTable, { HeaderCell } from '../common/DataTable';
 import {
   PokemonSpeciesData,
@@ -78,9 +78,9 @@ export const SheetImporter = observer(() => {
         baseMon.trainerOffset ||= newMon.trainerOffset;
         baseMon.trainerScale ||= newMon.trainerScale;
         baseMon.exclude = false;
-        const species = {
+        const species: Partial<IPokemonSpeciesData> = {
           ...baseMon.species[0],
-          ...newMon.species[0],
+          ...newMon.species[0]
         };
         baseMon.species[0] = new PokemonSpeciesData(baseMon, species);
       }
